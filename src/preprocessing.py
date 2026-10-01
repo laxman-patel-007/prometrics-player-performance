@@ -1,7 +1,6 @@
 """
 ProMetrics: Player Performance Analysis (Case Study no. 102)
-Module III: Data Preprocessing & Feature Engineering
-Strictly adhering to syllabus requirements:
+Data Preprocessing & Feature Engineering Pipeline:
 - Handling missing data (domain-aware stratified median imputation)
 - Categorical encoding (One-Hot Encoding for nominal variables)
 - Feature engineering (Domain composite indices & non-linear age interaction)
@@ -109,7 +108,7 @@ def preprocess_player_data(raw_csv_path: str = "data/raw/player_performance_raw.
     y_reg = df["overall_performance_rating"]
     y_clf = df["performance_tier_code"]
 
-    # 6. Stratified Train / Test Split (Module VI)
+    # 6. Stratified Train / Test Split
     # Stratified by performance_tier_code to maintain balanced class proportions
     X_train_raw, X_test_raw, y_train_reg, y_test_reg, y_train_clf, y_test_clf = train_test_split(
         df_encoded, y_reg, y_clf,
@@ -120,7 +119,7 @@ def preprocess_player_data(raw_csv_path: str = "data/raw/player_performance_raw.
 
     print(f"Training split: {X_train_raw.shape[0]} samples | Test split: {X_test_raw.shape[0]} samples")
 
-    # 7. Feature Scaling (Module III)
+    # 7. Feature Scaling
     # Standardize numerical features using StandardScaler (fit on train, transform on test)
     scaler = StandardScaler()
     X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train_raw), columns=feature_names, index=X_train_raw.index)

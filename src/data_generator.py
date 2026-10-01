@@ -13,7 +13,7 @@ def generate_player_dataset(n_samples: int = 3000, random_seed: int = 42) -> pd.
     """
     Synthesize an authentic, domain-validated dataset of professional players.
     Reflects real-world distributions, positional correlations, age-performance curves,
-    and realistic missingness/noise to satisfy Module III preprocessing requirements.
+    and realistic missingness/noise to demonstrate robust data preprocessing.
     """
     np.random.seed(random_seed)
 
@@ -257,7 +257,7 @@ def generate_player_dataset(n_samples: int = 3000, random_seed: int = 42) -> pd.
         # Add realistic random match-to-match variance (+/- 1.8 points)
         perf_score = float(np.clip(perf_score + np.random.normal(0, 1.2), 52.0, 94.5))
 
-        # Assign Performance Tier (Module V Classification target):
+        # Assign Performance Tier (Classification target):
         # 0 = Developing / Rotation (< 70)
         # 1 = Core / High-Impact (70 to 81)
         # 2 = Elite / World-Class (>= 82)
@@ -338,7 +338,7 @@ def generate_player_dataset(n_samples: int = 3000, random_seed: int = 42) -> pd.
     df = pd.DataFrame(data)
 
     # Introduce realistic missing values (~2% to 4%) on non-critical reporting fields
-    # to demonstrate Module III: Handling Missing Data
+    # to demonstrate robust missing data imputation
     mask_short_pass = np.random.rand(len(df)) < 0.025
     df.loc[mask_short_pass, "short_passing"] = np.nan
 

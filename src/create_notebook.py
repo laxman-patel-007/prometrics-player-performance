@@ -1,6 +1,6 @@
 """
 Generates the comprehensive academic Jupyter Notebook for Case Study 102.
-Structured strictly according to syllabus Modules I - IX.
+Structured as a complete, professional end-to-end Machine Learning pipeline.
 """
 
 import json
@@ -46,13 +46,12 @@ def build_notebook():
 
     # Header
     add_md("""# ProMetrics: Multi-Dimensional Player Performance Analysis, Archetype Discovery, and Value Estimation in Modern Football
-### Case Study no. 102 | Machine Learning Fundamentals Final Project
-**Author:** AI & Machine Learning Research Team  
-**Course:** Machine Learning Fundamentals (Aligned strictly with Modules I through IX)  
-**Academic Year:** 2026-2027  
+### Case Study no. 102 | Advanced Machine Learning Project
+**Focus:** Sports Analytics, Athletic Performance Prediction & Tactical Archetype Clustering  
+**Domain:** Football (Soccer) Performance Telemetry & Market Intelligence  
 
 ---
-## Executive Summary & Problem Formulation
+## 1. Executive Summary & Problem Formulation
 In elite professional sports organizations, player valuation, recruitment scouting, and tactical lineups require evidence-based, quantitative evaluation. Traditional scouting often suffers from cognitive heuristics, regional scouting biases, and subjective impressionism. 
 
 **Problem Statement:**
@@ -66,21 +65,20 @@ In elite professional sports organizations, player valuation, recruitment scouti
 5. **Match Productivity Output:** Minutes played, Goals per 90, Assists per 90, Pass accuracy %, Tackle success %, Distance covered per 90 (km).
 
 ---
-## Course Syllabus Mapping:
-- **Module I:** Introduction to Machine Learning (Problem Formulation, Types of ML, End-to-End Workflow)
-- **Module II:** ML Libraries and Packages (NumPy, Pandas, Matplotlib, Seaborn, Scikit-Learn)
-- **Module III:** Data Preprocessing & Feature Engineering (Missing values, stratified imputation, One-Hot Encoding, StandardScaler, Domain features)
-- **Module IV:** Supervised Learning: Regression (Linear Regression, Polynomial Regression, Ridge Regression)
-- **Module V:** Supervised Learning: Classification (Logistic Regression, K-Nearest Neighbors, Decision Trees)
-- **Module VI:** Model Evaluation & Validation (Train/Test Split, 5-Fold Cross-Validation, RMSE, MAE, R², Accuracy, Precision, Recall, F1, Confusion Matrix)
-- **Module VII:** Unsupervised Learning (K-Means Clustering, Elbow Inertia, Silhouette Score, Tactical Archetype Discovery)
-- **Module VIII:** Dimensionality Reduction & Ensembles (PCA Scree & Biplot, Random Forest Regressor & Classifier with Feature Importances)
-- **Module IX:** Neural Networks & Model Deployment Basics (Multi-Layer Perceptron MLP, Joblib model persistence, Streamlit UI)
+## Machine Learning System Architecture:
+- **Phase 1: Environment & Tooling:** Scientific Python stack (NumPy, Pandas, Matplotlib, Seaborn, Scikit-Learn)
+- **Phase 2: Data Preprocessing & Feature Engineering:** Missing value imputation, One-Hot Encoding, StandardScaler, and composite domain indices
+- **Phase 3: Continuous Regression Modeling:** Linear Regression (OLS), Polynomial interaction (degree 2), Ridge, and Random Forest
+- **Phase 4: Multi-Class Talent Classification:** Logistic Regression, K-Nearest Neighbors, Decision Trees, and Random Forests
+- **Phase 5: Model Evaluation & Validation:** Stratified 80/20 train/test split, 5-Fold Cross Validation, R², RMSE, MAE, Accuracy, F1, Confusion Matrix
+- **Phase 6: Unsupervised Learning:** K-Means Clustering (Elbow & Silhouette validation), Tactical Archetype Discovery, and Hierarchical Dendrograms
+- **Phase 7: Dimensionality Reduction:** Principal Component Analysis (PCA) for variance decomposition and latent skill projection
+- **Phase 8: Neural Networks & Deployment:** Scikit-Learn Multi-Layer Perceptrons (MLP), Joblib persistence, and interactive Streamlit UI
 """)
 
-    # Module II: Tooling Setup
+    # Tooling Setup
     add_md("""---
-## Module II: ML Libraries and Tooling Ecosystem Setup
+## 2. Machine Learning Tooling & Ecosystem Setup
 We initialize the Python machine learning stack:
 - **NumPy & Pandas:** High-performance vector mathematics and tabular data wrangling.
 - **Matplotlib & Seaborn:** Publication-quality statistical visualizations.
@@ -104,9 +102,9 @@ plt.rcParams['font.size'] = 11
 print("Machine learning ecosystem initialized successfully!")
 """)
 
-    # Module I & Dataset Ingestion
+    # Dataset Ingestion
     add_md("""---
-## Module I: Problem Definition & Dataset Ingestion
+## 3. Dataset Ingestion & Exploration
 We load the dataset `data/raw/player_performance_raw.csv`, inspecting initial rows, dimensions, and data types.
 """)
 
@@ -119,9 +117,9 @@ df_raw.head()
 df_raw.describe().T[['mean', 'std', 'min', '50%', 'max']].round(2)
 """)
 
-    # Module III: Preprocessing
+    # Preprocessing
     add_md("""---
-## Module III: Data Preprocessing & Feature Engineering
+## 4. Data Preprocessing & Feature Engineering
 A vital stage in the ML lifecycle:
 1. **Handling Missing Data:** Real-world tracking data often features sensor dropouts. Rather than blind global mean imputation, we perform **Stratified Median Imputation** grouped by `primary_position`. A Midfielder's expected stamina and passing differs fundamentally from a Goalkeeper.
 2. **Feature Engineering:**
@@ -189,7 +187,7 @@ print(f"Preprocessed X_train shape: {X_train.shape} | X_test shape: {X_test.shap
 
     # Exploratory Data Analysis
     add_md("""---
-## Exploratory Data Analysis (EDA) & Factor Insights
+## 5. Exploratory Data Analysis (EDA) & Factor Insights
 Visualizing correlation structures and multi-dimensional attribute fingerprints.
 """)
 
@@ -215,9 +213,9 @@ plt.ylabel("Overall Performance Rating (50-95)")
 plt.show()
 """)
 
-    # Module IV: Regression
+    # Regression
     add_md("""---
-## Module IV: Supervised Learning: Regression
+## 6. Supervised Learning: Continuous Regression Models
 We formulate the regression task: predicting continuous $y \\in [50, 95]$ as a function of the vector of scaled features $\\mathbf{x}$.
 
 ### Evaluated Algorithms:
@@ -228,9 +226,9 @@ We formulate the regression task: predicting continuous $y \\in [50, 95]$ as a f
    $$y = \\mathbf{w}_1 x_1 + \\mathbf{w}_2 x_2 + \\mathbf{w}_{12} x_1 x_2 + \\mathbf{w}_{11} x_1^2 + \\dots$$
 3. **Ridge Regression ($L_2$ Regularized):**
    $$\\min_{\\mathbf{w}} \\sum_{i=1}^n \\left( y_i - \\mathbf{w}^T \\mathbf{x}_i \\right)^2 + \\alpha \\|\\mathbf{w}\\|^2$$
-4. **Random Forest Regressor (Module VIII Ensemble):**
+4. **Random Forest Regressor (Ensemble Method):**
    Averaging predictions from an ensemble of de-correlated decision trees built via bootstrap aggregating (bagging).
-5. **Multi-Layer Perceptron Regressor (Module IX Neural Network Basics):**
+5. **Multi-Layer Perceptron Regressor (Neural Network):**
    Feedforward artificial neural network optimizing mean squared error via backpropagation and Adam.
 """)
 
@@ -301,7 +299,7 @@ pd.DataFrame(reg_summary).sort_values("Test R²", ascending=False)
 
     # Residual Diagnostics
     add_md("""---
-## Module VI: Model Evaluation & Residual Diagnostics
+## 7. Model Evaluation & Residual Diagnostics
 Residual analysis ($e_i = y_i - \\hat{y}_i$) allows us to verify homoscedasticity, normality of error, and absence of systematic bias.
 """)
 
@@ -323,9 +321,9 @@ plt.tight_layout()
 plt.show()
 """)
 
-    # Module V: Classification
+    # Classification
     add_md("""---
-## Module V: Supervised Learning: Classification
+## 8. Supervised Learning: Multi-Class Talent Tier Classification
 We address the talent tier categorization problem:
 - **Class 0:** Developing / Rotation (< 71)
 - **Class 1:** Core / Star (71 to 81)
@@ -339,9 +337,9 @@ We address the talent tier categorization problem:
 3. **Decision Tree Classifier:**
    Greedy recursive binary splitting minimizing Gini impurity:
    $$I_G(t) = 1 - \\sum_{k=1}^K p_k^2$$
-4. **Random Forest Classifier (Module VIII):**
+4. **Random Forest Classifier (Ensemble):**
    Ensemble of decorrelated decision trees.
-5. **Multi-Layer Perceptron Classifier (Module IX):**
+5. **Multi-Layer Perceptron Classifier (Neural Network):**
    Multi-class softmax neural network classifier.
 """)
 
@@ -428,9 +426,9 @@ plt.tight_layout()
 plt.show()
 """)
 
-    # Module VII: Unsupervised Learning
+    # Clustering
     add_md("""---
-## Module VII: Unsupervised Learning: Tactical Archetype Discovery
+## 9. Unsupervised Learning: Tactical Archetype Discovery
 Can an algorithm cluster players into natural playing styles without nominal position supervision?
 
 ### Methodology:
@@ -490,9 +488,9 @@ plt.tight_layout()
 plt.show()
 """)
 
-    # Module VIII: PCA & Ensembles
+    # PCA & Ensembles
     add_md("""---
-## Module VIII: Dimensionality Reduction (PCA) & Ensemble Methods
+## 10. Dimensionality Reduction (PCA) & Ensemble Feature Importances
 1. **Principal Component Analysis (PCA):** Orthogonal projection finding directions of maximum variance.
 2. **Random Forest Feature Importances:** Mean decrease in impurity (MDI) across trees.
 """)
@@ -528,9 +526,9 @@ plt.tight_layout()
 plt.show()
 """)
 
-    # Module IX: Neural Network & Deployment
+    # Neural Network & Deployment
     add_md("""---
-## Module IX: Neural Networks & Model Deployment
+## 11. Neural Networks & Model Deployment
 We demonstrated Scikit-Learn's `MLPRegressor` and `MLPClassifier`, validating multi-layer feedforward neural networks with backpropagation. 
 
 All trained models and scalers are persisted via `joblib` in the `models/` directory and connected to the real-time Streamlit analytics platform (`app.py`).
@@ -543,7 +541,7 @@ streamlit run app.py
 
     # Viva Voce Prep
     add_md("""---
-## Comprehensive Viva Voce Questions & Answers Guide
+## 12. Technical Defense & Viva Voce Q&A Guide
 ### Key Questions for Evaluator Defense:
 1. **Q: Why did you use stratified median imputation rather than simple mean imputation?**  
    *A:* In sports analytics, attributes like stamina, short passing, and defensive awareness have distinct bimodal distributions across positions (e.g. goalkeepers vs central midfielders). A global mean would artificially distort goalkeepers with midfielder passing attributes. Stratifying by position preserves biomechanical and tactical ground truths.

@@ -1,7 +1,7 @@
 """
 ProMetrics: Advanced Player Performance Analytics & Scouting Intelligence
 Case Study no. 102: Player Performance Analysis
-Built strictly conforming to Machine Learning Syllabus (Modules I - IX).
+Enterprise Sports Machine Learning Framework
 """
 
 import os
@@ -104,9 +104,9 @@ st.sidebar.title("ProMetrics Studio")
 st.sidebar.markdown("**Case Study 102:** Player Performance Analysis")
 
 menu = st.sidebar.radio(
-    "Navigation Modules:",
+    "Analytics Navigation:",
     [
-        "1. Executive Overview & Syllabus Alignment",
+        "1. Executive Overview & System Architecture",
         "2. Exploratory Data Analysis & Measurable Factors",
         "3. Performance Rating Prediction (Regression)",
         "4. Talent Tier Classification",
@@ -118,22 +118,18 @@ menu = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.info("""
-**Course Coverage:**
-- **Module I:** Problem Formulation & Workflow
-- **Module II:** NumPy, Pandas, Scikit-Learn
-- **Module III:** Preprocessing & Feature Engineering
-- **Module IV:** Linear & Polynomial Regression
-- **Module V:** Logistic, KNN, Decision Trees
-- **Module VI:** Cross-Validation & Metric Evaluation
-- **Module VII:** K-Means & Hierarchical Clustering
-- **Module VIII:** PCA & Random Forest Ensembles
-- **Module IX:** Neural Networks & Streamlit Deployment
+**Analytics Architecture:**
+- **Data Engineering:** Stratified Imputation & Scaling
+- **Regression:** OLS, Polynomial, Ridge, Random Forest, MLP
+- **Classification:** Logistic Regression, KNN, Decision Tree, RF
+- **Tactical Discovery:** K-Means Clustering & PCA
+- **Interactive Simulation:** What-If Player Development
 """)
 
 # ==============================================================================
-# TAB 1: EXECUTIVE OVERVIEW & SYLLABUS MAPPING
+# TAB 1: EXECUTIVE OVERVIEW & SYSTEM ARCHITECTURE
 # ==============================================================================
-if menu == "1. Executive Overview & Syllabus Alignment":
+if menu == "1. Executive Overview & System Architecture":
     st.markdown('<div class="main-header">ProMetrics: Player Performance Analytics Platform</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Case Study no. 102 | A Machine Learning Framework for Investigating Measurable Factors in Player Performance</div>', unsafe_allow_html=True)
 
@@ -156,26 +152,24 @@ if menu == "1. Executive Overview & Syllabus Alignment":
     **Assigned Problem Statement:**
     > *"A sports organization wants to investigate measurable factors associated with player performance. (With Proper Justification)"*
 
-    **Formal ML Objectives:**
+    **Key Machine Learning Objectives:**
     1. **Supervised Regression:** Predict a continuous **Overall Performance Rating** (scale 50.0–95.0) as a function of physiological, athletic, and technical factors.
     2. **Supervised Classification:** Classify athletes into actionable organizational tiers: **Developing/Rotation (0)**, **Core/Star (1)**, or **Elite/World-Class (2)**.
     3. **Unsupervised Clustering:** Discover hidden **Tactical Archetypes** without relying on nominal roster labels.
     4. **Dimensionality Reduction:** Extract orthogonal latent skill axes using **PCA** to visualize player positioning and identify redundant athletic indicators.
     """)
 
-    st.markdown("### 2. Full Syllabus Compliance Matrix")
-    syllabus_data = [
-        {"Module": "Module I", "Topic": "Introduction to Machine Learning", "Implementation in Project": "Supervised (Regression & Classification) + Unsupervised (Clustering & PCA) end-to-end pipeline."},
-        {"Module": "Module II", "Topic": "ML Libraries & Packages", "Implementation in Project": "Built entirely with NumPy, Pandas, Scikit-Learn, Matplotlib, Seaborn, and Streamlit."},
-        {"Module": "Module III", "Topic": "Data Preprocessing & Feature Engineering", "Implementation in Project": "Stratified median imputation, One-Hot Encoding, StandardScaler, and composite athletic/technical indices."},
-        {"Module": "Module IV", "Topic": "Supervised Learning: Regression", "Implementation in Project": "Ordinary Least Squares (OLS) Linear Regression, Polynomial Regression (degree 2 interaction), and Ridge."},
-        {"Module": "Module V", "Topic": "Supervised Learning: Classification", "Implementation in Project": "Multinomial Logistic Regression, K-Nearest Neighbors (KNN), and Decision Tree Classifier."},
-        {"Module": "Module VI", "Topic": "Model Evaluation & Validation", "Implementation in Project": "Stratified 80/20 split, 5-Fold Cross Validation, MAE/MSE/RMSE/R², Confusion Matrix, and Precision/Recall/F1."},
-        {"Module": "Module VII", "Topic": "Unsupervised Learning", "Implementation in Project": "K-Means Clustering with Elbow Inertia & Silhouette score validation across k=2..7, tactical profiling."},
-        {"Module": "Module VIII", "Topic": "Dimensionality Reduction & Ensembles", "Implementation in Project": "PCA for variance decomposition & biplot loadings; Random Forest Regressor & Classifier with Gini/MSE importances."},
-        {"Module": "Module IX", "Topic": "Neural Networks & Model Deployment", "Implementation in Project": "Multi-Layer Perceptron (MLP) Regressor & Classifier; full deployment in an interactive Streamlit UI."}
+    st.markdown("### 2. Machine Learning System Architecture & Methodologies")
+    arch_data = [
+        {"Pipeline Component": "Data Preprocessing & Cleaning", "Methodology": "Stratified position-based median imputation, domain feature engineering, and robust standardization."},
+        {"Pipeline Component": "Supervised Regression Engine", "Methodology": "Ordinary Least Squares (OLS), Degree-2 Polynomial interaction, Ridge (L2), and Random Forest ensembling."},
+        {"Pipeline Component": "Talent Tier Classification", "Methodology": "Multinomial Logistic Regression, K-Nearest Neighbors (KNN), Decision Tree, and Multi-Layer Perceptron (MLP)."},
+        {"Pipeline Component": "Model Validation & Cross-Validation", "Methodology": "Stratified 80/20 train/test split, 5-Fold Cross Validation, R², RMSE, MAE, Confusion Matrix, and Precision/Recall/F1."},
+        {"Pipeline Component": "Tactical Archetype Discovery", "Methodology": "K-Means Clustering with Elbow Inertia & Silhouette score validation across k=2..7, tactical profiling."},
+        {"Pipeline Component": "Dimensionality Reduction", "Methodology": "Principal Component Analysis (PCA) for variance decomposition, latent 2D projection, and biplot factor loadings."},
+        {"Pipeline Component": "Scouting Simulation Engine", "Methodology": "Interactive what-if intervention simulator modeling performance gain and projected transfer market value."}
     ]
-    st.table(pd.DataFrame(syllabus_data))
+    st.table(pd.DataFrame(arch_data))
 
 # ==============================================================================
 # TAB 2: EXPLORATORY DATA ANALYSIS & MEASURABLE FACTORS
@@ -269,11 +263,11 @@ elif menu == "2. Exploratory Data Analysis & Measurable Factors":
 # ==============================================================================
 elif menu == "3. Performance Rating Prediction (Regression)":
     st.markdown('<div class="main-header">Performance Rating Prediction Engine</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Module IV: Supervised Learning (Regression) - Live Performance Estimation</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Supervised Learning (Regression) - Real-Time Performance Estimation</div>', unsafe_allow_html=True)
 
     st.sidebar.subheader("Select Prediction Model:")
     chosen_reg_model = st.sidebar.selectbox(
-        "Algorithm (Module IV & VIII):",
+        "Prediction Algorithm:",
         ["Random Forest Regressor (Ensemble)", "Linear Regression (OLS)", "Ridge Regression (L2)", "Polynomial Regression (Deg 2)", "MLP Regressor (Neural Net)"]
     )
 
@@ -415,7 +409,7 @@ elif menu == "3. Performance Rating Prediction (Regression)":
 # ==============================================================================
 elif menu == "4. Talent Tier Classification":
     st.markdown('<div class="main-header">Talent Tier Classification Studio</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Module V: Supervised Classification (Logistic Regression, KNN, Decision Tree, Random Forest, MLP)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Supervised Classification (Logistic Regression, KNN, Decision Tree, Random Forest, MLP)</div>', unsafe_allow_html=True)
 
     clf_choice = st.selectbox(
         "Select Classification Algorithm to Analyze:",
@@ -473,7 +467,7 @@ elif menu == "4. Talent Tier Classification":
 # ==============================================================================
 elif menu == "5. Tactical Archetypes & PCA Clustering":
     st.markdown('<div class="main-header">Tactical Archetype Discovery & Dimensionality Reduction</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Module VII (K-Means Clustering) & Module VIII (Principal Component Analysis - PCA)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Unsupervised K-Means Clustering & Principal Component Analysis (PCA)</div>', unsafe_allow_html=True)
 
     col_pca1, col_pca2 = st.columns([2, 1])
     
@@ -622,22 +616,22 @@ elif menu == "6. What-If Scouting Simulator":
 # ==============================================================================
 elif menu == "7. Model Evaluation & Benchmark Studio":
     st.markdown('<div class="main-header">Rigorous Model Evaluation Studio</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Module VI: 5-Fold Cross Validation, Error Diagnostics, and Feature Importance Rankings</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">5-Fold Cross Validation, Error Diagnostics, and Feature Importance Rankings</div>', unsafe_allow_html=True)
 
-    st.subheader("1. Supervised Learning Regression Benchmark (Module IV)")
+    st.subheader("1. Supervised Learning: Continuous Regression Benchmark")
     reg_df = pd.DataFrame(metrics["regression"]).T.reset_index()
     reg_df.rename(columns={"index": "Model Algorithm"}, inplace=True)
     st.dataframe(reg_df.style.highlight_max(subset=["Test_R2", "CV_R2_mean"], color="#DCFCE7").highlight_min(subset=["Test_RMSE", "Test_MAE"], color="#DCFCE7"))
 
     st.markdown("---")
-    st.subheader("2. Supervised Learning Classification Benchmark (Module V)")
+    st.subheader("2. Supervised Learning: Multi-Class Talent Tier Benchmark")
     clf_df = pd.DataFrame(metrics["classification"]).T.reset_index()
     clf_df.rename(columns={"index": "Model Algorithm"}, inplace=True)
     clf_df_display = clf_df.drop(columns=["Confusion_Matrix"])
     st.dataframe(clf_df_display.style.highlight_max(subset=["Test_Accuracy", "Test_F1_Macro", "CV_Accuracy_mean"], color="#DCFCE7"))
 
     st.markdown("---")
-    st.subheader("3. Feature Importance Analysis (Module VIII Ensemble)")
+    st.subheader("3. Feature Importance Analysis (Random Forest Ensembles)")
     col_imp1, col_imp2 = st.columns(2)
     with col_imp1:
         st.markdown("#### Top Factors Driving Overall Performance Rating (Random Forest Regressor)")

@@ -6,25 +6,25 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Case Study no. 102:** A sports organization wants to investigate measurable factors associated with player performance. (With Proper Justification)  
-> **Course:** Machine Learning Fundamentals (Modules I through IX Full Alignment)
+> **Framework:** Comprehensive End-to-End Sports Analytics & Machine Learning System
 
 ---
 
-## 🌟 Project Highlights & Syllabus Alignment
+## 🌟 Project Highlights & Technical Architecture
 
-This project delivers an end-to-end, mathematically rigorous Machine Learning solution strictly aligned with every module of the prescribed syllabus:
+This project delivers an end-to-end, mathematically rigorous Machine Learning solution modeling player performance:
 
-| Module | Curriculum Topic | Project Implementation |
+| Component | Technical Focus | Project Implementation |
 | :--- | :--- | :--- |
-| **Module I** | Introduction to Machine Learning | Real-world problem definition, Supervised (Regression & Classification) + Unsupervised workflow. |
-| **Module II** | ML Libraries & Packages | Implemented with NumPy, Pandas, Scikit-Learn, Matplotlib, Seaborn, and Streamlit. |
-| **Module III** | Data Preprocessing & Feature Engineering | Stratified position-based median imputation, domain composite indices, One-Hot Encoding, StandardScaler. |
-| **Module IV** | Supervised Learning: Regression | Linear Regression (OLS), Polynomial Regression (Degree 2), Ridge Regression ($L_2$). |
-| **Module V** | Supervised Learning: Classification | Multinomial Logistic Regression, K-Nearest Neighbors (KNN), Decision Tree Classifier. |
-| **Module VI** | Model Evaluation & Validation | Stratified 80/20 train/test split, 5-Fold Cross Validation, $R^2$, RMSE, MAE, Accuracy, Precision, Recall, Macro F1, Confusion Matrix. |
-| **Module VII** | Unsupervised Learning | K-Means Clustering (Elbow Method & Silhouette Validation across $k=2..7$), Hierarchical Clustering (Dendrogram). |
-| **Module VIII**| Dimensionality Reduction & Ensembles | Principal Component Analysis (PCA Scree & Biplot), Random Forest Regressor & Classifier with Feature Importances. |
-| **Module IX** | Neural Networks & Model Deployment | Scikit-Learn Multi-Layer Perceptron (MLP), Joblib model persistence, and interactive Streamlit web dashboard. |
+| **Problem Formulation** | Sports Science Objectives | Real-world problem definition, Supervised (Regression & Classification) + Unsupervised workflow. |
+| **Tooling & Packages** | Scientific Python Stack | Implemented with NumPy, Pandas, Scikit-Learn, Matplotlib, Seaborn, and Streamlit. |
+| **Data Preprocessing** | Feature Engineering | Stratified position-based median imputation, domain composite indices, One-Hot Encoding, StandardScaler. |
+| **Continuous Regression** | Rating Prediction | Linear Regression (OLS), Polynomial Regression (Degree 2), Ridge Regression ($L_2$). |
+| **Talent Classification** | Tier Categorization | Multinomial Logistic Regression, K-Nearest Neighbors (KNN), Decision Tree Classifier. |
+| **Model Evaluation** | Rigorous Benchmarks | Stratified 80/20 train/test split, 5-Fold Cross Validation, $R^2$, RMSE, MAE, Accuracy, Precision, Recall, Macro F1, Confusion Matrix. |
+| **Unsupervised Discovery** | Tactical Archetypes | K-Means Clustering (Elbow Method & Silhouette Validation across $k=2..7$), Hierarchical Clustering (Dendrogram). |
+| **Dimensionality Reduction** | Latent Factor Space | Principal Component Analysis (PCA Scree & Biplot), Random Forest Regressor & Classifier with Feature Importances. |
+| **Neural Networks & Deploy** | Production App | Scikit-Learn Multi-Layer Perceptron (MLP), Joblib model persistence, and interactive Streamlit web dashboard. |
 
 ---
 
@@ -47,7 +47,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 Open **[http://localhost:8501](http://localhost:8501)** in your browser to access the 7-in-1 analytics platform:
-1. **Executive Overview & Syllabus Alignment**
+1. **Executive Overview & System Architecture**
 2. **Exploratory Data Analysis (EDA) & Measurable Factors**
 3. **Performance Rating Prediction Engine (Regression)**
 4. **Talent Tier Classification Studio**
@@ -118,27 +118,27 @@ python src/train_models.py
 │       ├── y_train_reg.csv / y_test_reg.csv # Continuous performance ratings
 │       └── y_train_clf.csv / y_test_clf.csv # Categorical talent tiers
 ├── models/
-│   ├── linear_regression.joblib          # Module IV OLS
-│   ├── polynomial_regression.joblib      # Module IV Degree 2
-│   ├── ridge_regression.joblib           # Module IV Regularized
-│   ├── random_forest_regressor.joblib    # Module VIII Ensemble
-│   ├── mlp_regressor.joblib              # Module IX Neural Net
-│   ├── logistic_regression.joblib        # Module V Multinomial
-│   ├── knn_classifier.joblib             # Module V KNN
-│   ├── decision_tree_classifier.joblib   # Module V Decision Tree
-│   ├── random_forest_classifier.joblib   # Module VIII Ensemble
-│   ├── mlp_classifier.joblib             # Module IX Neural Net
-│   ├── kmeans_model.joblib               # Module VII Clustering
-│   ├── pca_model.joblib                  # Module VIII Dimensionality Reduction
-│   ├── scaler.joblib                     # Module III StandardScaler
-│   ├── feature_metadata.json             # Feature names and schemas
-│   └── metrics_summary.json              # Full 5-fold CV and test metrics
+│   ├── linear_regression.joblib          # OLS Linear Regression Model
+│   ├── polynomial_regression.joblib      # Degree-2 Polynomial Regression Model
+│   ├── ridge_regression.joblib           # L2 Regularized Ridge Model
+│   ├── random_forest_regressor.joblib    # Random Forest Regressor Ensemble
+│   ├── mlp_regressor.joblib              # Multi-Layer Perceptron Regressor
+│   ├── logistic_regression.joblib        # Multinomial Logistic Regression Model
+│   ├── knn_classifier.joblib             # K-Nearest Neighbors Classifier
+│   ├── decision_tree_classifier.joblib   # Pruned Decision Tree Classifier
+│   ├── random_forest_classifier.joblib   # Random Forest Classifier Ensemble
+│   ├── mlp_classifier.joblib             # Multi-Layer Perceptron Classifier
+│   ├── kmeans_model.joblib               # K-Means Tactical Archetype Model
+│   ├── pca_model.joblib                  # Principal Component Analysis Model
+│   ├── scaler.joblib                     # Fitted StandardScaler Pipeline
+│   ├── feature_metadata.json             # Feature Schema & Tier Mappings
+│   └── metrics_summary.json              # Full 5-Fold CV & Test Evaluation Metrics
 ├── notebooks/
-│   └── player_performance_analysis.ipynb # Complete Academic Jupyter Notebook (Modules I-IX)
+│   └── player_performance_analysis.ipynb # End-to-End Academic Jupyter Notebook
 ├── src/
 │   ├── data_generator.py                 # Authentic dataset synthesis module
-│   ├── preprocessing.py                  # Module III imputation, scaling, & encoding
-│   ├── train_models.py                   # Complete training, CV, & evaluation engine
+│   ├── preprocessing.py                  # Imputation, scaling, & encoding pipeline
+│   ├── train_models.py                   # Comprehensive training & 5-fold CV engine
 │   └── create_notebook.py                # Notebook generator
 ├── app.py                                # Production Streamlit web application
 ├── requirements.txt                      # Project package dependencies

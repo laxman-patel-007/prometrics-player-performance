@@ -1,13 +1,12 @@
 """
 ProMetrics: Player Performance Analysis (Case Study no. 102)
-Training & Evaluation Engine
-Strictly implements and benchmarks:
-- Module IV: Supervised Learning: Regression (Linear, Polynomial, Ridge, Random Forest, MLP)
-- Module V: Supervised Learning: Classification (Logistic Regression, KNN, Decision Tree, Random Forest, MLP)
-- Module VI: Rigorous Model Evaluation (5-Fold CV, MAE/MSE/RMSE/R2, Acc/Prec/Recall/F1, Confusion Matrix)
-- Module VII: Unsupervised Learning (K-Means Clustering, Silhouette Analysis, Hierarchical Clustering)
-- Module VIII: Dimensionality Reduction & Ensembles (PCA Scree & Loadings, Random Forest Feature Importance)
-- Module IX: Neural Network Basics & Model Deployment Persistence (MLP, Joblib)
+Training & Evaluation Engine:
+- Continuous Regression: Linear Regression, Polynomial, Ridge, Random Forest, MLP
+- Multi-Class Classification: Logistic Regression, KNN, Decision Tree, Random Forest, MLP
+- Evaluation & Validation: 5-Fold Cross Validation, R², RMSE, MAE, Accuracy, F1, Confusion Matrix
+- Unsupervised Learning: K-Means Clustering, Silhouette Analysis, Hierarchical Clustering
+- Dimensionality Reduction: PCA Scree & Loadings, Random Forest Feature Importance Rankings
+- Neural Networks & Model Persistence: Multi-Layer Perceptron (MLP), Joblib
 """
 
 import os
@@ -55,9 +54,9 @@ def train_and_evaluate_all():
     }
 
     # =========================================================================
-    # MODULE IV: SUPERVISED LEARNING - REGRESSION
+    # SUPERVISED LEARNING: CONTINUOUS REGRESSION
     # =========================================================================
-    print("\n--- Training Module IV: Supervised Learning (Regression) ---")
+    print("\n--- Training Supervised Learning (Regression) ---")
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
     # 1. Linear Regression (Baseline Ordinary Least Squares)
@@ -125,7 +124,7 @@ def train_and_evaluate_all():
     }
     print(f"Ridge Regression        -> Test R2: {ridge_r2:.4f} | RMSE: {ridge_rmse:.4f} | MAE: {ridge_mae:.4f}")
 
-    # 4. Random Forest Regressor (Module VIII Ensemble)
+    # 4. Random Forest Regressor (Ensemble)
     rf_reg = RandomForestRegressor(n_estimators=120, max_depth=12, random_state=42, n_jobs=-1)
     rf_cv_r2 = cross_val_score(rf_reg, X_train, y_train_reg, cv=kf, scoring="r2")
     rf_reg.fit(X_train, y_train_reg)
@@ -144,7 +143,7 @@ def train_and_evaluate_all():
     }
     print(f"Random Forest Regressor -> Test R2: {rf_r2:.4f} | RMSE: {rf_rmse:.4f} | MAE: {rf_mae:.4f}")
 
-    # 5. Multi-Layer Perceptron Regressor (Module IX Neural Network Basics)
+    # 5. Multi-Layer Perceptron Regressor (Neural Network)
     mlp_reg = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=350, random_state=42, early_stopping=True)
     mlp_cv_r2 = cross_val_score(mlp_reg, X_train, y_train_reg, cv=kf, scoring="r2")
     mlp_reg.fit(X_train, y_train_reg)
@@ -164,9 +163,9 @@ def train_and_evaluate_all():
     print(f"MLP Regressor (NN)      -> Test R2: {mlp_r2:.4f} | RMSE: {mlp_rmse:.4f} | MAE: {mlp_mae:.4f}")
 
     # =========================================================================
-    # MODULE V: SUPERVISED LEARNING - CLASSIFICATION
+    # SUPERVISED LEARNING: MULTI-CLASS CLASSIFICATION
     # =========================================================================
-    print("\n--- Training Module V: Supervised Learning (Classification) ---")
+    print("\n--- Training Supervised Learning (Classification) ---")
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     target_names = ["Developing", "Star", "Elite"]
 
@@ -239,7 +238,7 @@ def train_and_evaluate_all():
     }
     print(f"Decision Tree           -> Test Acc: {dt_acc:.4f} | F1-Macro: {dt_f1:.4f} | Precision: {dt_prec:.4f}")
 
-    # 4. Random Forest Classifier (Module VIII Ensemble)
+    # 4. Random Forest Classifier (Ensemble)
     rf_clf = RandomForestClassifier(n_estimators=150, max_depth=10, random_state=42, n_jobs=-1)
     rf_cv_acc = cross_val_score(rf_clf, X_train, y_train_clf, cv=skf, scoring="accuracy")
     rf_clf.fit(X_train, y_train_clf)
@@ -262,7 +261,7 @@ def train_and_evaluate_all():
     }
     print(f"Random Forest Clf       -> Test Acc: {rf_acc:.4f} | F1-Macro: {rf_f1:.4f} | Precision: {rf_prec:.4f}")
 
-    # 5. Multi-Layer Perceptron Classifier (Module IX Neural Network Basics)
+    # 5. Multi-Layer Perceptron Classifier (Neural Network)
     mlp_clf = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=350, random_state=42, early_stopping=True)
     mlp_cv_acc = cross_val_score(mlp_clf, X_train, y_train_clf, cv=skf, scoring="accuracy")
     mlp_clf.fit(X_train, y_train_clf)
@@ -286,9 +285,9 @@ def train_and_evaluate_all():
     print(f"MLP Classifier (NN)     -> Test Acc: {mlp_acc:.4f} | F1-Macro: {mlp_f1:.4f} | Precision: {mlp_prec:.4f}")
 
     # =========================================================================
-    # MODULE VII: UNSUPERVISED LEARNING (K-MEANS & HIERARCHICAL)
+    # UNSUPERVISED LEARNING (K-MEANS & HIERARCHICAL)
     # =========================================================================
-    print("\n--- Training Module VII: Unsupervised Learning (Clustering) ---")
+    print("\n--- Training Unsupervised Learning (Clustering) ---")
     # Clustering on core playing style attributes (combining athletic + technical + tactical)
     cluster_features = [
         "sprint_speed", "stamina", "strength", "agility",
@@ -331,9 +330,9 @@ def train_and_evaluate_all():
     print(f"K-Means Optimal k={optimal_k} with Silhouette Score: {silhouettes[k_range.index(optimal_k)]:.4f}")
 
     # =========================================================================
-    # MODULE VIII: DIMENSIONALITY REDUCTION (PCA) & ENSEMBLE IMPORTANCES
+    # DIMENSIONALITY REDUCTION (PCA) & ENSEMBLE IMPORTANCES
     # =========================================================================
-    print("\n--- Training Module VIII: Dimensionality Reduction (PCA) ---")
+    print("\n--- Training Dimensionality Reduction (PCA) ---")
     pca_full = PCA()
     pca_full.fit(X_train)
     explained_variance_ratio = [round(float(x), 4) for x in pca_full.explained_variance_ratio_]

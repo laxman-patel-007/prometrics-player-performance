@@ -4,10 +4,9 @@
 **Project Title (Student-Formulated):**  
 ## ProMetrics: Multi-Dimensional Player Performance Prediction, Tactical Archetype Discovery, and Value Estimation in Modern Football
 
-**Course Title:** Machine Learning Fundamentals  
-**Course Code:** ML-101 / ML-202  
-**Curriculum Mapping:** Modules I through IX (Full Coverage)  
-**Academic Year:** 2026–2027  
+**System Domain:** Professional Sports Analytics & Machine Learning Engineering  
+**Application Focus:** Quantitative Player Evaluation, Multi-Factor Rating Prediction & Tactical Archetype Discovery  
+**Technology Stack:** Python, Scikit-Learn, Pandas, NumPy, Streamlit  
 
 ---
 
@@ -15,13 +14,13 @@
 1. [Problem Definition & Real-World Motivation](#1-problem-definition--real-world-motivation)
 2. [Dataset Description, Variable Dictionary & Data Quality](#2-dataset-description-variable-dictionary--data-quality)
 3. [Exploratory Data Analysis (EDA) & Domain Observations](#3-exploratory-data-analysis-eda--domain-observations)
-4. [Data Preprocessing & Feature Engineering (Module III)](#4-data-preprocessing--feature-engineering-module-iii)
-5. [Supervised Learning: Regression Experiments (Module IV)](#5-supervised-learning-regression-experiments-module-iv)
-6. [Supervised Learning: Classification Experiments (Module V)](#6-supervised-learning-classification-experiments-module-v)
-7. [Rigorous Model Evaluation & Validation (Module VI)](#7-rigorous-model-evaluation--validation-module-vi)
-8. [Unsupervised Learning: Tactical Archetypes (Module VII)](#8-unsupervised-learning-tactical-archetypes-module-vii)
-9. [Dimensionality Reduction & Ensemble Analysis (Module VIII)](#9-dimensionality-reduction--ensemble-analysis-module-viii)
-10. [Neural Network Concepts & Model Deployment (Module IX)](#10-neural-network-concepts--model-deployment-module-ix)
+4. [Data Preprocessing & Feature Engineering](#4-data-preprocessing--feature-engineering)
+5. [Supervised Learning: Continuous Regression Experiments](#5-supervised-learning-continuous-regression-experiments)
+6. [Supervised Learning: Talent Tier Classification Experiments](#6-supervised-learning-talent-tier-classification-experiments)
+7. [Rigorous Model Evaluation & Validation](#7-rigorous-model-evaluation--validation)
+8. [Unsupervised Learning: Tactical Archetype Clustering](#8-unsupervised-learning-tactical-archetype-clustering)
+9. [Dimensionality Reduction & Ensemble Analysis](#9-dimensionality-reduction--ensemble-analysis)
+10. [Neural Network Architectures & Model Deployment](#10-neural-network-architectures--model-deployment)
 11. [Streamlit Application Architecture & User Guide](#11-streamlit-application-architecture--user-guide)
 12. [Error Diagnostics, Residual Analysis & Limitations](#12-error-diagnostics-residual-analysis--limitations)
 13. [Viva Voce Examination Guide: Questions & Model Answers](#13-viva-voce-examination-guide-questions--model-answers)
@@ -91,7 +90,7 @@ Prior to preprocessing, the raw data was systematically audited for real-world t
   - `short_passing`: 97 missing records ($3.03\%$)
   - `discipline_score`: 83 missing records ($2.59\%$)
   - `distance_km_per_90`: 79 missing records ($2.47\%$)
-- **Data Quality Rationale:** Tracking telemetry devices occasionally suffer packet dropouts during matches. These were intentionally documented to validate Module III preprocessing.
+- **Data Quality Rationale:** Tracking telemetry devices occasionally suffer packet dropouts during matches. These were systematically identified and resolved via domain-stratified imputation.
 
 ---
 
@@ -106,9 +105,9 @@ Correlation analysis revealed profound statistical associations with `overall_pe
 
 ---
 
-## 4. Data Preprocessing & Feature Engineering (Module III)
+## 4. Data Preprocessing & Feature Engineering
 
-In accordance with **Module III (Data Preprocessing & Feature Engineering)**, all transformations were scientifically justified:
+All data cleaning and feature engineering transformations were scientifically justified based on domain mechanics:
 
 ### 4.1 Stratified Median Imputation
 - **Methodology:** Global mean imputation would severely distort position-specific physiological realities (e.g. imputing a Goalkeeper's stamina with a Midfielder's high mean). Therefore, missing values were imputed using the **median of the player's primary playing position**:
@@ -138,7 +137,7 @@ To capture physical and tactical synergies, six engineered composite indices wer
 
 ---
 
-## 5. Supervised Learning: Regression Experiments (Module IV)
+## 5. Supervised Learning: Continuous Regression Experiments
 
 We formulated the continuous estimation of `overall_performance_rating` ($y \in [50.0, 95.0]$) using multiple regression architectures.
 
@@ -150,9 +149,9 @@ We formulated the continuous estimation of `overall_performance_rating` ($y \in 
    $$\hat{y} = \mathbf{w}_1^T \mathbf{x} + \mathbf{w}_2^T (\mathbf{x} \otimes \mathbf{x})$$
 3. **Ridge Regression ($L_2$ Regularized):**
    $$\min_{\mathbf{w}} \frac{1}{2n} \sum_{i=1}^n (y_i - \hat{y}_i)^2 + \alpha \|\mathbf{w}\|_2^2$$
-4. **Random Forest Regressor (Module VIII Ensemble):**
+4. **Random Forest Regressor (Ensemble Architecture):**
    Averaging $B=120$ bootstrap de-correlated trees with maximum depth $12$.
-5. **Multi-Layer Perceptron (MLP) Regressor (Module IX Neural Network):**
+5. **Multi-Layer Perceptron (MLP) Regressor (Neural Network Architecture):**
    Architecture: Input(43) $\rightarrow$ Dense(64, ReLU) $\rightarrow$ Dense(32, ReLU) $\rightarrow$ Output(1), optimized via Adam.
 
 ### 5.2 Regression Experimental Results Table
@@ -167,7 +166,7 @@ We formulated the continuous estimation of `overall_performance_rating` ($y \in 
 
 ---
 
-## 6. Supervised Learning: Classification Experiments (Module V)
+## 6. Supervised Learning: Classification Experiments
 
 We formulated the multi-class categorization of players into organizational tiers:
 - **Class 0:** Developing / Rotation
@@ -210,7 +209,7 @@ Actual Elite                   0                  29              190
 
 ---
 
-## 7. Rigorous Model Evaluation & Validation (Module VI)
+## 7. Rigorous Model Evaluation & Validation
 
 To ensure academic and statistical integrity:
 1. **Stratified Splitting:** Train/Test split ($80/20$) was stratified on class label to guarantee identical proportions of Elite ($34.3\%$), Star ($43.4\%$), and Developing ($22.3\%$) across both sets.
@@ -219,7 +218,7 @@ To ensure academic and statistical integrity:
 
 ---
 
-## 8. Unsupervised Learning: Tactical Archetypes (Module VII)
+## 8. Unsupervised Learning: Tactical Archetypes
 
 ### 8.1 K-Means Clustering on Latent Skill Space
 To discover natural playing styles independent of nominal roster labels, K-Means was executed across $k \in [2, 7]$ on core technical and athletic attributes:
@@ -240,7 +239,7 @@ Agglomerative Hierarchical Clustering using Ward's minimum variance linkage was 
 
 ---
 
-## 9. Dimensionality Reduction & Ensemble Analysis (Module VIII)
+## 9. Dimensionality Reduction & Ensemble Analysis
 
 ### 9.1 Principal Component Analysis (PCA)
 PCA reduced the 43 feature dimensions down to orthogonal principal components:
@@ -263,7 +262,7 @@ Gini and MSE impurity reductions isolated the primary measurable drivers of play
 
 ---
 
-## 10. Neural Network Concepts & Model Deployment (Module IX)
+## 10. Neural Network Concepts & Model Deployment
 
 - **Scikit-Learn Multi-Layer Perceptron (MLP):** Implemented both `MLPRegressor` and `MLPClassifier` using feedforward hidden layers $(64, 32)$, ReLU activation functions, and Adam stochastic gradient descent.
 - **Model Serialization:** All 12 production models, scalers, and metadata were serialized using `joblib` into the `models/` directory for zero-latency inference in the deployment dashboard.
@@ -275,7 +274,7 @@ Gini and MSE impurity reductions isolated the primary measurable drivers of play
 A production-ready Streamlit web application (`app.py`) was developed and launched on `http://localhost:8501`.
 
 ### Seven Interactive Studios:
-1. **Executive Overview & Syllabus Alignment:** High-level metrics, problem definition, and complete syllabus module verification.
+1. **Executive Overview & System Architecture:** High-level metrics, problem definition, and end-to-end architecture breakdown.
 2. **Exploratory Data Analysis Studio:** Interactive correlation heatmaps, positional radar charts, and age-performance curve sliders.
 3. **Performance Rating Prediction Engine (Regression):** Interactive sliders for athletic, technical, and tactical traits; instant prediction across 5 regression models with interactive gauges.
 4. **Talent Tier Classification Studio:** Classifies athletes into Developing, Star, or Elite; displays confusion matrix and probability distributions.
@@ -317,16 +316,17 @@ A production-ready Streamlit web application (`app.py`) was developed and launch
 **Model Answer:**  
 *"We evaluated cluster counts from $k=2$ through $k=7$ using two mathematical criteria: (1) the Elbow Method, observing the within-cluster sum of squares (inertia), which exhibited a distinct inflection point at $k=4$; and (2) the Silhouette Score, which confirmed peak cohesion and cluster separation at $0.3487$. These four clusters correspond cleanly to modern football tactical archetypes: Tactical Playmakers, Defensive Anchors, Explosive Forwards, and Positional Goalkeepers."*
 
-### Question 5: How does your project map to Modules IV through IX of our syllabus?
+### Question 5: What is the end-to-end machine learning methodology across the project lifecycle?
 **Model Answer:**  
-*"We adhered strictly to the course syllabus:  
-- **Module IV:** Implemented Linear Regression, Polynomial Regression (degree 2), and Ridge.  
-- **Module V:** Implemented Multinomial Logistic Regression, K-Nearest Neighbors, and Decision Tree.  
-- **Module VI:** Applied 80/20 stratified split, 5-Fold Cross Validation, and computed $R^2$, RMSE, MAE, Accuracy, Precision, Recall, and Confusion Matrices.  
-- **Module VII:** Performed K-Means with Elbow/Silhouette analysis and Hierarchical Clustering with Dendrograms.  
-- **Module VIII:** Performed PCA for dimensionality reduction and trained Random Forest ensembles with feature importances.  
-- **Module IX:** Implemented Multi-Layer Perceptrons and deployed the final solution via Streamlit."*
+*"We implemented a comprehensive, industry-grade ML pipeline:  
+- **Data Engineering:** Stratified position-based median imputation, domain composite indices, and StandardScaler normalization.  
+- **Continuous Regression:** Evaluated Linear Regression (OLS), Polynomial interaction (degree 2), Ridge (L2), and Random Forest Regressors for performance rating estimation.  
+- **Multi-Class Classification:** Benchmarked Multinomial Logistic Regression, K-Nearest Neighbors, Decision Trees, and Random Forests for talent tier stratification.  
+- **Validation:** Implemented stratified 80/20 partitioning, 5-Fold Cross Validation, residual diagnostics, and multi-metric triangulation.  
+- **Unsupervised Tactical Discovery:** Discovered 4 distinct tactical archetypes via K-Means (Elbow & Silhouette validation) and Ward's hierarchical dendrograms.  
+- **Dimensionality Reduction:** Extracted orthogonal skill axes via PCA explaining 73.5% cumulative variance.  
+- **Neural Networks & Deployment:** Implemented Multi-Layer Perceptrons and deployed a responsive 7-module Streamlit analytics application."*
 
 ---
 
-*End of Academic Project Report — ProMetrics Case Study 102*
+*End of Project Report — ProMetrics Case Study 102*
