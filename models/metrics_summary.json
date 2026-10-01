@@ -1,0 +1,258 @@
+{
+  "regression": {
+    "Linear Regression": {
+      "CV_R2_mean": 0.9454,
+      "CV_R2_std": 0.0055,
+      "Test_MAE": 1.5546,
+      "Test_MSE": 4.196,
+      "Test_RMSE": 2.0484,
+      "Test_R2": 0.9386
+    },
+    "Polynomial Regression (Deg 2)": {
+      "CV_R2_mean": 0.8005,
+      "CV_R2_std": 0.0339,
+      "Test_MAE": 2.6836,
+      "Test_RMSE": 4.0069,
+      "Test_R2": 0.765
+    },
+    "Ridge Regression": {
+      "CV_R2_mean": 0.9456,
+      "CV_R2_std": 0.0053,
+      "Test_MAE": 1.5527,
+      "Test_RMSE": 2.0449,
+      "Test_R2": 0.9388
+    },
+    "Random Forest Regressor": {
+      "CV_R2_mean": 0.9474,
+      "CV_R2_std": 0.0066,
+      "Test_MAE": 1.498,
+      "Test_RMSE": 1.9189,
+      "Test_R2": 0.9461
+    },
+    "MLP Regressor (Neural Net)": {
+      "CV_R2_mean": 0.9208,
+      "CV_R2_std": 0.0079,
+      "Test_MAE": 1.7134,
+      "Test_RMSE": 2.2408,
+      "Test_R2": 0.9265
+    }
+  },
+  "classification": {
+    "Logistic Regression": {
+      "CV_Accuracy_mean": 0.877,
+      "CV_Accuracy_std": 0.0146,
+      "Test_Accuracy": 0.8797,
+      "Test_Precision": 0.8892,
+      "Test_Recall": 0.8791,
+      "Test_F1_Macro": 0.8836,
+      "Confusion_Matrix": [
+        [
+          126,
+          17,
+          0
+        ],
+        [
+          11,
+          247,
+          20
+        ],
+        [
+          0,
+          29,
+          190
+        ]
+      ]
+    },
+    "K-Nearest Neighbors (KNN)": {
+      "CV_Accuracy_mean": 0.8441,
+      "CV_Accuracy_std": 0.0219,
+      "Test_Accuracy": 0.8047,
+      "Test_Precision": 0.8199,
+      "Test_Recall": 0.7985,
+      "Test_F1_Macro": 0.8075,
+      "Confusion_Matrix": [
+        [
+          108,
+          35,
+          0
+        ],
+        [
+          16,
+          225,
+          37
+        ],
+        [
+          0,
+          37,
+          182
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "CV_Accuracy_mean": 0.8258,
+      "CV_Accuracy_std": 0.0129,
+      "Test_Accuracy": 0.7984,
+      "Test_Precision": 0.8155,
+      "Test_Recall": 0.7913,
+      "Test_F1_Macro": 0.8011,
+      "Confusion_Matrix": [
+        [
+          109,
+          34,
+          0
+        ],
+        [
+          20,
+          231,
+          27
+        ],
+        [
+          0,
+          48,
+          171
+        ]
+      ]
+    },
+    "Random Forest Classifier": {
+      "CV_Accuracy_mean": 0.8926,
+      "CV_Accuracy_std": 0.0124,
+      "Test_Accuracy": 0.8781,
+      "Test_Precision": 0.8933,
+      "Test_Recall": 0.8727,
+      "Test_F1_Macro": 0.8815,
+      "Confusion_Matrix": [
+        [
+          122,
+          21,
+          0
+        ],
+        [
+          8,
+          252,
+          18
+        ],
+        [
+          0,
+          31,
+          188
+        ]
+      ]
+    },
+    "MLP Classifier (Neural Net)": {
+      "CV_Accuracy_mean": 0.8617,
+      "CV_Accuracy_std": 0.0237,
+      "Test_Accuracy": 0.8453,
+      "Test_Precision": 0.8683,
+      "Test_Recall": 0.8365,
+      "Test_F1_Macro": 0.8493,
+      "Confusion_Matrix": [
+        [
+          114,
+          29,
+          0
+        ],
+        [
+          7,
+          245,
+          26
+        ],
+        [
+          0,
+          37,
+          182
+        ]
+      ]
+    }
+  },
+  "unsupervised": {
+    "k_range": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "inertias": [
+      19741.35,
+      15284.19,
+      11099.33,
+      8932.37,
+      7527.23,
+      6354.39
+    ],
+    "silhouette_scores": [
+      0.3045,
+      0.3051,
+      0.3487,
+      0.3565,
+      0.3527,
+      0.3671
+    ],
+    "optimal_k": 4,
+    "archetype_names": {
+      "0": "Tactical Playmaker & Orchestrator",
+      "1": "Defensive Anchor & Ball-Winner",
+      "2": "Explosive Forward & Finisher",
+      "3": "Goalkeeper / Positional Specialist"
+    }
+  },
+  "pca": {
+    "explained_variance_ratio_top5": [
+      0.3504,
+      0.1791,
+      0.1129,
+      0.0586,
+      0.0342
+    ],
+    "cumulative_variance_top5": [
+      0.3504,
+      0.5294,
+      0.6424,
+      0.7009,
+      0.7351
+    ],
+    "top_features_pc1": {
+      "technical_mastery_index": 0.2521,
+      "ball_control": 0.2441,
+      "crossing": 0.2393,
+      "stamina": 0.2359,
+      "short_passing": 0.2349,
+      "athletic_power_index": 0.2316
+    },
+    "top_features_pc2": {
+      "tackle_success_pct": 0.3415,
+      "defensive_solidity_index": 0.3092,
+      "defensive_awareness": 0.3069,
+      "sliding_tackle": 0.3029,
+      "primary_position_Forward": -0.301,
+      "standing_tackle": 0.2994
+    }
+  },
+  "feature_importances": {
+    "regression_top10": {
+      "athletic_power_index": 0.4488,
+      "composure": 0.36,
+      "strength": 0.0386,
+      "defensive_solidity_index": 0.0313,
+      "technical_mastery_index": 0.0207,
+      "jumping": 0.0177,
+      "ball_control": 0.0131,
+      "vision": 0.0084,
+      "stamina_efficiency": 0.0079,
+      "dribbling": 0.0054
+    },
+    "classification_top10": {
+      "athletic_power_index": 0.135,
+      "composure": 0.0882,
+      "jumping": 0.0668,
+      "strength": 0.0561,
+      "ball_control": 0.0518,
+      "defensive_solidity_index": 0.0494,
+      "technical_mastery_index": 0.0468,
+      "stamina_efficiency": 0.0468,
+      "aggression": 0.0426,
+      "dribbling": 0.0356
+    }
+  }
+}
