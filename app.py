@@ -60,32 +60,38 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Cache data and models
 @st.cache_data
 def load_datasets():
-    df_clean = pd.read_csv("data/processed/player_performance_cleaned.csv")
-    with open("models/metrics_summary.json", "r") as f:
+    data_path = os.path.join(BASE_DIR, "data/processed/player_performance_cleaned.csv")
+    metrics_path = os.path.join(BASE_DIR, "models/metrics_summary.json")
+    meta_path = os.path.join(BASE_DIR, "models/feature_metadata.json")
+    
+    df_clean = pd.read_csv(data_path)
+    with open(metrics_path, "r") as f:
         metrics = json.load(f)
-    with open("models/feature_metadata.json", "r") as f:
+    with open(meta_path, "r") as f:
         metadata = json.load(f)
     return df_clean, metrics, metadata
 
 @st.cache_resource
 def load_models():
     models = {
-        "scaler": joblib.load("models/scaler.joblib"),
-        "linear_reg": joblib.load("models/linear_regression.joblib"),
-        "ridge_reg": joblib.load("models/ridge_regression.joblib"),
-        "poly_reg": joblib.load("models/polynomial_regression.joblib"),
-        "rf_reg": joblib.load("models/random_forest_regressor.joblib"),
-        "mlp_reg": joblib.load("models/mlp_regressor.joblib"),
-        "log_clf": joblib.load("models/logistic_regression.joblib"),
-        "knn_clf": joblib.load("models/knn_classifier.joblib"),
-        "dt_clf": joblib.load("models/decision_tree_classifier.joblib"),
-        "rf_clf": joblib.load("models/random_forest_classifier.joblib"),
-        "mlp_clf": joblib.load("models/mlp_classifier.joblib"),
-        "kmeans": joblib.load("models/kmeans_model.joblib"),
-        "pca": joblib.load("models/pca_model.joblib")
+        "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
+        "linear_reg": joblib.load(os.path.join(BASE_DIR, "models/linear_regression.joblib")),
+        "ridge_reg": joblib.load(os.path.join(BASE_DIR, "models/ridge_regression.joblib")),
+        "poly_reg": joblib.load(os.path.join(BASE_DIR, "models/polynomial_regression.joblib")),
+        "rf_reg": joblib.load(os.path.join(BASE_DIR, "models/random_forest_regressor.joblib")),
+        "mlp_reg": joblib.load(os.path.join(BASE_DIR, "models/mlp_regressor.joblib")),
+        "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
+        "knn_clf": joblib.load(os.path.join(BASE_DIR, "models/knn_classifier.joblib")),
+        "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
+        "rf_clf": joblib.load(os.path.join(BASE_DIR, "models/random_forest_classifier.joblib")),
+        "mlp_clf": joblib.load(os.path.join(BASE_DIR, "models/mlp_classifier.joblib")),
+        "kmeans": joblib.load(os.path.join(BASE_DIR, "models/kmeans_model.joblib")),
+        "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
     }
     return models
 
