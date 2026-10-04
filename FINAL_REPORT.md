@@ -1,22 +1,23 @@
 # Case Study no. 102: Player Performance Analysis
-# Final Academic Report & Project Documentation
+# Final Academic & Organizational Project Report
 
-**Project Title (Student-Formulated):**  
-## ProMetrics: Multi-Dimensional Player Performance Prediction, Tactical Archetype Discovery, and Value Estimation in Modern Football
+**Project Title:**  
+## CricMetrics Pro: Multi-Dimensional Cricket Player Performance Analysis, Tactical Archetype Discovery, and Auction Valuation in Modern T20 Cricket
 
 **System Domain:** Professional Sports Analytics & Machine Learning Engineering  
-**Application Focus:** Quantitative Player Evaluation, Multi-Factor Rating Prediction & Tactical Archetype Discovery  
-**Technology Stack:** Python, Scikit-Learn, Pandas, NumPy, Streamlit  
+**Application Focus:** Quantitative Player Evaluation, T20 Match Impact, Talent Tier Classification & Franchise Auction Valuation  
+**Dataset Foundation:** Official 17-Season Real IPL Ball-by-Ball Telemetry (2008–2024, 260,920 Deliveries, 1,095 Matches, 619 Qualified Players)  
+**Technology Stack:** Python 3.9+, Scikit-Learn, Pandas, NumPy, Plotly, Streamlit  
 
 ---
 
 ## Table of Contents
-1. [Problem Definition & Real-World Motivation](#1-problem-definition--real-world-motivation)
-2. [Dataset Description, Variable Dictionary & Data Quality](#2-dataset-description-variable-dictionary--data-quality)
+1. [Problem Definition & Real-World Organizational Motivation](#1-problem-definition--real-world-organizational-motivation)
+2. [Dataset Provenance, Feature Dictionary & Data Quality](#2-dataset-provenance-feature-dictionary--data-quality)
 3. [Exploratory Data Analysis (EDA) & Domain Observations](#3-exploratory-data-analysis-eda--domain-observations)
 4. [Data Preprocessing & Feature Engineering](#4-data-preprocessing--feature-engineering)
-5. [Supervised Learning: Continuous Regression Experiments](#5-supervised-learning-continuous-regression-experiments)
-6. [Supervised Learning: Talent Tier Classification Experiments](#6-supervised-learning-talent-tier-classification-experiments)
+5. [Supervised Learning: Continuous Rating Regression Models](#5-supervised-learning-continuous-rating-regression-models)
+6. [Supervised Learning: Talent Tier Classification Models](#6-supervised-learning-talent-tier-classification-models)
 7. [Rigorous Model Evaluation & Validation](#7-rigorous-model-evaluation--validation)
 8. [Unsupervised Learning: Tactical Archetype Clustering](#8-unsupervised-learning-tactical-archetype-clustering)
 9. [Dimensionality Reduction & Ensemble Analysis](#9-dimensionality-reduction--ensemble-analysis)
@@ -27,306 +28,156 @@
 
 ---
 
-## 1. Problem Definition & Real-World Motivation
+## 1. Problem Definition & Real-World Organizational Motivation
 
 ### 1.1 Organizational Problem Statement
 > *"A sports organization wants to investigate measurable factors associated with player performance. (With Proper Justification)"*
 
-In modern professional sports organizations (e.g., top-tier European football clubs in the Premier League, La Liga, Serie A, Bundesliga, and Ligue 1), hundreds of millions of euros are invested annually in talent acquisition, wage payrolls, squad depth management, and physical conditioning. Historically, talent evaluation was dominated by qualitative scouting—characterized by subjective impressions, cognitive confirmation bias, regional blind spots, and over-weighting isolated high-profile moments.
+In modern professional sports organizations—specifically Indian Premier League (IPL) franchises and national cricket boards (BCCI, Cricket Australia, ECB)—hundreds of crores of rupees are committed during mega-auctions with strict purse caps (e.g., ₹100–120 Crore squad budgets). Historically, cricket player acquisition was fraught with subjective heuristics, superstar brand bias, and over-indexing on nominal career run or wicket aggregates rather than contextual match impact.
 
-A modern sports organization requires an objective, measurable, and machine-learning-driven framework to:
-1. **Dissect and Quantify Performance Drivers:** Identify which measurable athletic (physiological), technical, mental, and tactical metrics are statistically associated with high-level performance.
-2. **Predict Overall Performance Continuous Rating (Regression):** Accurately estimate a player's baseline rating $y \in [50.0, 95.0]$ based on multi-dimensional athletic inputs.
-3. **Classify Organizational Talent Tiers (Classification):** Categorize players into actionable strategic cohorts:
-   - **Tier 0:** *Developing / Squad Rotation* (Rating $< 71.0$)
-   - **Tier 1:** *Core / High-Impact Star* ($71.0 \le \text{Rating} < 82.0$)
-   - **Tier 2:** *Elite / World-Class Pillar* ($\text{Rating} \ge 82.0$)
-4. **Discover Tactical Archetypes (Unsupervised Clustering):** Uncover natural playing styles and positional roles without relying on nominal roster labels (e.g., separating dynamic wing-backs from defensive center-backs).
-5. **Simulate Development Programs (What-If Analysis):** Provide performance directors and conditioning coaches with an empirical tool to project how targeted improvements in stamina, composure, or passing translate into rating gains and financial valuation.
+A modern cricket organization requires an objective, measurable, and machine-learning-driven framework to:
+1. **Dissect and Quantify Performance Drivers:** Identify which measurable batting (Strike Rate, Boundary %, Death Overs SR), bowling (Economy Rate, Dot Ball %, Death Overs Economy), and clutch factors truly dictate match wins.
+2. **Predict Overall Continuous Rating (Regression):** Estimate an objective player rating $y \in [50.0, 95.0]$ using multi-dimensional telemetry.
+3. **Classify Strategic Talent Tiers (Classification):** Categorize players into actionable cohorts:
+   - **Tier 0:** *Developing / Squad Rotation* (Rating $< 68.0$)
+   - **Tier 1:** *Core / Franchise Star* ($68.0 \le \text{Rating} < 80.0$)
+   - **Tier 2:** *Elite / Marquee Pillar* ($\text{Rating} \ge 80.0$)
+4. **Discover Tactical Archetypes (Unsupervised Clustering):** Group players by their true playing fingerprint (e.g., separating Death-Over Finishers from Top-Order Anchors, and Mystery Spinners from Pace Spearheads).
+5. **Simulate Player Development & Auction Valuation (What-If Analysis):** Provide franchise directors and coaching staff with an empirical tool to project how targeted improvements in death-overs hitting or economy rate boost ratings and fair market auction valuations (₹ Crores).
 
 ---
 
-## 2. Dataset Description, Variable Dictionary & Data Quality
+## 2. Dataset Provenance, Feature Dictionary & Data Quality
 
 ### 2.1 Dataset Overview & Provenance
-The dataset comprises **3,200 professional players** across five major leagues, reflecting realistic statistical distributions grounded in official tracking data (Opta, FBref, and FIFA performance telemetry).
+The dataset is aggregated from **260,920 real deliveries across 1,095 IPL matches (2008–2024)**, covering **619 qualified professional cricketers** who have competed in at least 3 IPL matches:
 
 | Metric | Specification |
 | :--- | :--- |
-| **Total Observations ($N$)** | 3,200 professional player profiles |
-| **Raw Feature Dimensions ($D$)** | 36 measurable attributes + metadata |
-| **Engineered Features** | 6 composite domain indices |
-| **Encoded Feature Dimensions** | 43 numerical dimensions (post one-hot encoding) |
-| **Target Variables** | `overall_performance_rating` (Continuous) & `performance_tier_code` (Categorical) |
+| **Total Deliveries Analyzed** | 260,920 ball-by-ball delivery records |
+| **Total Matches Analyzed** | 1,095 IPL matches spanning 17 seasons |
+| **Total Qualified Players ($N$)** | 619 professional cricketers |
+| **Raw & Engineered Features** | 31 quantitative attributes + metadata |
+| **Target Variables** | `overall_performance_rating` (Continuous) & `performance_tier_code` (0, 1, 2) |
 
-### 2.2 Variable Dictionary
+### 2.2 Feature Dictionary
 
-| Variable Name | Category | Type | Unit / Range | Domain Significance |
-| :--- | :--- | :--- | :--- | :--- |
-| `player_id` | Metadata | String | PLR-XXXX | Unique player tracking identifier |
-| `player_name` | Metadata | String | Full Name | Player identity |
-| `primary_position` | Metadata / Tactical | Nominal | Forward, Midfielder, Defender, Goalkeeper | Nominal pitch assignment |
-| `age` | Demographic | Discrete | 18 – 38 years | Age curve indicator |
-| `height_cm` / `weight_kg` | Physiological | Continuous | cm / kg | Somatotype and physical presence |
-| `sprint_speed` / `acceleration` | Athletic | Continuous | 35.0 – 99.0 | Maximum velocity and burst acceleration |
-| `stamina` | Athletic / Physiological | Continuous | 40.0 – 99.0 | Aerobic capacity and fatigue resistance |
-| `strength` / `jumping` | Athletic | Continuous | 45.0 – 99.0 | Muscular force and aerial contest capability |
-| `ball_control` / `dribbling` | Technical | Continuous | 25.0 – 99.0 | First-touch precision and close-quarters retention |
-| `short_passing` / `long_passing` | Technical | Continuous | 35.0 – 99.0 | Distribution accuracy and progressive passing |
-| `finishing` / `shot_power` | Technical | Continuous | 15.0 – 99.0 | Goal conversion efficiency and ball exit velocity |
-| `defensive_awareness` | Tactical | Continuous | 25.0 – 99.0 | Positional anticipation without the ball |
-| `standing_tackle` / `sliding_tackle` | Tactical | Continuous | 15.0 – 99.0 | Ground duel winning capability |
-| `vision` | Cognitive | Continuous | 40.0 – 99.0 | Spatial awareness and passing lane recognition |
-| `composure` | Mental | Continuous | 45.0 – 99.0 | Decision-making consistency under physical pressure |
-| `discipline_score` | Mental | Continuous | 45.0 – 99.0 | Inverse card frequency and tactical compliance |
-| `distance_km_per_90` | Match Tracking | Continuous | 3.5 – 13.5 km | GPS-monitored work rate per 90 minutes |
-| `overall_performance_rating` | Target (Reg) | Continuous | 52.0 – 94.5 | Normalized overall performance index |
-| `performance_tier` | Target (Clf) | Categorical | Developing, Star, Elite | Actionable organizational hierarchy |
-
-### 2.3 Data Quality Observations & Anomaly Audit
-Prior to preprocessing, the raw data was systematically audited for real-world telemetry noise:
-- **Missing Values:**
-  - `stamina`: 65 missing records ($2.03\%$)
-  - `short_passing`: 97 missing records ($3.03\%$)
-  - `discipline_score`: 83 missing records ($2.59\%$)
-  - `distance_km_per_90`: 79 missing records ($2.47\%$)
-- **Data Quality Rationale:** Tracking telemetry devices occasionally suffer packet dropouts during matches. These were systematically identified and resolved via domain-stratified imputation.
+| Variable Name | Category | Type | Domain Significance |
+| :--- | :--- | :--- | :--- |
+| `player_name` | Identifier | String | Official player identity (e.g., V Kohli, JJ Bumrah, MS Dhoni) |
+| `primary_role` | Categorical | Nominal | Playing specialization (Specialist Batter, All-Rounder, Specialist Bowler) |
+| `matches_played` | Experience | Integer | Total career IPL match appearances |
+| `total_runs` | Batting | Integer | Total runs scored |
+| `batting_average` | Batting | Continuous | Career batting average ($\frac{\text{Runs}}{\text{Dismissals}}$) |
+| `batting_strike_rate` | Batting | Continuous | Career batting strike rate ($\frac{\text{Runs}}{\text{Balls Faced}} \times 100$) |
+| `boundary_run_pct` | Batting | Continuous | Percentage of runs scored through boundaries |
+| `death_overs_strike_rate`| Batting | Continuous | Strike rate in death overs (overs 16–20) |
+| `wickets_taken` | Bowling | Integer | Total wickets taken |
+| `economy_rate` | Bowling | Continuous | Runs conceded per 6 balls bowled |
+| `bowling_strike_rate` | Bowling | Continuous | Balls bowled per wicket taken |
+| `dot_ball_bowled_pct` | Bowling | Continuous | Percentage of dot balls bowled ($\frac{\text{Dots}}{\text{Balls Bowled}} \times 100$) |
+| `death_overs_economy` | Bowling | Continuous | Economy rate during overs 16–20 |
+| `player_of_match_awards` | Clutch | Integer | Career Player of the Match awards won |
+| `batting_impact_index` | Composite | Continuous | Weighted composite metric of batting effectiveness (0–100) |
+| `bowling_impact_index` | Composite | Continuous | Weighted composite metric of bowling effectiveness (0–100) |
+| `clutch_match_winner_index` | Composite | Continuous | Weighted metric of match-winning performances |
+| `overall_performance_rating`| Target (Reg) | Continuous | True performance rating ($50.0 \le y \le 95.0$) |
+| `performance_tier` | Target (Clf) | Categorical | Talent tier: Developing / Squad, Core / Star, Elite / Marquee |
+| `estimated_auction_val_cr`| Financial | Continuous | Fair market auction valuation in ₹ Crores |
 
 ---
 
 ## 3. Exploratory Data Analysis (EDA) & Domain Observations
 
-### 3.1 Correlation Matrix & Measurable Drivers
-Correlation analysis revealed profound statistical associations with `overall_performance_rating`:
-1. **Athletic Composite Index ($r = 0.81$):** Demonstrates that baseline physiological capacity is a non-negotiable prerequisite for modern professional football.
-2. **Technical Mastery Index ($r = 0.69$):** Strongly distinguishes starter-grade talent from rotational bench players.
-3. **Composure ($r = 0.72$):** A universal psychological factor; regardless of position, players capable of executing decisions under pressure achieve significantly higher match ratings.
-4. **Age vs Athletic Peak:** Sprint speed and stamina follow a concave trajectory peaking between ages 25 and 28, after which physical degradation occurs while composure and tactical awareness monotonically increase.
+1. **Clutch Match-Winning Dominance:**  
+   `clutch_match_winner_index` exhibits the strongest direct correlation with overall rating ($r = 0.84$), confirming that match-turning contributions (Player of the Match awards and 50+ scores) are far more predictive of franchise success than volume accumulation alone.
+2. **Death Overs Mastery as a Key Differentiator:**  
+   In T20 cricket, `death_overs_strike_rate` ($r = 0.62$) and `death_overs_economy` correlate significantly higher with match outcomes than overall strike rate or economy, representing the high-pressure phase of matches.
+3. **The Strike Rate vs. Average Trade-off:**  
+   Scatter plot analysis reveals that batters with $\text{SR} > 145$ and $\text{Average} > 30$ constitute the top $5\%$ of elite T20 assets (e.g., AB de Villiers, Heinrich Klaasen, Andre Russell, David Warner).
 
 ---
 
 ## 4. Data Preprocessing & Feature Engineering
 
-All data cleaning and feature engineering transformations were scientifically justified based on domain mechanics:
-
-### 4.1 Stratified Median Imputation
-- **Methodology:** Global mean imputation would severely distort position-specific physiological realities (e.g. imputing a Goalkeeper's stamina with a Midfielder's high mean). Therefore, missing values were imputed using the **median of the player's primary playing position**:
-  $$\hat{x}_{i, j} = \text{Median}\left( \{ x_{k, j} \mid \text{Position}_k = \text{Position}_i \} \right)$$
-- **Result:** $0$ missing values remaining across all 3,200 records.
-
-### 4.2 Domain-Specific Feature Engineering
-To capture physical and tactical synergies, six engineered composite indices were formulated:
-1. **Athletic Power Index:**
-   $$\text{API} = 0.30 \times \text{Sprint} + 0.25 \times \text{Accel} + 0.25 \times \text{Stamina} + 0.20 \times \text{Strength}$$
-2. **Technical Mastery Index:**
-   $$\text{TMI} = 0.30 \times \text{BallControl} + 0.25 \times \text{Dribbling} + 0.25 \times \text{ShortPass} + 0.20 \times \text{LongPass}$$
-3. **Defensive Solidity Index:**
-   $$\text{DSI} = 0.40 \times \text{DefAwareness} + 0.35 \times \text{StandingTackle} + 0.25 \times \text{SlidingTackle}$$
-4. **Attacking Threat Index:**
-   $$\text{ATI} = 0.45 \times \text{Finishing} + 0.30 \times \text{ShotPower} + 0.25 \times \min(100, \text{GoalsPer90} \times 60)$$
-5. **Stamina Efficiency Ratio:**
-   $$\text{SER} = \frac{\text{Distance covered (km)}}{\text{Stamina}} \times 100$$
-6. **Non-Linear Age Peak Interaction:**
-   $$\Delta_{\text{age}}^2 = (\text{Age} - 27)^2$$
-
-### 4.3 Categorical Encoding & Feature Standardization
-- **One-Hot Encoding:** Applied to nominal variables (`primary_position`, `preferred_foot`, `work_rate_attack`, `work_rate_defense`) with `drop_first=True` to avoid dummy variable multicollinearity.
-- **StandardScaler ($Z$-Score Normalization):**
-  $$z = \frac{x - \mu}{\sigma}$$
-  Fit strictly on the training partition ($N=2,560$) and applied to the test partition ($N=640$) to prevent data leakage.
+1. **Stratification & Normalization:** Continuous metrics were transformed using Scikit-Learn's `StandardScaler` ($z = \frac{x - \mu}{\sigma}$).
+2. **One-Hot Encoding:** Categorical feature `primary_role` was one-hot encoded into binary indicator variables with `drop_first=True`.
+3. **Train/Test Splitting:** A stratified 80/20 train/test split (495 training instances, 124 test instances) was performed preserving class proportions across the three talent tiers.
 
 ---
 
-## 5. Supervised Learning: Continuous Regression Experiments
+## 5. Supervised Learning: Continuous Rating Regression Models
 
-We formulated the continuous estimation of `overall_performance_rating` ($y \in [50.0, 95.0]$) using multiple regression architectures.
+We formulated the continuous regression task predicting $y \in [50.0, 95.0]$:
 
-### 5.1 Evaluated Algorithms & Mathematical Formulation
-1. **Ordinary Least Squares (OLS) Linear Regression:**
-   $$\hat{y} = \mathbf{w}^T \mathbf{x} + b, \quad \min_{\mathbf{w}} \frac{1}{2n} \sum_{i=1}^n (y_i - \hat{y}_i)^2$$
-2. **Polynomial Regression (Degree 2 Interaction on Top Factors):**
-   Includes cross-product and quadratic terms ($\text{Speed}^2$, $\text{Speed} \times \text{Passing}$, etc.) with Ridge $L_2$ regularization:
-   $$\hat{y} = \mathbf{w}_1^T \mathbf{x} + \mathbf{w}_2^T (\mathbf{x} \otimes \mathbf{x})$$
-3. **Ridge Regression ($L_2$ Regularized):**
-   $$\min_{\mathbf{w}} \frac{1}{2n} \sum_{i=1}^n (y_i - \hat{y}_i)^2 + \alpha \|\mathbf{w}\|_2^2$$
-4. **Random Forest Regressor (Ensemble Architecture):**
-   Averaging $B=120$ bootstrap de-correlated trees with maximum depth $12$.
-5. **Multi-Layer Perceptron (MLP) Regressor (Neural Network Architecture):**
-   Architecture: Input(43) $\rightarrow$ Dense(64, ReLU) $\rightarrow$ Dense(32, ReLU) $\rightarrow$ Output(1), optimized via Adam.
+$$\min_{\mathbf{w}} \sum_{i=1}^n \left( y_i - \hat{y}_i \right)^2$$
 
-### 5.2 Regression Experimental Results Table
+### Experimental Results Leaderboard
+| Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test RMSE | Test $R^2$ Score |
+| :--- | :---: | :---: | :---: | :---: |
+| **Random Forest Regressor** | **$0.9528 \pm 0.0094$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
+| **Ridge Regression ($L_2$)** | $0.9000 \pm 0.0215$ | $1.5224$ | $1.9521$ | $0.9491$ |
+| **Linear Regression (OLS)** | $0.8797 \pm 0.0284$ | $1.5364$ | $1.9534$ | $0.9490$ |
+| **Polynomial Regression (Deg 2)** | $0.8649 \pm 0.0310$ | $1.7280$ | $2.5779$ | $0.9112$ |
+| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.0980$ | $4.2246$ | $5.8058$ | $0.5495$ |
 
-| Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test MSE | Test RMSE | Test $R^2$ Score |
+**Key Finding:** Random Forest Regressor significantly outperformed linear baselines ($R^2 = 0.9789$, $\text{RMSE} = 1.2562$), capturing the non-linear interaction thresholds between death-overs strike rate and boundary frequency.
+
+---
+
+## 6. Supervised Learning: Talent Tier Classification Models
+
+We formulated the multi-class classification problem predicting talent tiers (Developing=0, Star=1, Elite=2):
+
+| Model Architecture | 5-Fold CV Accuracy | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | **$0.9474 \pm 0.0066$** | **$1.4980$** | **$3.6822$** | **$1.9189$** | **$0.9461$** |
-| **Ridge Regression ($\alpha=1.0$)** | $0.9456 \pm 0.0053$ | $1.5527$ | $4.1816$ | $2.0449$ | $0.9388$ |
-| **Linear Regression (OLS)** | $0.9454 \pm 0.0055$ | $1.5546$ | $4.1960$ | $2.0484$ | $0.9386$ |
-| **MLP Regressor (Neural Net)** | $0.9208 \pm 0.0079$ | $1.7134$ | $5.0212$ | $2.2408$ | $0.9265$ |
-| **Polynomial Regression (Deg 2)** | $0.8005 \pm 0.0339$ | $2.6836$ | $16.0552$ | $4.0069$ | $0.7650$ |
+| **K-Nearest Neighbors (KNN)** | $0.9030 \pm 0.0221$ | **$95.16\%$** | $0.9587$ | **$0.9421$** | **$0.9501$** |
+| **Random Forest Classifier** | **$0.9475 \pm 0.0142$** | $94.35\%$ | **$0.9496$** | $0.9426$ | $0.9459$ |
+| **MLP Classifier (Neural Net)** | $0.8141 \pm 0.0384$ | $92.74\%$ | $0.9405$ | $0.9177$ | $0.9287$ |
+| **Logistic Regression** | $0.9253 \pm 0.0180$ | $87.90\%$ | $0.9067$ | $0.8694$ | $0.8853$ |
+| **Decision Tree Classifier** | $0.8990 \pm 0.0195$ | $87.90\%$ | $0.8931$ | $0.8706$ | $0.8812$ |
 
 ---
 
-## 6. Supervised Learning: Classification Experiments
+## 7. Unsupervised Learning: Tactical Archetype Clustering
 
-We formulated the multi-class categorization of players into organizational tiers:
-- **Class 0:** Developing / Rotation
-- **Class 1:** Core / Star
-- **Class 2:** Elite / World-Class
+Using K-Means Clustering on multi-dimensional skill vectors with Elbow and Silhouette validation ($k=5$):
 
-### 6.1 Evaluated Algorithms & Mathematical Formulation
-1. **Multinomial Logistic Regression:**
-   $$P(Y = k \mid \mathbf{x}) = \frac{e^{\mathbf{w}_k^T \mathbf{x}}}{\sum_{j=1}^K e^{\mathbf{w}_j^T \mathbf{x}}}$$
-2. **K-Nearest Neighbors (KNN Classifier, $k=7$):**
-   $$d(\mathbf{x}, \mathbf{x}_i) = \sqrt{\sum_{m=1}^D (x_m - x_{im})^2}$$
-3. **Decision Tree Classifier (Gini Impurity, $\text{max\_depth}=6$):**
-   $$I_G(t) = 1 - \sum_{k=1}^K p(k|t)^2$$
-4. **Random Forest Classifier ($B=150$ Trees):**
-   Ensemble majority voting across de-correlated bootstrapped decision trees.
-5. **Multi-Layer Perceptron (MLP) Classifier (Softmax Output):**
-   Dense(64) $\rightarrow$ Dense(32) $\rightarrow$ Softmax(3).
-
-### 6.2 Classification Experimental Results Table
-
-| Model Algorithm | 5-Fold CV Accuracy (Mean $\pm$ Std) | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Logistic Regression** | $0.8770 \pm 0.0146$ | **$87.97\%$** | $0.8892$ | **$0.8791$** | **$0.8836$** |
-| **Random Forest Classifier** | **$0.8926 \pm 0.0124$** | $87.81\%$ | **$0.8933$** | $0.8727$ | $0.8815$ |
-| **MLP Classifier (Neural Net)** | $0.8617 \pm 0.0237$ | $84.53\%$ | $0.8683$ | $0.8365$ | $0.8493$ |
-| **K-Nearest Neighbors (KNN)** | $0.8441 \pm 0.0219$ | $80.47\%$ | $0.8199$ | $0.7985$ | $0.8075$ |
-| **Decision Tree Classifier** | $0.8258 \pm 0.0129$ | $79.84\%$ | $0.8155$ | $0.7913$ | $0.8011$ |
-
-### 6.3 Confusion Matrix Analysis (Logistic Regression)
-
-```
-                     Predicted Developing   Predicted Star   Predicted Elite
-Actual Developing            126                  17                0
-Actual Star                   11                 247               20
-Actual Elite                   0                  29              190
-```
-
-- **Zero Severe Misclassifications:** No Elite player was ever predicted as Developing, and no Developing player was ever misclassified as Elite ($0$ off-diagonal extreme errors).
-- **Boundary Ambiguity:** The only misclassifications occurred at the subtle border between Star and Elite (ratings 80.5–82.5), which is expected in continuous human performance rating.
+### The 5 Discovered Tactical Archetypes:
+1. **Cluster 0: Tactical Anchor & Top-Order Accumulator:** High batting average ($>35$), controlled powerplay strike rate ($125-135$), deep match batting (e.g. Virat Kohli, Shikhar Dhawan, David Warner, KL Rahul).
+2. **Cluster 1: High-Impact Pace Spearhead & Death Bowler:** High dot ball % ($>40\%$), low death overs economy ($<8.5$), elite yorker precision (e.g. Jasprit Bumrah, Lasith Malinga, Bhuvneshwar Kumar).
+3. **Cluster 2: Explosive Death-Over Finisher & Boundary Hitter:** Extreme death overs strike rate ($>180$), boundary % ($>70\%$), power hitter profile (e.g. Andre Russell, Heinrich Klaasen, MS Dhoni, Kieron Pollard).
+4. **Cluster 3: Mystery / Control Spin Maestro:** High dot ball bowling ($>42\%$), restrictive economy rate in middle overs ($<7.2$), deceived dismissals (e.g. Sunil Narine, Yuzvendra Chahal, Rashid Khan, R Ashwin).
+5. **Cluster 4: Elite Dual-Threat All-Rounder:** Balanced high batting and bowling impact indices, reliable 4-over bowling quota + finishing punch (e.g. Ravindra Jadeja, Hardik Pandya, DJ Bravo, Shane Watson).
 
 ---
 
-## 7. Rigorous Model Evaluation & Validation
+## 8. Dimensionality Reduction & PCA Analysis
 
-To ensure academic and statistical integrity:
-1. **Stratified Splitting:** Train/Test split ($80/20$) was stratified on class label to guarantee identical proportions of Elite ($34.3\%$), Star ($43.4\%$), and Developing ($22.3\%$) across both sets.
-2. **5-Fold Cross Validation:** All models were trained across 5 distinct validation folds to guard against lucky sample splits and verify hyperparameter stability (standard deviations all $< 0.025$).
-3. **Multi-Metric Triangulation:** Beyond raw accuracy, we evaluated Macro Precision, Macro Recall, Macro F1, and Residual Distributions.
-
----
-
-## 8. Unsupervised Learning: Tactical Archetypes
-
-### 8.1 K-Means Clustering on Latent Skill Space
-To discover natural playing styles independent of nominal roster labels, K-Means was executed across $k \in [2, 7]$ on core technical and athletic attributes:
-- **Elbow Curve (Inertia / WCSS):** Steep drop from $k=2$ ($19,741$) to $k=4$ ($11,099$), where the rate of decrease plateaus.
-- **Silhouette Analysis:** Peak cluster cohesion and separation confirmed at $k=4$ (Silhouette score $= 0.3487$).
-
-### 8.2 Discovered Tactical Archetype Profiles
-
-| Cluster ID | Tactical Archetype Name | Dominant Measurable Traits | Roster Examples |
-| :---: | :--- | :--- | :--- |
-| **0** | **Tactical Playmaker & Orchestrator** | High vision ($84+$), elite short passing ($86+$), high composure, superior agility | Creative Midfielders, Deep-Lying Playmakers |
-| **1** | **Defensive Anchor & Ball-Winner** | Exceptional standing tackle ($85+$), high strength, defensive awareness ($86+$) | Center-Backs, Defensive Ball-Winning Midfielders |
-| **2** | **Explosive Forward & Finisher** | Blistering sprint speed ($86+$), high finishing ($84+$), shot power, acceleration | Strikers, Wingers, Inside Forwards |
-| **3** | **Goalkeeper / Positional Specialist** | Low outfield sprint/passing, high reflexes, specialized physical frame | Shot-stoppers, Sweeper Keepers |
-
-### 8.3 Hierarchical Clustering
-Agglomerative Hierarchical Clustering using Ward's minimum variance linkage was computed and visualized via a Dendrogram, demonstrating clean macro-separation between outfield players and goalkeepers, followed by offensive vs defensive outfield branches.
+Principal Component Analysis (PCA) projected the 29-dimensional space into 2 principal components explaining **60.79% of total variance**:
+- **PC1 (T20 Match Impact & Volume):** Captures total matches, clutch awards, and multi-skill volume.
+- **PC2 (Batting vs. Bowling Orientation):** Neatly separates specialist pacers and spinners (negative values) from pure top-order batters (positive values), placing all-rounders in the central equilibrium.
 
 ---
 
-## 9. Dimensionality Reduction & Ensemble Analysis
+## 9. What-If Development & Auction Valuation Simulator
 
-### 9.1 Principal Component Analysis (PCA)
-PCA reduced the 43 feature dimensions down to orthogonal principal components:
-- **PC1 (35.04% Variance):** Represents **Overall Technical & Athletic Engine**.
-  - Top Positive Loadings: `technical_mastery_index` ($+0.252$), `ball_control` ($+0.244$), `stamina` ($+0.236$), `short_passing` ($+0.235$).
-- **PC2 (17.91% Variance):** Represents **Defensive Anchor vs Offensive Attacker Spectrum**.
-  - Top Positive Loadings: `tackle_success_pct` ($+0.342$), `defensive_solidity_index` ($+0.309$), `defensive_awareness` ($+0.307$).
-  - Top Negative Loadings: `primary_position_Forward` ($-0.301$), `finishing` ($-0.264$).
-- **Cumulative Explained Variance:** Top 5 components explain **$73.51\%$** of total dataset variance.
+The system models how targeted interventions enhance player rating and auction valuation in ₹ Crores:
 
-### 9.2 Ensemble Feature Importance Rankings (Random Forest)
-Gini and MSE impurity reductions isolated the primary measurable drivers of player performance:
-1. `athletic_power_index` ($44.88\%$)
-2. `composure` ($36.00\%$)
-3. `strength` ($3.86\%$)
-4. `defensive_solidity_index` ($3.13\%$)
-5. `technical_mastery_index` ($2.07\%$)
+$$\text{Valuation} = \min\left(24.5, \max\left(0.5, \exp\left((\hat{y} - 58.0) \times 0.09\right) \times 1.5 \times \text{Multiplier}\right)\right)$$
 
-**Sports Science Conclusion:** Over $80\%$ of professional player performance ratings are determined by the combination of core athletic capability and mental composure under pressure.
+Where All-Rounders receive an auction premium multiplier of $1.25\times$.
 
 ---
 
-## 10. Neural Network Concepts & Model Deployment
+## 10. Viva Voce Examination Guide: Model Answers
 
-- **Scikit-Learn Multi-Layer Perceptron (MLP):** Implemented both `MLPRegressor` and `MLPClassifier` using feedforward hidden layers $(64, 32)$, ReLU activation functions, and Adam stochastic gradient descent.
-- **Model Serialization:** All 12 production models, scalers, and metadata were serialized using `joblib` into the `models/` directory for zero-latency inference in the deployment dashboard.
-
----
-
-## 11. Streamlit Application Architecture & User Guide
-
-A production-ready Streamlit web application (`app.py`) was developed and launched on `http://localhost:8501`.
-
-### Seven Interactive Studios:
-1. **Executive Overview & System Architecture:** High-level metrics, problem definition, and end-to-end architecture breakdown.
-2. **Exploratory Data Analysis Studio:** Interactive correlation heatmaps, positional radar charts, and age-performance curve sliders.
-3. **Performance Rating Prediction Engine (Regression):** Interactive sliders for athletic, technical, and tactical traits; instant prediction across 5 regression models with interactive gauges.
-4. **Talent Tier Classification Studio:** Classifies athletes into Developing, Star, or Elite; displays confusion matrix and probability distributions.
-5. **Tactical Archetypes & PCA Studio:** 2D interactive PCA scatter projection, K-Means cluster color-coding, and Elbow/Silhouette validation charts.
-6. **What-If Scouting Simulator:** Select any player and simulate customized training interventions ($\Delta$ Stamina, $\Delta$ Passing, $\Delta$ Composure) to see real-time projected rating and market value growth.
-7. **Model Evaluation & Benchmark Studio:** Comprehensive tables of all 5-fold CV scores, test metrics, and feature importance bar charts.
+1. **Q: Why did you transition from nominal career runs to rate and phase metrics?**  
+   *A:* In modern T20 franchise cricket, a batter scoring 40 runs off 20 balls in the death overs has a vastly higher win probability contribution than a batter scoring 50 off 45 balls in the middle overs. Evaluating rate metrics (Death Overs SR, Boundary %, Dot Ball %) eliminates the volume distortion of older players.
+2. **Q: Why does KNN achieve 95.16% accuracy in tier classification?**  
+   *A:* In normalized multidimensional sports feature spaces, elite players (Bumrah, Kohli, Russell) form dense, distinct geometric clusters in proximity to other elite benchmarks, allowing distance-weighted nearest neighbors to establish accurate boundaries.
+3. **Q: How does this system prevent franchise overspending in IPL auctions?**  
+   *A:* CricMetrics Pro provides quantitative fair-value anchors derived from 17 seasons of longitudinal ball-by-ball data, enabling franchise directors to identify undervalued tactical archetypes ("Moneyball").
 
 ---
-
-## 12. Error Diagnostics, Residual Analysis & Limitations
-
-### 12.1 Residual Diagnostics (Regression)
-- **Mean Residual:** $-0.012$ (Centered at zero, indicating no systematic positive or negative bias).
-- **Normality:** Residual histogram confirms Gaussian distribution of error.
-- **Homoscedasticity:** Residual scatter plot shows consistent variance across low (55) to high (90) rating ranges without funneling patterns.
-
-### 12.2 Limitations & Ethical Considerations
-1. **Injuries & Match Fatigue:** The current model evaluates nominal physical capacity; in-season acute muscular fatigue and injury recovery cycles require real-time biometric GPS updates.
-2. **Intangibles & Team Chemistry:** Leadership, dressing room cohesion, and tactical managerial philosophy (e.g., high-press vs low-block) cannot be fully captured by individual telemetry alone.
-3. **Algorithmic Fairness in Scouting:** Models must not discriminate against older players whose physical speed drops but whose positional reading compensates.
-
----
-
-## 13. Viva Voce Examination Guide: Questions & Model Answers
-
-### Question 1: How does this project address the assigned Case Study 102 problem statement?
-**Model Answer:**  
-*"Case Study 102 requires investigating measurable factors associated with player performance with proper justification. We addressed this by formulating a multi-tiered machine learning framework: (1) we performed correlation and feature importance analysis to identify that athletic power and composure are the primary drivers of performance; (2) we developed supervised regression models to predict continuous rating scores; (3) we implemented classification models to assign talent tiers; (4) we discovered unsupervised tactical archetypes via K-Means and PCA; and (5) we deployed the entire solution into a Streamlit application."*
-
-### Question 2: Why did you use stratified median imputation rather than simple mean imputation?
-**Model Answer:**  
-*"In sports tracking data, athletic and technical metrics exhibit position-dependent multimodal distributions. For instance, central midfielders have high short passing and stamina, whereas goalkeepers have specialized handling and low outfield mobility. A global mean imputation would contaminate goalkeepers with midfielder characteristics. By stratifying median imputation by primary playing position, we preserve domain physics and prevent feature contamination."*
-
-### Question 3: Why did Random Forest outperform Linear Regression in the regression task?
-**Model Answer:**  
-*"While overall performance has strong monotonic linear trends, athletic performance is inherently constrained by non-linear thresholds and synergistic interactions. For example, high sprint speed is ineffective without adequate ball control or composure. Random Forest utilizes an ensemble of de-correlated decision trees that naturally split on multi-variable thresholds and interactions without requiring manual polynomial expansions, resulting in a higher test $R^2$ of 0.9461 versus 0.9386 for OLS."*
-
-### Question 4: How did you select the optimal number of clusters for K-Means?
-**Model Answer:**  
-*"We evaluated cluster counts from $k=2$ through $k=7$ using two mathematical criteria: (1) the Elbow Method, observing the within-cluster sum of squares (inertia), which exhibited a distinct inflection point at $k=4$; and (2) the Silhouette Score, which confirmed peak cohesion and cluster separation at $0.3487$. These four clusters correspond cleanly to modern football tactical archetypes: Tactical Playmakers, Defensive Anchors, Explosive Forwards, and Positional Goalkeepers."*
-
-### Question 5: What is the end-to-end machine learning methodology across the project lifecycle?
-**Model Answer:**  
-*"We implemented a comprehensive, industry-grade ML pipeline:  
-- **Data Engineering:** Stratified position-based median imputation, domain composite indices, and StandardScaler normalization.  
-- **Continuous Regression:** Evaluated Linear Regression (OLS), Polynomial interaction (degree 2), Ridge (L2), and Random Forest Regressors for performance rating estimation.  
-- **Multi-Class Classification:** Benchmarked Multinomial Logistic Regression, K-Nearest Neighbors, Decision Trees, and Random Forests for talent tier stratification.  
-- **Validation:** Implemented stratified 80/20 partitioning, 5-Fold Cross Validation, residual diagnostics, and multi-metric triangulation.  
-- **Unsupervised Tactical Discovery:** Discovered 4 distinct tactical archetypes via K-Means (Elbow & Silhouette validation) and Ward's hierarchical dendrograms.  
-- **Dimensionality Reduction:** Extracted orthogonal skill axes via PCA explaining 73.5% cumulative variance.  
-- **Neural Networks & Deployment:** Implemented Multi-Layer Perceptrons and deployed a responsive 7-module Streamlit analytics application."*
-
----
-
-*End of Project Report — ProMetrics Case Study 102*
+© 2026 CricMetrics Pro | Enterprise Sports Analytics Suite

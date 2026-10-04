@@ -1,170 +1,165 @@
 {
   "regression": {
     "Linear Regression": {
-      "CV_R2_mean": 0.9454,
-      "CV_R2_std": 0.0055,
-      "Test_MAE": 1.5546,
-      "Test_MSE": 4.196,
-      "Test_RMSE": 2.0484,
-      "Test_R2": 0.9386
-    },
-    "Polynomial Regression (Deg 2)": {
-      "CV_R2_mean": 0.8005,
-      "CV_R2_std": 0.0339,
-      "Test_MAE": 2.6836,
-      "Test_RMSE": 4.0069,
-      "Test_R2": 0.765
+      "Test_R2": 0.949,
+      "CV_R2_mean": 0.8797,
+      "CV_R2_std": 0.0371,
+      "Test_RMSE": 1.9534,
+      "Test_MAE": 1.5364
     },
     "Ridge Regression": {
-      "CV_R2_mean": 0.9456,
-      "CV_R2_std": 0.0053,
-      "Test_MAE": 1.5527,
-      "Test_RMSE": 2.0449,
-      "Test_R2": 0.9388
+      "Test_R2": 0.9491,
+      "CV_R2_mean": 0.9,
+      "CV_R2_std": 0.0221,
+      "Test_RMSE": 1.9521,
+      "Test_MAE": 1.5224
+    },
+    "Polynomial Regression (Deg 2)": {
+      "Test_R2": 0.9112,
+      "CV_R2_mean": 0.8649,
+      "CV_R2_std": 0.0388,
+      "Test_RMSE": 2.5779,
+      "Test_MAE": 1.728
     },
     "Random Forest Regressor": {
-      "CV_R2_mean": 0.9474,
-      "CV_R2_std": 0.0066,
-      "Test_MAE": 1.498,
-      "Test_RMSE": 1.9189,
-      "Test_R2": 0.9461
+      "Test_R2": 0.9789,
+      "CV_R2_mean": 0.9528,
+      "CV_R2_std": 0.0129,
+      "Test_RMSE": 1.2562,
+      "Test_MAE": 0.9024
     },
     "MLP Regressor (Neural Net)": {
-      "CV_R2_mean": 0.9208,
-      "CV_R2_std": 0.0079,
-      "Test_MAE": 1.7134,
-      "Test_RMSE": 2.2408,
-      "Test_R2": 0.9265
+      "Test_R2": 0.5495,
+      "CV_R2_mean": 0.4503,
+      "CV_R2_std": 0.1375,
+      "Test_RMSE": 5.8058,
+      "Test_MAE": 4.2246
     }
   },
   "classification": {
     "Logistic Regression": {
-      "CV_Accuracy_mean": 0.877,
-      "CV_Accuracy_std": 0.0146,
-      "Test_Accuracy": 0.8797,
-      "Test_Precision": 0.8892,
-      "Test_Recall": 0.8791,
-      "Test_F1_Macro": 0.8836,
+      "Test_Accuracy": 0.879,
+      "CV_Accuracy_mean": 0.9253,
+      "Test_Precision": 0.9072,
+      "Test_Recall": 0.8694,
+      "Test_F1_Macro": 0.8853,
       "Confusion_Matrix": [
         [
-          126,
-          17,
+          22,
+          3,
           0
         ],
         [
-          11,
-          247,
-          20
+          0,
+          56,
+          4
         ],
         [
           0,
-          29,
-          190
+          8,
+          31
         ]
       ]
     },
     "K-Nearest Neighbors (KNN)": {
-      "CV_Accuracy_mean": 0.8441,
-      "CV_Accuracy_std": 0.0219,
-      "Test_Accuracy": 0.8047,
-      "Test_Precision": 0.8199,
-      "Test_Recall": 0.7985,
-      "Test_F1_Macro": 0.8075,
+      "Test_Accuracy": 0.9516,
+      "CV_Accuracy_mean": 0.903,
+      "Test_Precision": 0.9601,
+      "Test_Recall": 0.9421,
+      "Test_F1_Macro": 0.9501,
       "Confusion_Matrix": [
         [
-          108,
-          35,
+          23,
+          2,
           0
         ],
         [
-          16,
-          225,
-          37
+          1,
+          59,
+          0
         ],
         [
           0,
-          37,
-          182
+          3,
+          36
         ]
       ]
     },
     "Decision Tree": {
-      "CV_Accuracy_mean": 0.8258,
-      "CV_Accuracy_std": 0.0129,
-      "Test_Accuracy": 0.7984,
-      "Test_Precision": 0.8155,
-      "Test_Recall": 0.7913,
-      "Test_F1_Macro": 0.8011,
+      "Test_Accuracy": 0.879,
+      "CV_Accuracy_mean": 0.899,
+      "Test_Precision": 0.8945,
+      "Test_Recall": 0.8706,
+      "Test_F1_Macro": 0.8812,
       "Confusion_Matrix": [
         [
-          109,
-          34,
+          21,
+          4,
           0
         ],
         [
-          20,
-          231,
-          27
+          1,
+          54,
+          5
         ],
         [
           0,
-          48,
-          171
+          5,
+          34
         ]
       ]
     },
     "Random Forest Classifier": {
-      "CV_Accuracy_mean": 0.8926,
-      "CV_Accuracy_std": 0.0124,
-      "Test_Accuracy": 0.8781,
-      "Test_Precision": 0.8933,
-      "Test_Recall": 0.8727,
-      "Test_F1_Macro": 0.8815,
+      "Test_Accuracy": 0.9435,
+      "CV_Accuracy_mean": 0.9475,
+      "Test_Precision": 0.9513,
+      "Test_Recall": 0.9426,
+      "Test_F1_Macro": 0.9459,
       "Confusion_Matrix": [
         [
-          122,
-          21,
+          23,
+          2,
           0
         ],
         [
-          8,
-          252,
-          18
+          0,
+          56,
+          4
         ],
         [
           0,
-          31,
-          188
+          1,
+          38
         ]
       ]
     },
     "MLP Classifier (Neural Net)": {
-      "CV_Accuracy_mean": 0.8617,
-      "CV_Accuracy_std": 0.0237,
-      "Test_Accuracy": 0.8453,
-      "Test_Precision": 0.8683,
-      "Test_Recall": 0.8365,
-      "Test_F1_Macro": 0.8493,
+      "Test_Accuracy": 0.9274,
+      "CV_Accuracy_mean": 0.8141,
+      "Test_Precision": 0.9426,
+      "Test_Recall": 0.9177,
+      "Test_F1_Macro": 0.9287,
       "Confusion_Matrix": [
         [
-          114,
-          29,
+          22,
+          3,
           0
         ],
         [
-          7,
-          245,
-          26
+          0,
+          57,
+          3
         ],
         [
           0,
-          37,
-          182
+          3,
+          36
         ]
       ]
     }
   },
   "unsupervised": {
+    "optimal_k": 5,
     "k_range": [
       2,
       3,
@@ -174,85 +169,60 @@
       7
     ],
     "inertias": [
-      19741.35,
-      15284.19,
-      11099.33,
-      8932.37,
-      7527.23,
-      6354.39
+      3990.9110124600957,
+      3223.1573628833057,
+      2694.9794301187553,
+      2414.250640858315,
+      2261.5636202548676,
+      2111.51893447726
     ],
     "silhouette_scores": [
-      0.3045,
-      0.3051,
-      0.3487,
-      0.3565,
-      0.3527,
-      0.3671
+      0.2584649142262604,
+      0.2757802263681739,
+      0.2594396421249176,
+      0.24360067991511516,
+      0.21512384365668702,
+      0.21602929408185162
     ],
-    "optimal_k": 4,
     "archetype_names": {
-      "0": "Tactical Playmaker & Orchestrator",
-      "1": "Defensive Anchor & Ball-Winner",
-      "2": "Explosive Forward & Finisher",
-      "3": "Goalkeeper / Positional Specialist"
+      "0": "Tactical Anchor & Top-Order Accumulator",
+      "1": "High-Impact Pace Spearhead & Death Bowler",
+      "2": "Explosive Death-Over Finisher & Boundary Hitter",
+      "3": "Mystery / Control Spin Maestro",
+      "4": "Elite Dual-Threat All-Rounder"
     }
   },
   "pca": {
-    "explained_variance_ratio_top5": [
-      0.3504,
-      0.1791,
-      0.1129,
-      0.0586,
-      0.0342
+    "explained_variance_ratio": [
+      0.3816,
+      0.2263
     ],
-    "cumulative_variance_top5": [
-      0.3504,
-      0.5294,
-      0.6424,
-      0.7009,
-      0.7351
-    ],
-    "top_features_pc1": {
-      "technical_mastery_index": 0.2521,
-      "ball_control": 0.2441,
-      "crossing": 0.2393,
-      "stamina": 0.2359,
-      "short_passing": 0.2349,
-      "athletic_power_index": 0.2316
-    },
-    "top_features_pc2": {
-      "tackle_success_pct": 0.3415,
-      "defensive_solidity_index": 0.3092,
-      "defensive_awareness": 0.3069,
-      "sliding_tackle": 0.3029,
-      "primary_position_Forward": -0.301,
-      "standing_tackle": 0.2994
-    }
+    "total_variance_explained": 0.6079
   },
   "feature_importances": {
     "regression_top10": {
-      "athletic_power_index": 0.4488,
-      "composure": 0.36,
-      "strength": 0.0386,
-      "defensive_solidity_index": 0.0313,
-      "technical_mastery_index": 0.0207,
-      "jumping": 0.0177,
-      "ball_control": 0.0131,
-      "vision": 0.0084,
-      "stamina_efficiency": 0.0079,
-      "dribbling": 0.0054
+      "clutch_match_winner_index": 0.5646,
+      "batting_impact_index": 0.2054,
+      "matches_played": 0.0515,
+      "bowling_impact_index": 0.0279,
+      "wickets_taken": 0.0263,
+      "boundary_run_pct": 0.0222,
+      "primary_role_Specialist Bowler": 0.0192,
+      "player_of_match_awards": 0.0142,
+      "overs_bowled": 0.0131,
+      "batting_strike_rate": 0.0108
     },
     "classification_top10": {
-      "athletic_power_index": 0.135,
-      "composure": 0.0882,
-      "jumping": 0.0668,
-      "strength": 0.0561,
-      "ball_control": 0.0518,
-      "defensive_solidity_index": 0.0494,
-      "technical_mastery_index": 0.0468,
-      "stamina_efficiency": 0.0468,
-      "aggression": 0.0426,
-      "dribbling": 0.0356
+      "clutch_match_winner_index": 0.1282,
+      "batting_impact_index": 0.1163,
+      "player_of_match_awards": 0.0781,
+      "matches_played": 0.0675,
+      "wickets_taken": 0.0583,
+      "batting_strike_rate": 0.0536,
+      "boundary_run_pct": 0.0473,
+      "overs_bowled": 0.0387,
+      "bowling_impact_index": 0.0364,
+      "batting_average": 0.0351
     }
   }
 }
