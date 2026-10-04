@@ -115,11 +115,10 @@ $$\min_{\mathbf{w}} \sum_{i=1}^n \left( y_i - \hat{y}_i \right)^2$$
 ### Experimental Results Leaderboard
 | Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test RMSE | Test $R^2$ Score |
 | :--- | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | **$0.9528 \pm 0.0094$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
-| **Ridge Regression ($L_2$)** | $0.9000 \pm 0.0215$ | $1.5224$ | $1.9521$ | $0.9491$ |
-| **Linear Regression (OLS)** | $0.8797 \pm 0.0284$ | $1.5364$ | $1.9534$ | $0.9490$ |
-| **Polynomial Regression (Deg 2)** | $0.8649 \pm 0.0310$ | $1.7280$ | $2.5779$ | $0.9112$ |
-| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.0980$ | $4.2246$ | $5.8058$ | $0.5495$ |
+| **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
+| **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
+| **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
+| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.1375$ | $4.2246$ | $5.8058$ | $0.5495$ |
 
 **Key Finding:** Random Forest Regressor significantly outperformed linear baselines ($R^2 = 0.9789$, $\text{RMSE} = 1.2562$), capturing the non-linear interaction thresholds between death-overs strike rate and boundary frequency.
 

@@ -29,9 +29,8 @@
 ├── models/
 │   ├── scaler.joblib                        # Fitted StandardScaler object for 29 normalized features
 │   ├── random_forest_regressor.joblib       # Production continuous rating model (R² = 0.9789, RMSE = 1.25)
-│   ├── ridge_regression.joblib              # L2 regularized linear benchmark model (R² = 0.9491)
 │   ├── linear_regression.joblib             # Ordinary Least Squares parametric baseline (R² = 0.9490)
-│   ├── polynomial_regression.joblib         # Degree-2 polynomial interaction model (R² = 0.9112)
+│   ├── polynomial_regression.joblib         # Degree-2 polynomial interaction model (R² = 0.9087)
 │   ├── mlp_regressor.joblib                 # Deep neural network regression benchmark (R² = 0.5495)
 │   ├── knn_classifier.joblib                # Top talent tier classifier (95.16% Test Accuracy)
 │   ├── random_forest_classifier.joblib      # Production tier classifier & Gini feature importance engine (94.35%)
@@ -142,18 +141,18 @@
 ### 2.3 Machine Learning Pipeline & Serialized Artifacts (`models/` and `src/`)
 
 #### `src/train_cricket_models.py` (Model Training & Evaluation Script)
-- **WHAT:** The master training script that fits, cross-validates, evaluates, and serializes all 13 machine learning models and metadata (318 lines of Python).
+- **WHAT:** The master training script that fits, cross-validates, evaluates, and serializes all 12 machine learning artifacts (11 models + 1 scaler) and metadata (305 lines of Python).
 - **HOW:**
   1. Loads `cricket_players_clean.csv`.
   2. Applies one-hot encoding with `drop_first=True`.
-  3. Executes an 80/20 train/test split stratified on `performance_tier_code`.
+  3. Executes an 80/20 train/test split stratified on `talent_tier`.
   4. Fits `StandardScaler` on `X_train` and transforms both sets.
-  5. Trains and cross-validates 5 regression models (Linear, Ridge, Polynomial, Random Forest, MLP) via 5-Fold CV.
+  5. Trains and cross-validates 4 regression models (Linear, Polynomial, Random Forest, MLP) via 5-Fold CV.
   6. Trains and cross-validates 5 classification models (KNN, Random Forest, Logistic, Decision Tree, MLP) via Stratified 5-Fold CV.
   7. Performs K-Means clustering ($k=2 \dots 7$) with Elbow and Silhouette scoring, saving optimal $k=5$.
   8. Fits 2-component PCA on standardized features.
   9. Extracts Gini feature importance rankings from tree ensembles.
-  10. Serializes all 13 model binaries via `joblib.dump()` and metrics to JSON.
+  10. Serializes all 12 model binaries via `joblib.dump()` and metrics to JSON.
 - **WHEN:** Executed during the offline training and model governance cycle (`python src/train_cricket_models.py`).
 - **WHY:** Centralizes all model training, hyperparameter configuration, and validation into a reproducible, audited script.
 
@@ -164,14 +163,13 @@
 | Artifact Path | Format | Serialized Object & Hyperparameters | Role & Purpose |
 | :--- | :---: | :--- | :--- |
 | `models/scaler.joblib` | Joblib Binary | `StandardScaler(mean_, var_, scale_)` | Normalizes 29 raw features to $\mu=0, \sigma=1$ during training and live inference. |
-| `models/random_forest_regressor.joblib` | Joblib Binary | `RandomForestRegressor(n_estimators=100, max_features='sqrt')` | **Production Rating Engine:** Generates overall player rating ($R^2 = 0.9789$, RMSE = $1.25$). |
-| `models/ridge_regression.joblib` | Joblib Binary | `Ridge(alpha=1.0)` | Regularized linear regression benchmark for collinear feature stabilization. |
+| `models/random_forest_regressor.joblib` | Joblib Binary | `RandomForestRegressor(n_estimators=180, max_depth=12)` | **Production Rating Engine:** Generates overall player rating ($R^2 = 0.9789$, RMSE = $1.25$). |
 | `models/linear_regression.joblib` | Joblib Binary | `LinearRegression()` | Ordinary Least Squares baseline benchmark model. |
-| `models/polynomial_regression.joblib` | Joblib Binary | `LinearRegression()` fitted on `PolynomialFeatures(degree=2)` | Degree-2 non-linear interaction model capturing skill synergy. |
+| `models/polynomial_regression.joblib` | Joblib Binary | `LinearRegression()` fitted on `PolynomialFeatures(degree=2)` | Degree-2 non-linear interaction model capturing skill synergy ($R^2 = 0.9087$). |
 | `models/mlp_regressor.joblib` | Joblib Binary | `MLPRegressor(hidden_layer_sizes=(64, 32), activation='relu')` | Deep neural network continuous regression benchmark. |
 | `models/knn_classifier.joblib` | Joblib Binary | `KNeighborsClassifier(n_neighbors=5, metric='euclidean')` | **Production Tier Classifier:** Categorizes players into talent tiers ($95.16\%$ Accuracy). |
-| `models/random_forest_classifier.joblib` | Joblib Binary | `RandomForestClassifier(n_estimators=100, criterion='gini')` | Production ensemble classifier & Gini feature importance attribution engine ($94.35\%$ Acc). |
-| `models/logistic_regression.joblib` | Joblib Binary | `LogisticRegression(multi_class='multinomial', penalty='l2')` | Multinomial softmax probabilistic classification baseline ($87.90\%$ Acc). |
+| `models/random_forest_classifier.joblib` | Joblib Binary | `RandomForestClassifier(n_estimators=180, criterion='gini')` | Production ensemble classifier & Gini feature importance attribution engine ($94.35\%$ Acc). |
+| `models/logistic_regression.joblib` | Joblib Binary | `LogisticRegression(multi_class='multinomial')` | Multinomial softmax probabilistic classification baseline ($87.90\%$ Acc). |
 | `models/decision_tree_classifier.joblib` | Joblib Binary | `DecisionTreeClassifier(max_depth=6, criterion='gini')` | White-box rule-based talent classification benchmark ($87.90\%$ Acc). |
 | `models/mlp_classifier.joblib` | Joblib Binary | `MLPClassifier(hidden_layer_sizes=(64, 32), activation='relu')` | Deep neural network multi-class tier classification benchmark ($92.74\%$ Acc). |
 | `models/kmeans_model.joblib` | Joblib Binary | Dictionary: `{'model': KMeans(n_clusters=5), 'features': cluster_features}` | Unsupervised clustering model discovering 5 tactical playing styles. |
@@ -189,7 +187,7 @@
   - *Cells 1–4:* Problem formulation, data ingestion, null handling, statistical summaries.
   - *Cells 5–8:* Exploratory Data Analysis, correlation heatmaps, role distributions.
   - *Cells 9–12:* Preprocessing, one-hot encoding, stratified train/test split, standard scaling.
-  - *Cells 13–15:* 5-model regression benchmark (Linear, Ridge, Poly, Random Forest, MLP) with 5-Fold CV.
+  - *Cells 13–15:* 4-model regression benchmark (Linear, Poly, Random Forest, MLP) with 5-Fold CV.
   - *Cells 16–18:* 5-model classification benchmark (KNN, RF, Logistic, Decision Tree, MLP) with confusion matrices.
   - *Cells 19–20:* K-Means clustering ($k=5$), elbow method, silhouette analysis.
   - *Cells 21–22:* PCA 2D latent projection and technical defense Q&A.

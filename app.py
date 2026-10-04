@@ -222,7 +222,6 @@ def load_models():
     models = {
         "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
         "linear_reg": joblib.load(os.path.join(BASE_DIR, "models/linear_regression.joblib")),
-        "ridge_reg": joblib.load(os.path.join(BASE_DIR, "models/ridge_regression.joblib")),
         "poly_reg": joblib.load(os.path.join(BASE_DIR, "models/polynomial_regression.joblib")),
         "rf_reg": joblib.load(os.path.join(BASE_DIR, "models/random_forest_regressor.joblib")),
         "mlp_reg": joblib.load(os.path.join(BASE_DIR, "models/mlp_regressor.joblib")),
@@ -629,7 +628,7 @@ elif menu == "⚡ AI Rating & Auction Valuation":
             
         chosen_reg_name = st.selectbox(
             "Evaluation Model Engine:",
-            ["Random Forest Regressor (Recommended - 97.9% R²)", "Ridge Regression (L2)", "Linear Regression (OLS)", "MLP Neural Network"],
+            ["Random Forest Regressor (Recommended - 97.9% R²)", "Linear Regression (OLS)", "Polynomial Regression (Deg 2)", "MLP Neural Network"],
             key="sim_reg_engine"
         )
 
@@ -684,8 +683,10 @@ elif menu == "⚡ AI Rating & Auction Valuation":
 
     if "Linear" in chosen_reg_name:
         pred_rating = models["linear_reg"].predict(input_scaled)[0]
-    elif "Ridge" in chosen_reg_name:
-        pred_rating = models["ridge_reg"].predict(input_scaled)[0]
+    elif "Polynomial" in chosen_reg_name:
+        poly_pkg = models["poly_reg"]
+        poly_in = poly_pkg["poly_transformer"].transform(input_df[poly_pkg["poly_cols"]])
+        pred_rating = poly_pkg["poly_model"].predict(poly_in)[0]
     elif "Neural" in chosen_reg_name:
         pred_rating = models["mlp_reg"].predict(input_scaled)[0]
     else:

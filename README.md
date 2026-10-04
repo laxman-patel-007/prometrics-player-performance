@@ -22,7 +22,7 @@ CricMetrics Pro is an end-to-end Machine Learning decision support platform buil
 | **Problem Formulation** | Franchise Economics & Scouting | Evidence-based T20 player valuation, death-overs impact, and auction budget allocation. |
 | **Data Foundation** | Real IPL Ball-by-Ball Data | Aggregated 17 seasons of ball-by-ball deliveries (`deliveries_2008_2024.csv`, `matches_2008_2024.csv`). |
 | **Feature Engineering** | Batting, Bowling & Clutch Indices | Batting SR, Death Overs (16-20) SR, Boundary %, Economy Rate, Dot Ball %, Player of the Match awards. |
-| **Continuous Regression** | Rating Prediction ($R^2 = 0.9789$) | Random Forest Regressor, Ridge Regression ($L_2$), Linear Regression (OLS), Polynomial interaction, MLP. |
+| **Continuous Regression** | Rating Prediction ($R^2 = 0.9789$) | Random Forest Regressor, Linear Regression (OLS), Polynomial interaction, MLP. |
 | **Talent Classification** | Tier Categorization ($95.16\%$ Acc) | K-Nearest Neighbors (KNN), Random Forest Classifier, Logistic Regression, Decision Tree, MLP. |
 | **Tactical Clustering** | Unsupervised Style Discovery | K-Means Clustering ($k=5$) discovering Anchors, Death Finishers, Pace Spearheads, Mystery Spinners, and All-Rounders. |
 | **Dimensionality Reduction** | Latent 2D Tactical Map | Principal Component Analysis (PCA) mapping 619 players into 2D skill space (60.8% variance explained). |
@@ -80,11 +80,10 @@ python src/create_cricket_notebook.py
 ### Supervised Continuous Regression Benchmark (Predicting Overall Rating 50–95)
 | Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test RMSE | Test $R^2$ Score |
 | :--- | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | **$0.9528 \pm 0.0094$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
-| **Ridge Regression ($L_2$)** | $0.9000 \pm 0.0215$ | $1.5224$ | $1.9521$ | $0.9491$ |
-| **Linear Regression (OLS)** | $0.8797 \pm 0.0284$ | $1.5364$ | $1.9534$ | $0.9490$ |
-| **Polynomial Regression (Deg 2)** | $0.8649 \pm 0.0310$ | $1.7280$ | $2.5779$ | $0.9112$ |
-| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.0980$ | $4.2246$ | $5.8058$ | $0.5495$ |
+| **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
+| **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
+| **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
+| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.1375$ | $4.2246$ | $5.8058$ | $0.5495$ |
 
 ### Supervised Classification Benchmark (Predicting Talent Tier)
 | Model Architecture | 5-Fold CV Accuracy | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score |

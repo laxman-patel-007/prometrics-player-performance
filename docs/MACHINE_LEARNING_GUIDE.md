@@ -15,7 +15,7 @@ In accordance with Case Study no. 102, a professional sports organization (T20 c
 
 | ML Paradigm | Target Variable / Output | Core Objective | Primary Algorithm(s) | Benchmark Result |
 | :--- | :--- | :--- | :--- | :--- |
-| **Supervised Continuous Regression** | Overall Performance Rating ($y \in [50.0, 95.0]$) | Predict continuous match impact score & calculate fair auction purse (₹ Crores) | Random Forest Regressor, Ridge ($L_2$), Linear (OLS), Polynomial, MLP | **Random Forest: $R^2 = 0.9789$, RMSE = $1.2562$** |
+| **Supervised Continuous Regression** | Overall Performance Rating ($y \in [50.0, 95.0]$) | Predict continuous match impact score & calculate fair auction purse (₹ Crores) | Random Forest Regressor, Linear (OLS), Polynomial, MLP | **Random Forest: $R^2 = 0.9789$, RMSE = $1.2562$** |
 | **Supervised Multi-Class Classification** | Talent Tier Code ($y \in \{0, 1, 2\}$) | Categorize player into Developing, Core, or Elite tier for squad depth management | K-Nearest Neighbors (KNN), Random Forest, Logistic, Decision Tree, MLP | **KNN: $95.16\%$ Accuracy, Macro F1 = $0.9501$** |
 | **Unsupervised Clustering** | Tactical Playing Style ($k=5$ Archetypes) | Group athletes by multi-skill tactical fingerprints rather than nominal playing roles | K-Means Clustering ($k=5$), Silhouette Scoring, Elbow Curve | **5 Distinct Tactical Roles ($s=0.285$)** |
 | **Dimensionality Reduction** | Latent 2D Coordinates ($[z_1, z_2]$) | Project 29-dimensional performance vectors into an interpretable 2D tactical map | Principal Component Analysis (PCA) | **Top 2 Components Explain $60.79\%$ Variance** |
@@ -40,7 +40,7 @@ In accordance with Case Study no. 102, a professional sports organization (T20 c
 - **WHEN:** Executed strictly **after** the 80/20 train/test split. The `StandardScaler` is fitted exclusively on `X_train` ($\mu_{	ext{train}}, \sigma_{	ext{train}}$) and subsequently applied to transform `X_train`, `X_test`, and real-time user inputs in the Streamlit application.
 - **WHY:**
   1. **Scale Dominance Prevention:** In the raw dataset, `total_runs` spans $[0, 8000+]$ and `balls_faced` spans $[0, 6000+]$, whereas `economy_rate` spans $[5.0, 12.0]$ and `dot_ball_bowled_pct` spans $[15.0, 55.0]$. In unscaled space, Euclidean distance metrics ($d(p, q) = \sqrt{\sum (p_i - q_i)^2}$) in KNN, K-Means, and PCA would be 99.9% dominated by runs, completely ignoring bowling and fielding impact.
-  2. **Gradient Stability:** Multi-Layer Perceptrons (MLPs) and Ridge Regression require standardized inputs to ensure symmetric loss surfaces, preventing vanishing or exploding gradients.
+  2. **Gradient Stability:** Multi-Layer Perceptrons (MLPs) and Linear Regression require standardized inputs to ensure symmetric loss surfaces, preventing vanishing or exploding gradients.
   3. **Data Leakage Elimination:** Fitting the scaler on the entire dataset prior to splitting would leak test set distribution parameters ($\mu_{	ext{test}}, \sigma_{	ext{test}}$) into the training pipeline.
 - **HOW:** Implemented using Scikit-Learn's `StandardScaler()`. Serialized to disk as `models/scaler.joblib`. During inference in `app.py`:
   ```python
@@ -52,11 +52,24 @@ In accordance with Case Study no. 102, a professional sports organization (T20 c
 ### 2.3 Domain-Specific Composite Feature Engineering
 - **WHAT:** Formulating non-linear composite domain metrics that synthesize multiple raw counting statistics into normalized, rate-based capability indices:
   1. **Batting Impact Index:**
-     $$	ext{BatScore} = \min\left(rac{	ext{Avg}}{45}, 1.5ight) 	imes 35 + \min\left(rac{	ext{SR}}{160}, 1.5ight) 	imes 35 + \min\left(rac{	ext{Bound}\%}{75}, 1.5ight) 	imes 15 + \min\left(rac{	ext{DeathSR}}{200}, 1.5ight) 	imes 15$$
+     $$	ext{BatScore} = \min\left(rac{	ext{Avg}}{45}, 1.5
+ight) 	imes 35 + \min\left(rac{	ext{SR}}{160}, 1.5
+ight) 	imes 35 + \min\left(rac{	ext{Bound}\%}{75}, 1.5
+ight) 	imes 15 + \min\left(rac{	ext{DeathSR}}{200}, 1.5
+ight) 	imes 15$$
   2. **Bowling Impact Index:**
-     $$	ext{BowlScore} = \max\left(rac{11.0 - 	ext{Econ}}{4.0}, 0ight) 	imes 40 + \max\left(rac{35.0 - 	ext{BowlSR}}{18.0}, 0ight) 	imes 35 + \min\left(rac{	ext{Dot}\%}{50}, 1.5ight) 	imes 25$$
+     $$	ext{BowlScore} = \max\left(rac{11.0 - 	ext{Econ}}{4.0}, 0
+ight) 	imes 40 + \max\left(rac{35.0 - 	ext{BowlSR}}{18.0}, 0
+ight) 	imes 35 + \min\left(rac{	ext{Dot}\%}{50}, 1.5
+ight) 	imes 25$$
   3. **Clutch Match-Winner Index:**
-     $$	ext{Clutch} = \min(	ext{MoM} 	imes 4, 40) + \min\left(\left\lfloorrac{	ext{Runs}}{250}ightfloor 	imes 2.5, 30ight) + \min\left(\left\lfloorrac{	ext{Wkts}}{15}ightfloor 	imes 3.0, 30ight)$$
+     $$	ext{Clutch} = \min(	ext{MoM} 	imes 4, 40) + \min\left(\left\lfloorrac{	ext{Runs}}{250}
+ight
+floor 	imes 2.5, 30
+ight) + \min\left(\left\lfloorrac{	ext{Wkts}}{15}
+ight
+floor 	imes 3.0, 30
+ight)$$
 - **WHEN:** Computed in `src/cricket_data_pipeline.py` during raw delivery aggregation and dynamically recomputed in `app.py` when evaluating new or customized player profiles.
 - **WHY:** Raw counting totals suffer from heavy **tenure bias**; a cricketer who played 15 seasons can accumulate 3,000 runs with a mediocre strike rate (115) and average (22), whereas a generational finisher might play 50 matches at an extraordinary strike rate of 175 with match-winning impact. Composite indices capture efficiency, phase-specific lethality (death overs), and psychological resilience under pressure.
 - **HOW:** Calculated during ball-by-ball aggregation. Deliveries in overs 16–20 are tagged to compute `death_overs_strike_rate` and `death_overs_economy`. Player of the Match awards are joined from `matches_2008_2024.csv`.
@@ -80,19 +93,7 @@ The regression framework models player performance as a continuous function $f: 
 
 ---
 
-### 3.2 Ridge Regression ($L_2$ Tikhonov Regularization)
-- **WHAT:** A regularized linear regression model adding an $L_2$ norm penalty on the weight vector to the loss function:
-  $$\mathcal{L}_{	ext{Ridge}}(eta) = ||y - Xeta||_2^2 + lpha ||eta||_2^2 = \sum_{i=1}^n (y_i - x_i^T eta)^2 + lpha \sum_{j=1}^p eta_j^2$$
-- **WHEN:** Evaluated alongside OLS to assess whether penalizing coefficient magnitudes mitigates collinearity among correlated features (e.g. `total_runs`, `balls_faced`, `fours`, `sixes`).
-- **WHY:** In cricket telemetry, several features exhibit high Pearson correlations ($r > 0.85$). In OLS, $(X^T X)$ becomes ill-conditioned, causing coefficient variances to explode. Ridge introduces a small positive bias $lpha I$ to the diagonal, shrinking coefficients smoothly, drastically reducing estimator variance (Bias-Variance Trade-off).
-- **HOW:** Solved via regularized normal equations:
-  $$\hat{eta}_{	ext{Ridge}} = (X^T X + lpha I)^{-1} X^T y$$
-  Trained with $lpha = 1.0$.
-  - **Results:** Test $R^2 = 0.9491$, 5-Fold CV $R^2 = 0.9000 \pm 0.0215$, RMSE = $1.9521$, MAE = $1.5224$. Ridge achieved significantly higher cross-validation stability ($0.9000$ vs $0.8797$) with lower standard deviation.
-
----
-
-### 3.3 Polynomial Regression (Degree-2 Feature Synergy)
+### 3.2 Polynomial Regression (Degree-2 Feature Synergy)
 - **WHAT:** A non-linear extension mapping the input feature space into polynomial combinations up to degree $d=2$:
   $$\phi(x) = [1, x_1, \dots, x_p, x_1^2, x_1 x_2, \dots, x_p^2]$$
   Transforming a 29-dimensional input into a 464-dimensional feature space.
@@ -103,21 +104,23 @@ The regression framework models player performance as a continuous function $f: 
 
 ---
 
-### 3.4 Random Forest Regressor (Ensemble Bagging)
+### 3.3 Random Forest Regressor (Ensemble Bagging)
 - **WHAT:** An ensemble learning algorithm that constructs a multitude of decorrelated decision trees during training and outputs the mean prediction ($rac{1}{B} \sum_{b=1}^B T_b(x)$) of individual trees:
   $$\hat{f}_{	ext{RF}}(x) = rac{1}{B} \sum_{b=1}^B T(x; \Theta_b)$$
   Combines **Bootstrap Aggregation (Bagging)** with **Random Feature Subspace Selection** (sampling $\sqrt{p}$ features at each split).
 - **WHEN:** **Selected as the Production Machine Learning Engine** powering the entire continuous rating and auction valuation platform.
 - **WHY:**
   1. **Non-Linear Threshold Partitioning:** Real cricket performance has sharp non-linear thresholds: an economy rate below 7.5 in overs 16–20 produces a step-function surge in win probability that no linear hyper-plane can model.
-  2. **Variance Reduction Without Bias Inflation:** Bagging 100 de-correlated trees reduces variance exponentially ($	ext{Var}(ar{X}) = ho \sigma^2 + rac{1-ho}{B} \sigma^2$) while maintaining the low bias of deep trees.
+  2. **Variance Reduction Without Bias Inflation:** Bagging 100 de-correlated trees reduces variance exponentially ($	ext{Var}(ar{X}) = 
+ho \sigma^2 + rac{1-
+ho}{B} \sigma^2$) while maintaining the low bias of deep trees.
   3. **Immunity to Multicollinearity & Outliers:** Decision trees split on single features at a time, making them naturally invariant to monotonic transformations and collinearity.
 - **HOW:** Implemented via `RandomForestRegressor(n_estimators=100, max_features='sqrt', random_state=42)`.
   - **Results:** **Benchmark Winner.** Test $R^2 = \mathbf{0.9789}$, 5-Fold CV $R^2 = \mathbf{0.9528 \pm 0.0094}$, Test RMSE = $\mathbf{1.2562}$, Test MAE = $\mathbf{0.9024}$.
 
 ---
 
-### 3.5 Multi-Layer Perceptron (MLP) Regressor
+### 3.4 Multi-Layer Perceptron (MLP) Regressor
 - **WHAT:** A deep feedforward artificial neural network consisting of an input layer ($29$ units), two fully-connected hidden layers ($64$ and $32$ units) with non-linear activation functions (ReLU), and a single linear output neuron:
   $$h^{(1)} = 	ext{ReLU}(W^{(1)} x + b^{(1)}), \quad h^{(2)} = 	ext{ReLU}(W^{(2)} h^{(1)} + b^{(2)}), \quad \hat{y} = W^{(3)} h^{(2)} + b^{(3)}$$
 - **WHEN:** Evaluated as a deep representation learning alternative for tabular sports modeling.
@@ -173,7 +176,8 @@ The classification framework stratifies talent into 3 actionable organizational 
 
 ### 4.4 Decision Tree Classifier (CART)
 - **WHAT:** A greedy, top-down recursive binary tree partitioner that splits nodes on feature $j$ and threshold $	heta$ to maximize information gain (reduction in Gini impurity):
-  $$\Delta I_G = I_G(D) - \left( rac{|D_L|}{|D|} I_G(D_L) + rac{|D_R|}{|D|} I_G(D_R) ight)$$
+  $$\Delta I_G = I_G(D) - \left( rac{|D_L|}{|D|} I_G(D_L) + rac{|D_R|}{|D|} I_G(D_R) 
+ight)$$
 - **WHEN:** White-box rule-based talent categorization benchmark.
 - **WHY:** Highly interpretable: enables franchise management to inspect exact decision rules (e.g. `if clutch_index > 42.5 and death_overs_strike_rate > 165 -> Elite`).
 - **HOW:** Maximum depth set to 6 to prevent over-branching.
@@ -289,7 +293,6 @@ The system computes an exhaustive suite of statistical metrics:
 | **StandardScaler ($Z$-Score)** | Rescales variables to zero mean ($\mu=0$) and unit variance ($\sigma=1$) | Immediately after train/test split; fitted on `X_train` only | Prevents scale dominance in Euclidean metrics (KNN, K-Means, PCA) | $z = (x - \mu)/\sigma$, serialized to `models/scaler.joblib` |
 | **Composite Indices** | Nonlinear rate-based performance synthesizers | Data aggregation (`src/`) & profile simulation (`app.py`) | Neutralizes tenure/volume bias; rewards phase-specific death impact & clutch wins | Mathematical formulations weighting boundaries, death strike rate, awards |
 | **Linear Regression (OLS)** | Minimizes residual sum of squares: $\min \|\|y - Xeta\|\|_2^2$ | Baseline continuous rating estimation | Provides benchmark coefficient interpretability | Normal equation $eta = (X^T X)^{-1} X^T y$; Test $R^2 = 0.9490$, RMSE = $1.95$ |
-| **Ridge Regression ($L_2$)** | Regularized OLS adding penalty $lpha \|eta\|_2^2$ | Benchmark regression to mitigate multicollinearity | Shrinks collinear coefficients smoothly, reducing variance | $eta = (X^T X + lpha I)^{-1} X^T y$ with $lpha=1.0$; Test $R^2 = 0.9491$, 5-Fold $R^2 = 0.90$ |
 | **Polynomial Regression** | Expands inputs to degree-2 interaction terms $x_i x_j$ | Investigating non-linear skill synergy | Captures multiplicative value (e.g. Strike Rate $	imes$ Boundary %) | `PolynomialFeatures(degree=2)` generating 464 features; Test $R^2 = 0.9112$ |
 | **Random Forest Regressor** | Bagged ensemble of 100 de-correlated decision trees | **Production Continuous Rating Engine** | Handles non-linear cricket thresholds and outliers without overfitting | 100 trees, MSE split; **Winner: $R^2 = 0.9789$, RMSE = $1.2562$** |
 | **MLP Regressor** | Deep feedforward neural network with ReLU | Deep learning tabular benchmark | Evaluates if deep representation learning beats tree ensembles | Layers $(64, 32)$, Adam, early stopping; Test $R^2 = 0.5495$, RMSE = $5.80$ |

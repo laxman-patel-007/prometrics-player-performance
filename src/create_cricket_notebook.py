@@ -199,15 +199,14 @@ Visualizing correlation structures and multi-dimensional attribute fingerprints.
 We formulate the regression task: predicting continuous $y \\in [50, 95]$ as a function of the vector of scaled features $\\mathbf{x}$.
 
 ### Evaluated Algorithms:
-1. **Linear Regression (OLS):** Standard ordinary least squares.
-2. **Ridge Regression ($L_2$ Regularized):** Minimizes overfitting on correlated metrics.
-3. **Polynomial Regression (Degree 2):** Captures interaction terms between batting, bowling, and clutch factors.
-4. **Random Forest Regressor (Ensemble):** Bagged de-correlated decision trees.
-5. **Multi-Layer Perceptron (MLP Neural Net):** Feedforward backpropagation network.
+1. **Linear Regression (OLS):** Standard ordinary least squares (Module IV).
+2. **Polynomial Regression (Degree 2):** Captures interaction terms between batting, bowling, and clutch factors (Module IV).
+3. **Random Forest Regressor (Ensemble):** Bagged de-correlated decision trees (Module VIII).
+4. **Multi-Layer Perceptron (MLP Neural Net):** Feedforward backpropagation network (Module IX).
 """)
 
     add_code([
-        "from sklearn.linear_model import LinearRegression, Ridge",
+        "from sklearn.linear_model import LinearRegression",
         "from sklearn.preprocessing import PolynomialFeatures",
         "from sklearn.ensemble import RandomForestRegressor",
         "from sklearn.neural_network import MLPRegressor",
@@ -222,29 +221,23 @@ We formulate the regression task: predicting continuous $y \\in [50, 95]$ as a f
         "lr.fit(X_train, y_train_reg)",
         "lr_preds = lr.predict(X_test)",
         "",
-        "# 2. Ridge Regression",
-        "ridge = Ridge(alpha=10.0, random_state=42)",
-        "ridge_cv = cross_val_score(ridge, X_train, y_train_reg, cv=kf, scoring='r2')",
-        "ridge.fit(X_train, y_train_reg)",
-        "ridge_preds = ridge.predict(X_test)",
-        "",
-        "# 3. Polynomial Interaction Regression",
+        "# 2. Polynomial Interaction Regression",
         "poly_cols = ['batting_impact_index', 'bowling_impact_index', 'matches_played', 'clutch_match_winner_index']",
         "poly = PolynomialFeatures(degree=2, include_bias=False)",
         "X_train_poly = poly.fit_transform(X_train[poly_cols])",
         "X_test_poly = poly.transform(X_test[poly_cols])",
-        "poly_reg = Ridge(alpha=50.0, random_state=42)",
+        "poly_reg = LinearRegression()",
         "poly_cv = cross_val_score(poly_reg, X_train_poly, y_train_reg, cv=kf, scoring='r2')",
         "poly_reg.fit(X_train_poly, y_train_reg)",
         "poly_preds = poly_reg.predict(X_test_poly)",
         "",
-        "# 4. Random Forest Regressor",
+        "# 3. Random Forest Regressor",
         "rf_reg = RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42, n_jobs=-1)",
         "rf_cv = cross_val_score(rf_reg, X_train, y_train_reg, cv=kf, scoring='r2')",
         "rf_reg.fit(X_train, y_train_reg)",
         "rf_preds = rf_reg.predict(X_test)",
         "",
-        "# 5. MLP Regressor",
+        "# 4. MLP Regressor",
         "mlp_reg = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=400, random_state=42, early_stopping=True)",
         "mlp_cv = cross_val_score(mlp_reg, X_train, y_train_reg, cv=kf, scoring='r2')",
         "mlp_reg.fit(X_train, y_train_reg)",
@@ -252,7 +245,6 @@ We formulate the regression task: predicting continuous $y \\in [50, 95]$ as a f
         "",
         "reg_models = {",
         "    'Linear Regression': (lr_preds, lr_cv),",
-        "    'Ridge Regression': (ridge_preds, ridge_cv),",
         "    'Polynomial Regression': (poly_preds, poly_cv),",
         "    'Random Forest Regressor': (rf_preds, rf_cv),",
         "    'MLP Regressor': (mlp_preds, mlp_cv)",

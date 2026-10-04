@@ -15,7 +15,7 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split, cross_val_score, KFold, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.linear_model import LinearRegression, Ridge, LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -89,26 +89,12 @@ def train_and_evaluate_models():
     }
     joblib.dump(lr, os.path.join(MODELS_DIR, "linear_regression.joblib"))
 
-    # Model B: Ridge Regression (L2)
-    ridge = Ridge(alpha=10.0, random_state=42)
-    ridge_cv = cross_val_score(ridge, X_train, y_train_reg, cv=kf, scoring='r2')
-    ridge.fit(X_train, y_train_reg)
-    ridge_preds = ridge.predict(X_test)
-    reg_metrics['Ridge Regression'] = {
-        'Test_R2': round(float(r2_score(y_test_reg, ridge_preds)), 4),
-        'CV_R2_mean': round(float(ridge_cv.mean()), 4),
-        'CV_R2_std': round(float(ridge_cv.std()), 4),
-        'Test_RMSE': round(float(np.sqrt(mean_squared_error(y_test_reg, ridge_preds))), 4),
-        'Test_MAE': round(float(mean_absolute_error(y_test_reg, ridge_preds)), 4)
-    }
-    joblib.dump(ridge, os.path.join(MODELS_DIR, "ridge_regression.joblib"))
-
-    # Model C: Polynomial Regression (Key interaction features)
+    # Model B: Polynomial Regression (Module IV - Degree 2)
     poly_cols = ['batting_impact_index', 'bowling_impact_index', 'matches_played', 'clutch_match_winner_index']
     poly = PolynomialFeatures(degree=2, include_bias=False)
     X_train_poly = poly.fit_transform(X_train[poly_cols])
     X_test_poly = poly.transform(X_test[poly_cols])
-    poly_reg = Ridge(alpha=50.0, random_state=42)
+    poly_reg = LinearRegression()
     poly_cv = cross_val_score(poly_reg, X_train_poly, y_train_reg, cv=kf, scoring='r2')
     poly_reg.fit(X_train_poly, y_train_reg)
     poly_preds = poly_reg.predict(X_test_poly)
@@ -121,7 +107,7 @@ def train_and_evaluate_models():
     }
     joblib.dump({"poly_transformer": poly, "poly_model": poly_reg, "poly_cols": poly_cols}, os.path.join(MODELS_DIR, "polynomial_regression.joblib"))
 
-    # Model D: Random Forest Regressor (Ensemble)
+    # Model C: Random Forest Regressor (Module VIII - Ensembles)
     rf_reg = RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42, n_jobs=-1)
     rf_cv = cross_val_score(rf_reg, X_train, y_train_reg, cv=kf, scoring='r2')
     rf_reg.fit(X_train, y_train_reg)
@@ -135,7 +121,7 @@ def train_and_evaluate_models():
     }
     joblib.dump(rf_reg, os.path.join(MODELS_DIR, "random_forest_regressor.joblib"))
 
-    # Model E: Multi-Layer Perceptron Regressor (Neural Net)
+    # Model D: Multi-Layer Perceptron Regressor (Module IX - Neural Networks)
     mlp_reg = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=400, random_state=42, early_stopping=True)
     mlp_cv = cross_val_score(mlp_reg, X_train, y_train_reg, cv=kf, scoring='r2')
     mlp_reg.fit(X_train, y_train_reg)

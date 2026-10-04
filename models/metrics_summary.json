@@ -7,19 +7,12 @@
       "Test_RMSE": 1.9534,
       "Test_MAE": 1.5364
     },
-    "Ridge Regression": {
-      "Test_R2": 0.9491,
-      "CV_R2_mean": 0.9,
-      "CV_R2_std": 0.0221,
-      "Test_RMSE": 1.9521,
-      "Test_MAE": 1.5224
-    },
     "Polynomial Regression (Deg 2)": {
-      "Test_R2": 0.9112,
-      "CV_R2_mean": 0.8649,
-      "CV_R2_std": 0.0388,
-      "Test_RMSE": 2.5779,
-      "Test_MAE": 1.728
+      "Test_R2": 0.9087,
+      "CV_R2_mean": 0.8739,
+      "CV_R2_std": 0.0343,
+      "Test_RMSE": 2.6142,
+      "Test_MAE": 1.6563
     },
     "Random Forest Regressor": {
       "Test_R2": 0.9789,
