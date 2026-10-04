@@ -1,309 +1,303 @@
 # CricMetrics Pro: Complete Machine Learning Topics & Methodology Guide
-### Case Study no. 102 | Comprehensive Theoretical, Mathematical & Practical Reference
+### Simple & Clear Technical Guide | Case Study no. 102 Reference
 
-> **Executive Scope:** This document provides an exhaustive, multi-dimensional technical examination of every Machine Learning concept, algorithm, mathematical formulation, and evaluation technique implemented in the **CricMetrics Pro** sports organization decision support system. For every topic, this guide explicitly details:
-> - **WHAT** the concept/algorithm is (formal definitions, mathematical foundations, and operating mechanics).
-> - **WHEN** it is invoked within the analytics pipeline (data ingestion, preprocessing, training, inference, or dashboard simulation).
-> - **WHY** it was selected over competing alternatives (theoretical justification, business fit, franchise economics, and trade-offs).
-> - **HOW** it is implemented in production code (loss functions, hyperparameters, input/output tensors, and performance benchmarks).
+> **About this Document:** This guide explains all the Machine Learning concepts, algorithms, math formulas, and testing methods used in the **CricMetrics Pro** sports analytics project. It is written in simple, clear, and direct English so that every student, examiner, and data scientist can easily understand **WHAT** each technique does, **WHEN** it is used, **WHY** it was chosen, and **HOW** it works.
 
 ---
 
-## 1. System-Wide Machine Learning Formulation
+## 1. Project Overview & Machine Learning Tasks
 
-In accordance with Case Study no. 102, a professional sports organization (T20 cricket franchise) must investigate measurable factors associated with player performance to solve scouting, roster construction, and multi-crore auction valuation challenges. The system is formulated across four complementary machine learning paradigms:
+In modern T20 cricket, franchises (like IPL teams) spend ₹100+ Crores in player auctions. Choosing players based on emotions, raw reputation, or simple batting averages often leads to expensive mistakes. 
 
-| ML Paradigm | Target Variable / Output | Core Objective | Primary Algorithm(s) | Benchmark Result |
+**CricMetrics Pro** solves this by analyzing **260,920 real deliveries from 1,095 IPL matches (2008–2024)** covering **619 qualified professional cricketers**. We set up 4 core Machine Learning tasks:
+
+| ML Task | What It Predicts / Outputs | Business Goal | Models Used | Best Model & Result |
 | :--- | :--- | :--- | :--- | :--- |
-| **Supervised Continuous Regression** | Overall Performance Rating ($y \in [50.0, 95.0]$) | Predict continuous match impact score & calculate fair auction purse (₹ Crores) | Random Forest Regressor, Linear (OLS), Polynomial, MLP | **Random Forest: $R^2 = 0.9789$, RMSE = $1.2562$** |
-| **Supervised Multi-Class Classification** | Talent Tier Code ($y \in \{0, 1, 2\}$) | Categorize player into Developing, Core, or Elite tier for squad depth management | K-Nearest Neighbors (KNN), Random Forest, Logistic, Decision Tree, MLP | **KNN: $95.16\%$ Accuracy, Macro F1 = $0.9501$** |
-| **Unsupervised Clustering** | Tactical Playing Style ($k=5$ Archetypes) | Group athletes by multi-skill tactical fingerprints rather than nominal playing roles | K-Means Clustering ($k=5$), Silhouette Scoring, Elbow Curve | **5 Distinct Tactical Roles ($s=0.285$)** |
-| **Dimensionality Reduction** | Latent 2D Coordinates ($[z_1, z_2]$) | Project 29-dimensional performance vectors into an interpretable 2D tactical map | Principal Component Analysis (PCA) | **Top 2 Components Explain $60.79\%$ Variance** |
+| **1. Continuous Regression** | Overall Rating ($50.0$ to $95.0$) | Calculate fair player rating and auction purse (in ₹ Crores) | • Random Forest Regressor<br>• Linear Regression (OLS)<br>• Polynomial Regression<br>• Neural Network (MLP) | **Random Forest Regressor**<br>($R^2 = 0.9789$, Error = 1.25 pts) |
+| **2. Talent Classification** | Talent Tier Code (`0, 1, 2`) | Group players into Developing, Core, or Elite tiers | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Neural Network (MLP)<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
+| **3. Unsupervised Clustering** | Tactical Style (5 Archetypes) | Group athletes by how they actually play, not just "Batter/Bowler" | • K-Means Clustering ($k=5$ clusters) | **5 Clear Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
+| **4. Dimensionality Reduction** | 2D Coordinates ($[X, Y]$) | Compress 29 stats into an interactive 2D map | • Principal Component Analysis (PCA) | **Top 2 Components**<br>explain 60.79% of all variation |
 
 ---
 
-## 2. Data Preprocessing & Feature Transformation
+## 2. Data Preprocessing & Feature Engineering
+
+Before training models, raw cricket data must be cleaned, transformed, and rescaled.
 
 ### 2.1 One-Hot Encoding (`primary_role`)
-- **WHAT:** A mathematical mapping that converts a qualitative categorical variable with $K$ discrete levels into $K-1$ orthogonal binary indicator variables ($x_i \in \{0, 1\}$).
-- **WHEN:** Applied during the initial data transformation phase in `src/cricket_data_pipeline.py` and `src/train_cricket_models.py`, immediately before feeding tabular data into linear models, neural networks, and distance-based estimators.
-- **WHY:** Machine learning algorithms operate on numerical vectors in Euclidean or Hilbert spaces. Passing raw string categories (e.g. `'Specialist Batter'`) or integer labels ($1, 2, 3$) would impose an artificial ordinal ranking that does not exist. Using `drop_first=True` prevents the **Dummy Variable Trap** (perfect multicollinearity, where the sum of indicator variables equals $1$, rendering $(X^T X)$ singular and non-invertible in linear regression).
-- **HOW:** Implemented via Pandas `pd.get_dummies(df, columns=['primary_role'], drop_first=True, dtype=float)`. The 5 nominal roles (`Specialist Batter`, `All-Rounder`, `Specialist Bowler`, `Bowling Specialist`, `Squad Batter`) are mapped into 4 binary columns:
-  $$	ext{primary\_role\_Bowling Specialist}, \quad 	ext{primary\_role\_Specialist Batter}, \quad 	ext{primary\_role\_Specialist Bowler}, \quad 	ext{primary\_role\_Squad Batter}$$
-  If all 4 binary columns are $0$, the player belongs to the reference baseline category (`All-Rounder`).
+- **WHAT is it?**  
+  Converting text labels (like `"Specialist Batter"` or `"All-Rounder"`) into 0 and 1 columns that computers can do math with.
+- **WHEN is it used?**  
+  Applied during initial data preparation in `src/cricket_data_pipeline.py` before feeding data to any model.
+- **WHY is it necessary?**  
+  Computers only calculate numbers. If we gave roles numbers like `1 = Batter, 2 = All-Rounder, 3 = Bowler`, the model would mistakenly think a Bowler is "greater than" a Batter. One-hot encoding creates separate True/False (1/0) switches for each role. We drop the first column (`drop_first=True`) to prevent mathematical redundancy (the "dummy variable trap").
+- **HOW is it done?**  
+  ```python
+  df_encoded = pd.get_dummies(df, columns=['primary_role'], drop_first=True, dtype=float)
+  ```
+  Creates 4 binary columns: `primary_role_Bowling Specialist`, `primary_role_Specialist Batter`, `primary_role_Specialist Bowler`, and `primary_role_Squad Batter`. If all 4 are 0, the player is an `All-Rounder`.
 
 ---
 
 ### 2.2 Standard Scaling ($Z$-Score Normalization)
-- **WHAT:** A linear transformation that scales each continuous feature independently so that its empirical distribution exhibits a mean of zero ($\mu = 0$) and a standard deviation of one ($\sigma = 1$):
-  $$z = rac{x - \mu}{\sigma}$$
-- **WHEN:** Executed strictly **after** the 80/20 train/test split. The `StandardScaler` is fitted exclusively on `X_train` ($\mu_{	ext{train}}, \sigma_{	ext{train}}$) and subsequently applied to transform `X_train`, `X_test`, and real-time user inputs in the Streamlit application.
-- **WHY:**
-  1. **Scale Dominance Prevention:** In the raw dataset, `total_runs` spans $[0, 8000+]$ and `balls_faced` spans $[0, 6000+]$, whereas `economy_rate` spans $[5.0, 12.0]$ and `dot_ball_bowled_pct` spans $[15.0, 55.0]$. In unscaled space, Euclidean distance metrics ($d(p, q) = \sqrt{\sum (p_i - q_i)^2}$) in KNN, K-Means, and PCA would be 99.9% dominated by runs, completely ignoring bowling and fielding impact.
-  2. **Gradient Stability:** Multi-Layer Perceptrons (MLPs) and Linear Regression require standardized inputs to ensure symmetric loss surfaces, preventing vanishing or exploding gradients.
-  3. **Data Leakage Elimination:** Fitting the scaler on the entire dataset prior to splitting would leak test set distribution parameters ($\mu_{	ext{test}}, \sigma_{	ext{test}}$) into the training pipeline.
-- **HOW:** Implemented using Scikit-Learn's `StandardScaler()`. Serialized to disk as `models/scaler.joblib`. During inference in `app.py`:
+- **WHAT is it?**  
+  Rescaling every continuous column so that its average becomes 0 and its standard deviation becomes 1:
+  $$z = \frac{x - \mu}{\sigma}$$
+- **WHEN is it used?**  
+  Applied strictly **after** the 80/20 train/test split. The scaler learns only from training data (`X_train`) to avoid cheating (data leakage), and then scales both training and test data.
+- **WHY is it necessary?**  
+  In cricket, `total_runs` can be 5,000+ while `economy_rate` is only 7.5. Without scaling, distance calculations in KNN, K-Means, and PCA would be 99% dominated by runs, completely ignoring bowling stats. Scaling puts every skill on equal ground.
+- **HOW is it done?**  
   ```python
-  X_scaled_all = pd.DataFrame(models["scaler"].transform(X_all), columns=feature_cols)
+  from sklearn.preprocessing import StandardScaler
+  scaler = StandardScaler()
+  X_train_scaled = scaler.fit_transform(X_train)
+  X_test_scaled = scaler.transform(X_test)
   ```
+  Saved as `models/scaler.joblib`.
 
 ---
 
-### 2.3 Domain-Specific Composite Feature Engineering
-- **WHAT:** Formulating non-linear composite domain metrics that synthesize multiple raw counting statistics into normalized, rate-based capability indices:
-  1. **Batting Impact Index:**
-     $$	ext{BatScore} = \min\left(rac{	ext{Avg}}{45}, 1.5
-ight) 	imes 35 + \min\left(rac{	ext{SR}}{160}, 1.5
-ight) 	imes 35 + \min\left(rac{	ext{Bound}\%}{75}, 1.5
-ight) 	imes 15 + \min\left(rac{	ext{DeathSR}}{200}, 1.5
-ight) 	imes 15$$
-  2. **Bowling Impact Index:**
-     $$	ext{BowlScore} = \max\left(rac{11.0 - 	ext{Econ}}{4.0}, 0
-ight) 	imes 40 + \max\left(rac{35.0 - 	ext{BowlSR}}{18.0}, 0
-ight) 	imes 35 + \min\left(rac{	ext{Dot}\%}{50}, 1.5
-ight) 	imes 25$$
-  3. **Clutch Match-Winner Index:**
-     $$	ext{Clutch} = \min(	ext{MoM} 	imes 4, 40) + \min\left(\left\lfloorrac{	ext{Runs}}{250}
-ight
-floor 	imes 2.5, 30
-ight) + \min\left(\left\lfloorrac{	ext{Wkts}}{15}
-ight
-floor 	imes 3.0, 30
-ight)$$
-- **WHEN:** Computed in `src/cricket_data_pipeline.py` during raw delivery aggregation and dynamically recomputed in `app.py` when evaluating new or customized player profiles.
-- **WHY:** Raw counting totals suffer from heavy **tenure bias**; a cricketer who played 15 seasons can accumulate 3,000 runs with a mediocre strike rate (115) and average (22), whereas a generational finisher might play 50 matches at an extraordinary strike rate of 175 with match-winning impact. Composite indices capture efficiency, phase-specific lethality (death overs), and psychological resilience under pressure.
-- **HOW:** Calculated during ball-by-ball aggregation. Deliveries in overs 16–20 are tagged to compute `death_overs_strike_rate` and `death_overs_economy`. Player of the Match awards are joined from `matches_2008_2024.csv`.
+### 2.3 Cricket Composite Indices (Domain Feature Engineering)
+Raw career counting totals (like total runs) heavily favor older players who played 200 matches over younger stars who played 30 matches. To fix this, we created 3 rate-based impact indices:
+
+1. **Batting Impact Index:**  
+   Combines Batting Average, Strike Rate, Boundary %, and Death-Overs Strike Rate (overs 16–20).
+2. **Bowling Impact Index:**  
+   Combines Economy Rate, Bowling Strike Rate (balls per wicket), and Dot Ball %.
+3. **Clutch Match-Winner Index:**  
+   Rewards players who step up under pressure: Player of the Match awards, match-winning fifties, and 3+ wicket hauls.
 
 ---
 
-## 3. Supervised Continuous Regression Framework
+## 3. Supervised Learning: Continuous Rating Regression Models
 
-The regression framework models player performance as a continuous function $f: \mathbb{R}^{29} 	o [50.0, 95.0]$, representing an overall FIFA/NBA2K-style player rating used to anchor auction valuations.
+Regression models predict a continuous player overall rating between $50.0$ and $95.0$.
+
+---
 
 ### 3.1 Linear Regression (Ordinary Least Squares - OLS)
-- **WHAT:** A parametric linear model assuming a linear relationship between input vector $x \in \mathbb{R}^p$ and continuous target $y \in \mathbb{R}$:
-  $$\hat{y} = eta_0 + \sum_{j=1}^p eta_j x_j = Xeta$$
-  Optimized by minimizing the Residual Sum of Squares (RSS):
-  $$\mathcal{L}_{	ext{OLS}}(eta) = ||y - Xeta||_2^2 = \sum_{i=1}^n (y_i - x_i^T eta)^2$$
-- **WHEN:** Trained as the fundamental parametric baseline to determine whether linear combinations of metrics explain performance rating.
-- **WHY:** Provides direct parameter interpretability (each coefficient $eta_j$ represents the marginal increase in rating per unit standard deviation increase in feature $j$). However, OLS makes strong assumptions (homoscedasticity, no multicollinearity, linearity) that are violated by complex sports telemetry.
-- **HOW:** Solved analytically via the Normal Equation:
-  $$\hat{eta} = (X^T X)^{-1} X^T y$$
-  - **Results:** Test $R^2 = 0.9490$, 5-Fold CV $R^2 = 0.8797 \pm 0.0284$, RMSE = $1.9534$, MAE = $1.5364$.
+- **WHAT is it?**  
+  The classic linear model that predicts rating as a weighted sum of stats:
+  $$\text{Rating} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p$$
+- **WHEN is it used?**  
+  Used as the baseline reference model to check how well a simple straight-line equation predicts player performance.
+- **WHY was it chosen?**  
+  It is very easy to interpret: each weight $\beta_j$ tells you exactly how many rating points a player gains for every unit increase in that stat.
+- **HOW does it work & results?**  
+  - Solved analytically using the standard formula $\hat{\beta} = (X^T X)^{-1} X^T y$.
+  - **Test $R^2$:** `0.9490` | **5-Fold CV $R^2$:** `0.8797` | **Test RMSE:** `1.95` points.
+  - **Limitation:** It assumes performance grows in a straight line, but cricket has non-linear jumps (e.g. death overs acceleration).
 
 ---
 
-### 3.2 Polynomial Regression (Degree-2 Feature Synergy)
-- **WHAT:** A non-linear extension mapping the input feature space into polynomial combinations up to degree $d=2$:
-  $$\phi(x) = [1, x_1, \dots, x_p, x_1^2, x_1 x_2, \dots, x_p^2]$$
-  Transforming a 29-dimensional input into a 464-dimensional feature space.
-- **WHEN:** Investigated to evaluate whether multiplicative skill synergy (e.g. Batting Strike Rate $	imes$ Boundary %, Death Overs Economy $	imes$ Dot Ball %) captures non-linear performance gains.
-- **WHY:** T20 cricket is multiplicative: a high strike rate (150+) is vastly more valuable when combined with a high boundary percentage (>65%) than when composed entirely of risky singles.
-- **HOW:** Constructed via `PolynomialFeatures(degree=2, include_bias=False)` followed by linear regression.
-  - **Results:** Test $R^2 = 0.9112$, 5-Fold CV $R^2 = 0.8649 \pm 0.0310$, RMSE = $2.5779$, MAE = $1.7280$. The polynomial expansion suffered from slight overfitting due to feature explosion ($464$ features on $495$ training rows).
+### 3.2 Polynomial Regression (Degree 2)
+- **WHAT is it?**  
+  An extension of Linear Regression that creates squared terms ($x_i^2$) and interaction pairs ($x_i \times x_j$) between key stats.
+- **WHEN is it used?**  
+  Used to test if stats multiply each other's value (e.g., Strike Rate $\times$ Boundary %).
+- **WHY was it chosen?**  
+  In T20 cricket, skills multiply each other: a high strike rate (150+) is much more dangerous when paired with a high boundary percentage (>65%) than when hitting singles.
+- **HOW does it work & results?**  
+  - Generated using `PolynomialFeatures(degree=2, include_bias=False)` on key impact indices, followed by `LinearRegression()`.
+  - **Test $R^2$:** `0.9087` | **5-Fold CV $R^2$:** `0.8739` | **Test RMSE:** `2.61` points.
+  - **Limitation:** Creating paired terms multiplies feature count, causing slight overfitting compared to tree ensembles.
 
 ---
 
-### 3.3 Random Forest Regressor (Ensemble Bagging)
-- **WHAT:** An ensemble learning algorithm that constructs a multitude of decorrelated decision trees during training and outputs the mean prediction ($rac{1}{B} \sum_{b=1}^B T_b(x)$) of individual trees:
-  $$\hat{f}_{	ext{RF}}(x) = rac{1}{B} \sum_{b=1}^B T(x; \Theta_b)$$
-  Combines **Bootstrap Aggregation (Bagging)** with **Random Feature Subspace Selection** (sampling $\sqrt{p}$ features at each split).
-- **WHEN:** **Selected as the Production Machine Learning Engine** powering the entire continuous rating and auction valuation platform.
-- **WHY:**
-  1. **Non-Linear Threshold Partitioning:** Real cricket performance has sharp non-linear thresholds: an economy rate below 7.5 in overs 16–20 produces a step-function surge in win probability that no linear hyper-plane can model.
-  2. **Variance Reduction Without Bias Inflation:** Bagging 100 de-correlated trees reduces variance exponentially ($	ext{Var}(ar{X}) = 
-ho \sigma^2 + rac{1-
-ho}{B} \sigma^2$) while maintaining the low bias of deep trees.
-  3. **Immunity to Multicollinearity & Outliers:** Decision trees split on single features at a time, making them naturally invariant to monotonic transformations and collinearity.
-- **HOW:** Implemented via `RandomForestRegressor(n_estimators=100, max_features='sqrt', random_state=42)`.
-  - **Results:** **Benchmark Winner.** Test $R^2 = \mathbf{0.9789}$, 5-Fold CV $R^2 = \mathbf{0.9528 \pm 0.0094}$, Test RMSE = $\mathbf{1.2562}$, Test MAE = $\mathbf{0.9024}$.
+### 3.3 Random Forest Regressor — 🏆 PRODUCTION WINNER
+- **WHAT is it?**  
+  A team (ensemble) of **180 decision trees**. Each tree trains on a random sample of players and random stats. The forest averages the votes of all 180 trees to produce the final rating.
+- **WHEN is it used?**  
+  **Selected as the main production engine** in Tab 1, Tab 3, and Tab 5 of the web app. It powers the live auction purse simulator.
+- **WHY was it chosen?**  
+  1. **Best Performance:** Achieved $R^2 = 0.9789$ and the lowest error (RMSE = 1.25 points).
+  2. **Handles Non-Linear Cricket Jumps:** An economy rate below 7.5 in the death overs is game-winning, while 11.5 is losing. Decision trees effortlessly split players at these exact thresholds.
+  3. **No Overfitting:** Averaging 180 trees cancels out random errors from individual trees.
+- **HOW does it work & results?**  
+  - Implemented using `RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42)`.
+  - **Test $R^2$:** `0.9789` | **5-Fold CV $R^2$:** `0.9528` | **Test RMSE:** `1.2562` points | **Test MAE:** `0.9024` points.
 
 ---
 
-### 3.4 Multi-Layer Perceptron (MLP) Regressor
-- **WHAT:** A deep feedforward artificial neural network consisting of an input layer ($29$ units), two fully-connected hidden layers ($64$ and $32$ units) with non-linear activation functions (ReLU), and a single linear output neuron:
-  $$h^{(1)} = 	ext{ReLU}(W^{(1)} x + b^{(1)}), \quad h^{(2)} = 	ext{ReLU}(W^{(2)} h^{(1)} + b^{(2)}), \quad \hat{y} = W^{(3)} h^{(2)} + b^{(3)}$$
-- **WHEN:** Evaluated as a deep representation learning alternative for tabular sports modeling.
-- **WHY:** Neural networks are universal function approximators capable of learning arbitrary continuous mappings. Benchmarking MLP was necessary to test if deep learning could surpass ensemble tree methods on tabular sports telemetry.
-- **HOW:** Trained with Adam optimizer ($eta_1=0.9, eta_2=0.999$), learning rate $\eta=0.001$, early stopping on validation loss, maximum 500 epochs.
-  - **Results:** Test $R^2 = 0.5495$, 5-Fold CV $R^2 = 0.4503 \pm 0.0980$, RMSE = $5.8058$, MAE = $4.2246$.
-  - **Technical Takeaway:** Validated the established empirical consensus in machine learning research: deep neural networks without tabular-specific inductive bias significantly underperform tree ensembles on small-to-medium tabular datasets ($N pprox 600$).
+### 3.4 Multi-Layer Perceptron (MLP) Regressor (Neural Network)
+- **WHAT is it?**  
+  A deep feedforward neural network with an input layer (29 stats), two hidden layers (64 and 32 neurons with ReLU activation), and 1 output rating neuron:
+  $$\text{Input (29)} \longrightarrow \text{Dense (64)} \longrightarrow \text{Dense (32)} \longrightarrow \text{Output (1 Rating)}$$
+- **WHEN is it used?**  
+  Used as a deep learning benchmark to satisfy Module IX (Perceptrons & Neural Networks).
+- **WHY was it chosen?**  
+  To test whether deep representation learning could beat decision tree ensembles on cricket data.
+- **HOW does it work & results?**  
+  - Trained using the Adam optimizer with early stopping on validation loss.
+  - **Test $R^2$:** `0.5495` | **5-Fold CV $R^2$:** `0.4503` | **Test RMSE:** `5.8058` points.
+  - **Key Lesson:** Confirms the standard rule in machine learning: **On small-to-medium tabular datasets (~600 rows), tree ensembles (like Random Forest) work much better than neural networks.**
 
 ---
 
-## 4. Supervised Multi-Class Classification Framework
+## 4. Supervised Learning: Talent Tier Classification Models
 
-The classification framework stratifies talent into 3 actionable organizational tiers:
-- **Tier 0:** *Developing / Squad Talent* (Rating $< 68.0$, depth players and emerging prospects).
-- **Tier 1:** *Core / Star Performer* (Rating $68.0 \dots 79.9$, reliable starters and tournament anchors).
-- **Tier 2:** *Elite / Marquee Match-Winner* (Rating $\ge 80.0$, highest purse priority, multi-skill game changers).
-
-### 4.1 K-Nearest Neighbors (KNN)
-- **WHAT:** An instance-based, non-parametric lazy learning algorithm. Given query point $x_0$, it identifies the set $\mathcal{N}_k(x_0)$ of the $k$ closest training vectors under Euclidean metric:
-  $$d(x_0, x_i) = \sqrt{\sum_{j=1}^p (x_{0,j} - x_{i,j})^2}$$
-  And predicts class via plurality voting:
-  $$\hat{y} = rg\max_{c \in \{0, 1, 2\}} \sum_{i \in \mathcal{N}_k(x_0)} \mathbb{I}(y_i = c)$$
-- **WHEN:** Evaluated for talent tier stratification and scouting peer comparison.
-- **WHY:** Sports talent evaluation is inherently comparative: scouts evaluate a prospect by comparing them to historical peer archetypes. In standardized multi-metric space, players of identical quality naturally cluster in localized neighborhoods.
-- **HOW:** Parameterized with $k=5$, Euclidean distance, uniform weights.
-  - **Results:** **Classification Benchmark Winner.** Test Accuracy = $\mathbf{95.16\%}$, 5-Fold CV Accuracy = $90.30\% \pm 0.0221$, Macro Precision = $\mathbf{0.9601}$, Macro Recall = $\mathbf{0.9421}$, Macro F1-Score = $\mathbf{0.9501}$.
-  - **Confusion Matrix:** 23/25 Developing correct, 59/60 Core correct, 36/39 Elite correct (118/124 correct test samples).
+Classification models place players into **3 talent tiers**:
+- **Tier 1 (Elite / Marquee):** Overall Rating $\ge 80.0$ (Star match-winners).
+- **Tier 2 (Core / Star):** Overall Rating $68.0$ to $79.9$ (Reliable tournament starters).
+- **Tier 0 (Developing / Squad):** Overall Rating $< 68.0$ (Emerging players & squad backups).
 
 ---
 
-### 4.2 Random Forest Classifier
-- **WHAT:** An ensemble of $B=100$ classification trees. Node splits are chosen to minimize Gini Impurity:
-  $$I_G(t) = 1 - \sum_{c=0}^2 p(c|t)^2$$
-  Final prediction is obtained by majority class voting across all trees.
-- **WHEN:** Production classification model used alongside KNN, and primary engine for Gini Feature Importance attribution.
-- **WHY:** Provides high classification stability, robust out-of-bag error estimation, and naturally produces calibrated class probability estimates ($P(y=	ext{Elite}|x)$).
-- **HOW:** Configured with 100 trees, Gini criterion, `max_features='sqrt'`.
-  - **Results:** Test Accuracy = $\mathbf{94.35\%}$, 5-Fold CV Accuracy = $\mathbf{0.9475 \pm 0.0142}$, Macro Precision = $0.9496$, Macro Recall = $0.9426$, Macro F1 = $0.9459$. Highest cross-validation score among all classifiers.
+### 4.1 K-Nearest Neighbors (KNN, $k=5$) — 🏆 TOP ACCURACY
+- **WHAT is it?**  
+  A simple, intuitive classifier: to classify a player, it looks at the **5 most similar players** in cricket history and picks the most common tier among them.
+- **WHEN is it used?**  
+  Used in Tab 2 and Tab 6 for talent tier classification.
+- **WHY was it chosen?**  
+  1. **Highest Accuracy:** Achieved **95.16% test accuracy** (top among all classifiers).
+  2. **Matches Real Cricket Scouting:** Scouts naturally evaluate new players by comparing them to similar past players (*"He bowls and bats just like Hardik Pandya"*).
+- **HOW does it work & results?**  
+  - Measures Euclidean distance across all 29 scaled stats:
+    $$d(p, q) = \sqrt{\sum (p_i - q_i)^2}$$
+  - Takes a majority vote of the 5 closest neighbors ($k=5$).
+  - **Test Accuracy:** `95.16%` | **Macro F1-Score:** `0.9501` | **Precision:** `0.9601` | **Recall:** `0.9421`.
 
 ---
 
-### 4.3 Logistic Regression (Multinomial Softmax)
-- **WHAT:** A linear probabilistic classifier estimating posterior probabilities via the Softmax function:
-  $$P(Y = c | x) = rac{e^{eta_c^T x}}{\sum_{j=0}^2 e^{eta_j^T x}}$$
-  Trained by minimizing the Multi-Class Cross-Entropy loss with $L_2$ regularization:
-  $$\mathcal{L}_{	ext{CE}}(W) = -rac{1}{N} \sum_{i=1}^N \sum_{c=0}^2 y_{i,c} \log P(Y=c|x_i) + rac{\lambda}{2} ||W||_F^2$$
-- **WHEN:** Parametric probabilistic baseline for talent tier estimation.
-- **WHY:** Outputs calibrated probabilities that can be used directly by auction directors to quantify confidence intervals (e.g., "78% probability of being Elite, 22% Core").
-- **HOW:** Implemented with `multi_class='multinomial'`, solver='lbfgs', max 200 iterations.
-  - **Results:** Test Accuracy = $87.90\%$, 5-Fold CV Accuracy = $0.9253 \pm 0.0180$, Macro Precision = $0.9067$, Macro Recall = $0.8694$, Macro F1 = $0.8853$.
+### 4.2 Random Forest Classifier — 🏆 PRODUCTION TIER ENGINE
+- **WHAT is it?**  
+  An ensemble of **180 decision trees** voting on which tier a player belongs to.
+- **WHEN is it used?**  
+  Powers the Tier Classification engine and the **Feature Importance Leaderboard** in Tab 6.
+- **WHY was it chosen?**  
+  1. **Very High Accuracy:** `94.35%` on test data, and highest cross-validation score (`94.75%`).
+  2. **Feature Importance (Explainability):** It tells franchise owners which stats matter most using Gini impurity.
+- **HOW does it work & results?**  
+  - Implemented using `RandomForestClassifier(n_estimators=180, criterion='gini', random_state=42)`.
+  - **Test Accuracy:** `94.35%` | **5-Fold CV Accuracy:** `94.75%` | **Macro F1:** `0.9459`.
+  - **Top 3 Deciding Stats:** Clutch Match-Winner Index (12.8%), Batting Impact Index (11.6%), Player of the Match awards (7.8%).
 
 ---
 
-### 4.4 Decision Tree Classifier (CART)
-- **WHAT:** A greedy, top-down recursive binary tree partitioner that splits nodes on feature $j$ and threshold $	heta$ to maximize information gain (reduction in Gini impurity):
-  $$\Delta I_G = I_G(D) - \left( rac{|D_L|}{|D|} I_G(D_L) + rac{|D_R|}{|D|} I_G(D_R) 
-ight)$$
-- **WHEN:** White-box rule-based talent categorization benchmark.
-- **WHY:** Highly interpretable: enables franchise management to inspect exact decision rules (e.g. `if clutch_index > 42.5 and death_overs_strike_rate > 165 -> Elite`).
-- **HOW:** Maximum depth set to 6 to prevent over-branching.
-  - **Results:** Test Accuracy = $87.90\%$, 5-Fold CV Accuracy = $0.8990 \pm 0.0195$, Macro Precision = $0.8931$, Macro Recall = $0.8706$, Macro F1 = $0.8812$.
+### 4.3 Decision Tree Classifier (CART)
+- **WHAT is it?**  
+  A visual flowchart of simple "IF-THEN" rules:
+  - *Rule 1:* Is `clutch_match_winner_index` $> 24.5$?
+  - *If Yes:* Is `batting_impact_index` $> 62.0$? $\rightarrow$ **Elite Tier**
+  - *If No:* Is `wickets_taken` $< 8$? $\rightarrow$ **Developing Tier**
+- **WHEN is it used?**  
+  Used when coaches or non-technical executives want a clear, rule-by-rule explanation without math.
+- **WHY was it chosen?**  
+  It is the most interpretable model in machine learning. Anyone can trace the decision path on a sheet of paper.
+- **HOW does it work & results?**  
+  - Uses the Gini Impurity formula to pick questions that cleanly split the classes. Max depth is set to 6 to prevent memorizing the data.
+  - **Test Accuracy:** `87.90%` | **Macro F1:** `0.8812`.
 
 ---
 
-### 4.5 Multi-Layer Perceptron (MLP) Classifier
-- **WHAT:** A deep feedforward neural network with $(64, 32)$ hidden layers, ReLU non-linearities, and a 3-unit Softmax output layer trained with stochastic gradient descent (Adam).
-- **WHEN:** Deep learning classification benchmark.
-- **WHY:** Tests whether hierarchical latent representations can separate borderline talent tiers better than linear baselines.
-- **HOW:** Categorical cross-entropy loss, learning rate $\eta=0.001$, early stopping.
-  - **Results:** Test Accuracy = $92.74\%$, 5-Fold CV Accuracy = $0.8141 \pm 0.0384$, Macro Precision = $0.9405$, Macro Recall = $0.9177$, Macro F1 = $0.9287$.
+### 4.4 Logistic Regression (Multinomial / Softmax)
+- **WHAT is it?**  
+  A linear model that outputs probability percentages for each tier (e.g., 85% Elite, 12% Core, 3% Developing).
+- **WHEN is it used?**  
+  Used as the baseline probabilistic classifier.
+- **WHY was it chosen?**  
+  Gives team owners exact risk percentages during auction bidding wars rather than just a flat label.
+- **HOW does it work & results?**  
+  - Uses the Softmax formula to turn raw scores into probabilities that sum to 100%.
+  - **Test Accuracy:** `87.90%` | **Macro F1:** `0.8853`.
 
 ---
 
-## 5. Unsupervised Tactical Archetypes (Clustering)
+### 4.5 Multi-Layer Perceptron (MLP) Classifier (Neural Network)
+- **WHAT is it?**  
+  A deep neural network classifier with 2 hidden layers (64 and 32 neurons) and a Softmax output layer with 3 units.
+- **WHEN is it used?**  
+  Benchmark neural network classifier for Module IX.
+- **WHY was it chosen?**  
+  Tests if connected non-linear neurons can draw flexible boundaries separating borderline players.
+- **HOW does it work & results?**  
+  - Trained using Cross-Entropy loss and Adam optimizer.
+  - **Test Accuracy:** `92.74%` | **Macro F1:** `0.9287`.
+  - **Takeaway:** Solid accuracy (92.7%), but KNN and Random Forest were faster, more accurate, and much easier to explain.
+
+---
+
+## 5. Unsupervised Learning: Clustering (Tactical Archetypes)
+
+In clustering, the computer has **no labels or answers**. It looks at all 619 players and automatically groups them by similar playing styles.
+
+---
 
 ### 5.1 K-Means Clustering ($k=5$)
-- **WHAT:** An iterative centroid-based partitioning algorithm that segments $N=619$ cricketers into $k$ disjoint clusters $S = \{S_1, \dots, S_k\}$ by minimizing Within-Cluster Sum of Squares (Inertia):
-  $$rg\min_S \sum_{i=1}^k \sum_{x \in S_i} ||x - \mu_i||^2$$
-- **WHEN:** Implemented in Tab 4 of `app.py` (*Tactical Archetypes & 2D Map*) to reveal natural playing styles beyond nominal player roles.
-- **WHY:** Traditional scorecards classify cricketers into broad buckets (`Batter`, `Bowler`, `All-Rounder`). This obscures vital tactical specialization: an anchor who constructs innings at strike rate 125 has a totally different role than a death finisher operating at strike rate 190, yet both are nominally "Batters". Unsupervised clustering discovers these tactical archetypes purely from multi-skill telemetry.
-- **HOW:** Lloyd's algorithm with $k$-means++ initialization, 15 random restarts, trained on 11 standardized key metrics. Yielded 5 archetypes:
-  - **Cluster 0: Tactical Anchor & Top-Order Accumulator** (Kohli, Warner, Dhawan, KL Rahul). High average (38+), controlled strike rate (130-140), deep innings construction.
-  - **Cluster 1: High-Impact Pace Spearhead & Death Bowler** (Bumrah, Malinga, B Kumar, Shami). High dot-ball percentage (45%+), death economy < 8.0, Yorker accuracy.
-  - **Cluster 2: Explosive Death-Over Finisher & Boundary Hitter** (Russell, Klaasen, Dhoni, Pollard). High boundary % (>70%), death strike rate > 185, lower balls per boundary.
-  - **Cluster 3: Mystery / Control Spin Maestro** (Narine, Chahal, Rashid Khan, Ashwin). Low economy in middle overs (<7.0), deceived dismissals (bowled/LBW).
-  - **Cluster 4: Elite Dual-Threat All-Rounder** (Jadeja, Hardik Pandya, Bravo, Watson). Substantial contribution with both bat and ball, high clutch rating.
+- **WHAT is it?**  
+  An algorithm that groups 619 cricketers into **5 tactical clusters** based on how close their stats are to 5 cluster centers (centroids).
+- **WHEN is it used?**  
+  Powers **Tab 4 (Tactical Archetypes & Roster Balance)** in the web app.
+- **WHY was it chosen?**  
+  Nominal labels like "Batter" or "Bowler" are too simple for modern T20 cricket:
+  - Both Virat Kohli and Andre Russell are listed as "Batters", but Kohli anchors the innings while Russell hits death-overs sixes.
+  - Both Jasprit Bumrah and Yuzvendra Chahal are "Bowlers", but Bumrah bowls yorkers at 145 km/h while Chahal spins middle-over webs.
+  - K-Means automatically discovered these **5 real tactical archetypes**:
+    1. **Cluster 0: Tactical Anchor & Top-Order Accumulator** (builds partnerships, high average).
+    2. **Cluster 1: High-Impact Pace Spearhead & Death Bowler** (fast yorkers, low death economy, wickets).
+    3. **Cluster 2: Explosive Death-Over Finisher & Boundary Hitter** (strike rate > 155, high sixes).
+    4. **Cluster 3: Mystery / Control Spin Maestro** (high dot ball %, economical middle overs).
+    5. **Cluster 4: Elite Dual-Threat All-Rounder** (contributes heavily with both bat and ball).
+- **HOW does it work?**  
+  1. We tested cluster counts from $k=2$ to $k=7$ using the **Elbow Curve** (inertia) and **Silhouette Score** (cluster separation).
+  2. $k=5$ gave the clearest real-world cricket separation ($s = 0.285$).
+  3. Saved as `models/kmeans_model.joblib`.
 
 ---
 
-### 5.2 Elbow Method & Silhouette Analysis
-- **WHAT:** Quantitative metrics to objectively identify the optimal cluster count $k$:
-  1. **Elbow Method:** Plots Inertia (WCSS) vs $k$. The "elbow" marks the inflection point where additional clusters yield diminishing returns.
-  2. **Silhouette Coefficient:** Measures for each sample $i$ how close it is to points in its own cluster ($a(i)$) compared to points in the nearest neighboring cluster ($b(i)$):
-     $$s(i) = rac{b(i) - a(i)}{\max(a(i), b(i))}, \quad s(i) \in [-1, 1]$$
-- **WHEN:** Executed during unsupervised model validation across $k \in \{2, 3, 4, 5, 6, 7\}$.
-- **WHY:** Eliminates subjective human bias in choosing the number of playing archetypes.
-- **HOW:** Automated sweep in `src/train_cricket_models.py`. Evaluated inertia drop and silhouette coefficients. $k=5$ represented the optimal balance of high silhouette score ($s=0.285$) and distinct franchise operational roles.
+## 6. Dimensionality Reduction (Visualizing 29 Stats in 2D)
 
 ---
 
-## 6. Dimensionality Reduction (Principal Component Analysis - PCA)
-
-- **WHAT:** An unsupervised, non-parametric orthogonal linear transformation that maps $p$-dimensional standardized data into $k \le p$ uncorrelated variables called Principal Components:
-  $$Z = X W$$
-  Where columns of $W$ are eigenvectors of the empirical sample covariance matrix $\Sigma = rac{1}{n-1} X^T X$, ordered by decreasing eigenvalue magnitude ($\lambda_1 \ge \lambda_2 \dots$):
-  $$\Sigma v_i = \lambda_i v_i$$
-- **WHEN:** Executed in Tab 4 of `app.py` to project all 619 cricketers into an interactive 2D Cartesian scatter map.
-- **WHY:** Human minds and franchise executives cannot visualize a 29-dimensional performance feature space. PCA projects the multidimensional talent distribution onto a 2D plane while retaining the maximum possible variance of the original dataset.
-- **HOW:** Fitted using Scikit-Learn `PCA(n_components=2)`.
-  - **Component 1 (PC1 - T20 Match Impact & Volume):** Explains **$42.2\%$** of total variance. Loads heavily on `total_runs`, `matches_played`, `balls_faced`, `clutch_match_winner_index`, and `wickets_taken`. Separates elite veterans from emerging squad players.
-  - **Component 2 (PC2 - Batting vs Bowling Specialization):** Explains **$18.6\%$** of total variance. Possesses large positive loadings on batting metrics (`batting_average`, `batting_strike_rate`) and large negative loadings on bowling metrics (`overs_bowled`, `wickets_taken`, `economy_rate`). Separates specialist pacers and spinners (bottom) from top-order batters (top), with all-rounders positioned symmetrically near the origin.
-  - **Total Variance Explained:** **$60.79\%$** across just 2 latent dimensions!
-
----
-
-## 7. Model Evaluation, Validation & Governance Suite
-
-### 7.1 Stratified Train/Test Split (80/20)
-- **WHAT:** Partitioning the 619-player dataset into a training set ($N_{	ext{train}}=495$, $80\%$) and an unseen test set ($N_{	ext{test}}=124$, $20\%$), stratified on the target class `performance_tier_code`.
-- **WHEN:** Initiated at the very start of model training before scaling or fitting.
-- **WHY:** In sports analytics, elite players represent a minority (~15%). Random unstratified splits risk creating an unrepresentative test partition with too few elite cricketers. Stratification guarantees identical class proportions across train and test sets.
-- **HOW:** `train_test_split(df_encoded, test_size=0.20, random_state=42, stratify=y_clf)`.
+### 6.1 Principal Component Analysis (PCA, 2 Components)
+- **WHAT is it?**  
+  A mathematical tool that compresses 29 different statistics down into **2 coordinates (Component 1 on X-axis, Component 2 on Y-axis)** so that all 619 players can be shown on a single 2D scatter plot.
+- **WHEN is it used?**  
+  Powers the interactive 2D Tactical Scatter Plot in **Tab 4** of the web app.
+- **WHY was it chosen?**  
+  Human eyes cannot look at a 29-column table and understand player patterns. PCA keeps the most important information while letting coaches see every player's position on one screen.
+- **HOW does it work & results?**  
+  - Finds the two directions where player statistics vary the most:
+    - **Component 1 (X-axis, 38.16% variance):** Measures career volume and overall match impact.
+    - **Component 2 (Y-axis, 22.63% variance):** Measures bowling vs. batting specialization (bowlers go up, batters go down, all-rounders stay in the middle).
+  - **Together, these 2 coordinates preserve 60.79% of all information** in the original 29 columns.
+  - Saved as `models/pca_model.joblib`.
 
 ---
 
-### 7.2 5-Fold Cross Validation ($K$-Fold & Stratified $K$-Fold)
-- **WHAT:** Resampling procedure dividing the training data into $K=5$ equal folds. The model is trained on $K-1$ folds ($80\%$) and evaluated on the held-out fold ($20\%$), repeated $K$ times so every observation serves as test data exactly once.
-- **WHEN:** Applied across all 10 supervised regression and classification models in `src/train_cricket_models.py`.
-- **WHY:** A single train/test split can produce an overly optimistic or pessimistic score due to sampling noise. 5-Fold Cross Validation reports the **Mean $\pm$ Standard Deviation** of the performance metric, rigorously verifying generalizability and diagnosing overfitting.
-- **HOW:** `KFold(n_splits=5, shuffle=True, random_state=42)` for regression; `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` for classification.
+## 7. Model Evaluation & Validation Methods
+
+To make sure our models work reliably on new matches, we use standard academic testing methods:
+
+1. **80/20 Stratified Split:**
+   - 495 players (80%) are used to train the models.
+   - 124 players (20%) are held out to test the models.
+   - "Stratified" guarantees the same percentage of Elite, Core, and Developing players in both sets.
+2. **5-Fold Cross-Validation:**
+   - Splits training data into 5 equal parts. The model trains on 4 parts and tests on the 5th part, repeating 5 times.
+   - We report the average and standard deviation (e.g. $0.9528 \pm 0.0129$) to prove results are consistent.
+3. **Core Evaluation Metrics:**
+   - **$R^2$ Score:** How much variation the model explains ($1.0 = 100\%$ perfect). Random Forest scored **0.9789**.
+   - **RMSE:** Average rating error in points. Random Forest had only **1.25 points error**.
+   - **Accuracy:** % of correct tier classifications. KNN achieved **95.16%**.
+   - **Macro F1-Score:** Harmonic mean of precision and recall, balancing small and large tiers equally.
+   - **Confusion Matrix:** A $3 \times 3$ table showing exact correct predictions vs. mistakes.
 
 ---
 
-### 7.3 Quantitative Evaluation Metrics
-The system computes an exhaustive suite of statistical metrics:
+## 8. Master Summary Table
 
-1. **Coefficient of Determination ($R^2$):**
-   $$R^2 = 1 - rac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - ar{y})^2}$$
-   Measures proportion of variance in rating explained by the model. Random Forest achieved $R^2 = 0.9789$ ($97.89\%$ variance explained).
-2. **Root Mean Squared Error (RMSE):**
-   $$	ext{RMSE} = \sqrt{rac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2}$$
-   Penalizes large errors quadratically. Random Forest achieved $	ext{RMSE} = 1.2562$ rating points on a 50–95 scale.
-3. **Mean Absolute Error (MAE):**
-   $$	ext{MAE} = rac{1}{n} \sum_{i=1}^n |y_i - \hat{y}_i|$$
-   Measures expected absolute deviation. Random Forest achieved $	ext{MAE} = 0.9024$ points.
-4. **Multi-Class Confusion Matrix ($3 	imes 3$):**
-   Tracks true vs predicted class frequencies across Developing, Core, and Elite tiers, revealing precise false positive and false negative distributions.
-5. **Macro-Averaged Precision, Recall, and F1-Score:**
-   $$	ext{Precision} = rac{TP}{TP + FP}, \quad 	ext{Recall} = rac{TP}{TP + FN}, \quad F_1 = 2 \cdot rac{	ext{Precision} \cdot 	ext{Recall}}{	ext{Precision} + 	ext{Recall}}$$
-   Macro-averaging calculates metrics independently for each class and takes their unweighted average, ensuring minority elite players receive equal scrutiny to majority squad players. KNN achieved Macro F1 = $0.9501$.
-
----
-
-### 7.4 Gini Impurity Feature Importance Attribution
-- **WHAT:** An analytical measurement of the total decrease in node impurity brought by each feature across all trees in the Random Forest, normalized to sum to $1.0$:
-  $$	ext{Imp}(X_j) = rac{1}{B} \sum_{b=1}^B \sum_{t \in T_b: v(t)=X_j} p(t) \Delta I_G(t)$$
-- **WHEN:** Computed post-training and visualized dynamically in Tab 6 of `app.py`.
-- **WHY:** Eliminates the "black box" critique of machine learning in sports organizations. Explains to franchise owners and coaches *which physical attributes the AI relies upon* to evaluate talent.
-- **HOW:** Extracted from `rf_reg.feature_importances_` and `rf_clf.feature_importances_`:
-  - Top Regression Factors: `clutch_match_winner_index` ($0.278$), `death_overs_strike_rate` ($0.184$), `batting_impact_index` ($0.142$), `boundary_run_pct` ($0.098$).
-  - Proves that phase-specific impact (death overs) and match-winning clutch resilience dominate player rating far more than raw career aggregates.
-
----
-
-## 8. Master Machine Learning Reference Matrix
-
-| ML Topic / Algorithm | WHAT It Is | WHEN It Is Used | WHY It Was Chosen | HOW It Is Implemented |
-| :--- | :--- | :--- | :--- | :--- |
-| **One-Hot Encoding** | Binary indicator mapping for nominal features | Preprocessing pipeline before model ingestion | Eliminates artificial ordinal bias while `drop_first=True` avoids collinearity trap | `pd.get_dummies(..., drop_first=True)` creating 4 role indicator columns |
-| **StandardScaler ($Z$-Score)** | Rescales variables to zero mean ($\mu=0$) and unit variance ($\sigma=1$) | Immediately after train/test split; fitted on `X_train` only | Prevents scale dominance in Euclidean metrics (KNN, K-Means, PCA) | $z = (x - \mu)/\sigma$, serialized to `models/scaler.joblib` |
-| **Composite Indices** | Nonlinear rate-based performance synthesizers | Data aggregation (`src/`) & profile simulation (`app.py`) | Neutralizes tenure/volume bias; rewards phase-specific death impact & clutch wins | Mathematical formulations weighting boundaries, death strike rate, awards |
-| **Linear Regression (OLS)** | Minimizes residual sum of squares: $\min \|\|y - Xeta\|\|_2^2$ | Baseline continuous rating estimation | Provides benchmark coefficient interpretability | Normal equation $eta = (X^T X)^{-1} X^T y$; Test $R^2 = 0.9490$, RMSE = $1.95$ |
-| **Polynomial Regression** | Expands inputs to degree-2 interaction terms $x_i x_j$ | Investigating non-linear skill synergy | Captures multiplicative value (e.g. Strike Rate $	imes$ Boundary %) | `PolynomialFeatures(degree=2)` generating 464 features; Test $R^2 = 0.9112$ |
-| **Random Forest Regressor** | Bagged ensemble of 100 de-correlated decision trees | **Production Continuous Rating Engine** | Handles non-linear cricket thresholds and outliers without overfitting | 100 trees, MSE split; **Winner: $R^2 = 0.9789$, RMSE = $1.2562$** |
-| **MLP Regressor** | Deep feedforward neural network with ReLU | Deep learning tabular benchmark | Evaluates if deep representation learning beats tree ensembles | Layers $(64, 32)$, Adam, early stopping; Test $R^2 = 0.5495$, RMSE = $5.80$ |
-| **K-Nearest Neighbors (KNN)** | Instance-based majority vote among $k$ closest peers | **Production Talent Tier Classifier** | Sports scouting relies on historical peer comparisons in skill space | $k=5$, Euclidean metric; **Winner: $95.16\%$ Accuracy, Macro F1 = $0.9501$** |
-| **Random Forest Classifier** | Ensemble of 100 trees voting on class via Gini split | Primary competing classifier & feature attribution | Provides calibrated class probabilities and Gini feature importances | 100 trees, Gini split; **$94.35\%$ Accuracy, 5-Fold CV Acc = $94.75\%$** |
-| **Logistic Regression** | Multinomial softmax regression with Cross-Entropy | Probabilistic talent classification baseline | Direct posterior probability estimates $P(y=c\|x)$ for auction risk analysis | Multinomial softmax with $L_2$ penalty; Test Accuracy = $87.90\%$ |
-| **Decision Tree (CART)** | Recursive binary partitioning minimizing Gini impurity | White-box rule-based benchmark | Transparent "if-then" decision pathways for franchise coaching staff | Max depth 6, Gini splitting; Test Accuracy = $87.90\%$ |
-| **MLP Classifier** | Deep neural network with Softmax output layer | Deep learning classification benchmark | Tests whether non-linear latent layers separate boundary talent tiers | Layers $(64, 32)$, ReLU, Adam, Softmax; Test Accuracy = $92.74\%$ |
-| **K-Means Clustering** | Unsupervised partition minimizing WCSS / inertia | Tab 4 Tactical Archetypes & Roster Balance | Discovers real playing styles beyond simplistic nominal roles | Lloyd's algorithm ($k=5$, $k$-means++); Discovered 5 franchise archetypes |
-| **Elbow & Silhouette** | Quantitative cluster validation criteria | Cluster count optimization across $k \in [2, 7]$ | Replaces subjective human bias with objective mathematical validation | Evaluated inertia inflection and silhouette score ($s=0.285$ at $k=5$) |
-| **PCA** | Orthogonal linear projection onto maximum variance axes | Tab 4 2D Latent Tactical Map | Compresses 29 dimensions into 2D Cartesian plane for human visualization | SVD of covariance matrix; **Top 2 components explain $60.79\%$ variance** |
-| **Stratified Split (80/20)** | Preserves class distribution in train/test splits | Foundation of training pipeline | Prevents minority elite talent from being underrepresented in test sets | `train_test_split(..., stratify=y_clf)` partitioning 495 train / 124 test |
-| **5-Fold Cross Validation** | Resampling on 5 rotating folds (Mean $\pm$ Std) | Cross-validation across all 10 models | Proves models generalize and diagnoses variance/overfitting | `KFold` and `StratifiedKFold` reporting mean and standard deviation |
-| **Gini Feature Importance** | Total reduction in node impurity brought by feature | Explainable AI in Tab 6 of `app.py` | Transparently justifies to franchise owners what drives the AI valuation | Extracted from Random Forest trees; reveals clutch and death strike rate dominance |
+| Model Name | Task | Syllabus Module | Test Score | 5-Fold CV Score | Why It Was Chosen |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **Random Forest Regressor** | Player Rating | Module VIII | **$R^2 = 0.9789$**<br>(RMSE: 1.25) | **$0.9528 \pm 0.0129$** | **Production Winner:** Highest accuracy, handles non-linear cricket thresholds. |
+| **Linear Regression (OLS)** | Player Rating | Module IV | $R^2 = 0.9490$<br>(RMSE: 1.95) | $0.8797 \pm 0.0371$ | Baseline model; easy to explain exact feature weights. |
+| **Polynomial Regression** | Player Rating | Module IV | $R^2 = 0.9087$<br>(RMSE: 2.61) | $0.8739 \pm 0.0343$ | Tests multiplicative synergy between strike rate and boundary frequency. |
+| **MLP Regressor (Neural Net)** | Player Rating | Module IX | $R^2 = 0.5495$<br>(RMSE: 5.81) | $0.4503 \pm 0.1375$ | Deep learning baseline; shows trees are better for tabular sports data. |
+| **K-Nearest Neighbors (KNN)** | Talent Tiers | Module V | **$95.16\%$ Acc**<br>(F1: 0.9501) | $0.9030 \pm 0.0221$ | **Accuracy Winner:** Classifies players by finding historical peer matches. |
+| **Random Forest Classifier** | Talent Tiers | Module VIII | $94.35\%$ Acc<br>(F1: 0.9459) | **$0.9475 \pm 0.0142$** | **Production Winner:** Stable across folds and provides feature importance rankings. |
+| **MLP Classifier (Neural Net)** | Talent Tiers | Module IX | $92.74\%$ Acc<br>(F1: 0.9287) | $0.8141 \pm 0.0384$ | Neural network classifier; draws flexible non-linear boundaries. |
+| **Logistic Regression** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8853) | $0.9253 \pm 0.0180$ | Linear probabilistic model; gives exact risk percentages. |
+| **Decision Tree (CART)** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8812) | $0.8990 \pm 0.0195$ | 100% human-readable "IF-THEN" flowchart for coaches. |
+| **K-Means Clustering** | Tactical Styles | Module VII | **5 Clusters**<br>($s = 0.285$) | Validated via Elbow Curve | Discovered 5 real playing styles beyond simplistic Batter/Bowler tags. |
+| **PCA** | 2D Visualization | Module VIII | **$60.79\%$ Var**<br>(2 Components) | SVD Decomposition | Compresses 29 stats into an interactive 2D scatter plot. |

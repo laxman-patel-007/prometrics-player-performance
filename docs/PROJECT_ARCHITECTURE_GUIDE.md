@@ -1,215 +1,195 @@
-# CricMetrics Pro: Complete File-by-File Repository Architecture Guide
-### Enterprise Sports Analytics Suite | Technical Blueprint & File Encyclopedia
+# CricMetrics Pro: Complete File-by-File Project Architecture Guide
+### Easy-to-Understand Blueprint for Every File in This Project
 
-> **Executive Scope:** This document delivers an exhaustive, component-by-component architectural reference for every file and directory in the **CricMetrics Pro** codebase. For every single file, this specification details:
-> - **WHAT** the file is (file type, primary role, interfaces, and dependencies).
-> - **HOW** it works internally (functions, classes, data structures, algorithms, and execution flow).
-> - **WHEN** it is executed or utilized (pipeline stage, deployment lifecycle, or runtime inference).
-> - **WHY** it is necessary (system design justification, performance rationale, and organizational function).
+> **About this Document:** This guide explains every single file and folder in the **CricMetrics Pro** project repository. For every file, it clearly explains in simple English:
+> - **WHAT** the file is.
+> - **HOW** it works inside.
+> - **WHEN** it is used in the project.
+> - **WHY** it is necessary.
 
 ---
 
-## 1. Repository Directory Structure & File Hierarchy
+## 1. Project Directory Structure
 
 ```text
 /Users/laxmanpatel/Desktop/ML
-├── app.py                                   # Production Streamlit 6-in-1 War Room Web Dashboard
-├── requirements.txt                         # Production Python dependencies and pinned versions
-├── README.md                                # Public GitHub repository documentation and executive overview
-├── FINAL_REPORT.md                          # Comprehensive academic/organizational defense and viva voce dossier
-├── .gitignore                               # Git exclusions (ignoring heavy raw data, preserving models & clean CSVs)
+├── app.py                                   # Interactive Streamlit Web Application (6 Tabs)
+├── requirements.txt                         # List of Python packages needed to run the project
+├── README.md                                # Project introduction and quickstart guide for GitHub
+├── FINAL_REPORT.md                          # Academic and viva voce project report
+├── .gitignore                               # Tells Git which heavy files to ignore (like raw data)
 ├── .streamlit/
-│   └── config.toml                          # Streamlit server config, brand gold theme tokens, error settings
+│   └── config.toml                          # Dark theme styling and settings for the Streamlit app
 ├── data/
 │   ├── processed/
-│   │   └── cricket_players_clean.csv        # Qualified 619-player analytical dataset with 27 engineered features
+│   │   └── cricket_players_clean.csv        # Cleaned dataset of 619 cricketers with 27 calculated stats
 │   └── raw/
-│       ├── matches_2008_2024.csv            # 1,095 IPL match metadata (venues, teams, results, MoM awards)
-│       └── deliveries_2008_2024.csv         # 260,920 ball-by-ball deliveries (17 seasons, 69MB local dataset)
+│       ├── matches_2008_2024.csv            # 1,095 IPL match summaries (results, Player of the Match)
+│       └── deliveries_2008_2024.csv         # 260,920 ball-by-ball records from 17 IPL seasons (69 MB)
 ├── models/
-│   ├── scaler.joblib                        # Fitted StandardScaler object for 29 normalized features
-│   ├── random_forest_regressor.joblib       # Production continuous rating model (R² = 0.9789, RMSE = 1.25)
-│   ├── linear_regression.joblib             # Ordinary Least Squares parametric baseline (R² = 0.9490)
-│   ├── polynomial_regression.joblib         # Degree-2 polynomial interaction model (R² = 0.9087)
-│   ├── mlp_regressor.joblib                 # Deep neural network regression benchmark (R² = 0.5495)
-│   ├── knn_classifier.joblib                # Top talent tier classifier (95.16% Test Accuracy)
-│   ├── random_forest_classifier.joblib      # Production tier classifier & Gini feature importance engine (94.35%)
-│   ├── logistic_regression.joblib           # Multinomial softmax tier classification baseline (87.90%)
-│   ├── decision_tree_classifier.joblib      # Rule-based CART tier classifier (87.90%)
-│   ├── mlp_classifier.joblib                # Deep neural network tier classifier (92.74%)
-│   ├── kmeans_model.joblib                  # K-Means clustering model (k=5 tactical archetypes)
-│   ├── pca_model.joblib                     # Principal Component Analysis model (2D projection, 60.8% variance)
-│   ├── feature_metadata.json                # Feature names, schemas, categorical encodings, tier definitions
-│   └── metrics_summary.json                 # Complete benchmark evaluation metrics and confusion matrices
+│   ├── scaler.joblib                        # StandardScaler tool to normalize numbers (mean=0, std=1)
+│   ├── random_forest_regressor.joblib       # Best rating model (R² = 0.9789, error = 1.25 points)
+│   ├── linear_regression.joblib             # Baseline straight-line rating model (R² = 0.9490)
+│   ├── polynomial_regression.joblib         # Interaction regression model (R² = 0.9087)
+│   ├── mlp_regressor.joblib                 # Deep neural network regression model (R² = 0.5495)
+│   ├── knn_classifier.joblib                # Best talent tier classifier (95.16% Accuracy)
+│   ├── random_forest_classifier.joblib      # Production tier classifier & feature importance (94.35%)
+│   ├── logistic_regression.joblib           # Probabilistic tier classifier (87.90% Accuracy)
+│   ├── decision_tree_classifier.joblib      # Visual IF-THEN flowchart classifier (87.90% Accuracy)
+│   ├── mlp_classifier.joblib                # Deep neural network tier classifier (92.74% Accuracy)
+│   ├── kmeans_model.joblib                  # K-Means model grouping players into 5 tactical styles
+│   ├── pca_model.joblib                     # PCA tool compressing 29 stats into 2D coordinates (X, Y)
+│   ├── feature_metadata.json                # Column names, order, and tier labels
+│   └── metrics_summary.json                 # Test scores, cross-validation numbers, and confusion matrices
 ├── notebooks/
-│   └── cricket_player_performance_analysis.ipynb # 22-cell end-to-end data science study & interactive report
+│   └── cricket_player_performance_analysis.ipynb # 22-cell Jupyter research notebook with charts
 ├── src/
-│   ├── cricket_data_pipeline.py             # Raw delivery aggregation & multi-skill feature engineering
-│   ├── train_cricket_models.py              # Model training, 5-fold cross-validation & artifact serialization
-│   └── create_cricket_notebook.py           # Programmatic JSON generator for reproducible Jupyter notebook
+│   ├── cricket_data_pipeline.py             # Script that cleans 260k balls into 619 player rows
+│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 11 ML models
+│   └── create_cricket_notebook.py           # Script that automatically builds the Jupyter notebook
 └── docs/
-    ├── MACHINE_LEARNING_GUIDE.md & .pdf     # In-depth guide to all ML topics (What, When, Why, How)
-    └── PROJECT_ARCHITECTURE_GUIDE.md & .pdf # File-by-file architectural blueprint (This document)
+    ├── ML_MODELS_GUIDE.md & .pdf            # Simple & easy guide to all ML models (What, When, Why, How)
+    ├── MACHINE_LEARNING_GUIDE.md & .pdf     # In-depth guide to all ML topics and math formulas
+    └── PROJECT_ARCHITECTURE_GUIDE.md & .pdf # File-by-file blueprint (This document)
 ```
 
 ---
 
-## 2. File-by-File Technical Deep Dive
+## 2. File-by-File Explanations
 
-### 2.1 User Interface & Application Layer
+### 2.1 Web Application Layer
 
-#### `app.py` (Streamlit Web Dashboard)
-- **WHAT:** The enterprise web application serving as the primary interactive War Room interface for franchise executives, coaches, and sports data analysts (990+ lines of Python).
-- **HOW:** Built using Streamlit, Plotly Express/Graph Objects, and Pandas. Utilizes `@st.cache_data` and `@st.cache_resource` to load `cricket_players_clean.csv` and all 13 ML models into RAM instantly. Renders 6 dedicated modules via sidebar radio navigation:
-  1. *🏛️ War Room & Roster Intel:* Interactive scouting database with role, tier, experience filters, and live search.
-  2. *📊 Telemetry & Factor Impact:* Normalized 0–100 hexagonal skill radar charts, Pearson correlation bar charts, and Strike Rate vs Average quadrant matrices.
-  3. *⚡ AI Rating & Auction Valuation:* Interactive sliders with 1-click iconic presets (Kohli, Bumrah, Russell, Narine, Pandya), estimating performance rating, talent tier, and auction purse (₹ Crores) with a custom CSS Player Card.
-  4. *🧩 Tactical Archetypes & 2D Map:* 2D PCA latent scatter projection mapping all 619 cricketers, colored by K-Means cluster, role, or tier.
-  5. *🚀 What-If Franchise Simulator:* Development simulator forecasting rating and purse changes resulting from targeted death-overs training drills.
-  6. *🏆 Model Benchmarks & Defense:* 10-model leaderboards (Regression $R^2$, RMSE, MAE; Classification Accuracy, F1), interactive Confusion Matrix heatmaps, and Gini feature importances.
-- **WHEN:** Continuously executed in real-time when accessed locally (`http://localhost:8501`) or deployed in the cloud on Streamlit Community Cloud.
-- **WHY:** Bridges complex machine learning algorithms and organizational decision-makers. Franchise directors require intuitive visual exploration rather than raw command-line outputs.
-
----
-
-#### `.streamlit/config.toml` (Dashboard Theme & Server Configuration)
-- **WHAT:** Streamlit's official configuration file governing theme tokens, server parameters, and client behavior.
-- **HOW:** Formatted in TOML with dedicated sections:
-  ```toml
-  [theme]
-  primaryColor = "#F59E0B"
-  backgroundColor = "#0F172A"
-  secondaryBackgroundColor = "#1E293B"
-  textColor = "#F8FAFC"
-  font = "sans serif"
-
-  [client]
-  showErrorDetails = true
-
-  [server]
-  headless = true
-  enableCORS = false
-  enableXsrfProtection = false
-  ```
-- **WHEN:** Loaded automatically by Streamlit at server startup before `app.py` begins executing.
-- **WHY:** Enforces a premium enterprise dark theme (Slate Navy `#0F172A` and Franchise Gold `#F59E0B`) across all operating systems and browsers, regardless of client dark/light mode defaults. `showErrorDetails = true` ensures transparent diagnostics during live deployment.
+#### `app.py` (Interactive Streamlit Dashboard)
+- **WHAT:** The main web application that coaches, franchise directors, and analysts use to explore player data and test predictions (990+ lines of Python).
+- **HOW:** Built with Streamlit, Plotly, and Pandas. It loads all trained models into memory once (`@st.cache_resource`) and displays 6 interactive tabs:
+  1. *🏛️ War Room & Roster Intel:* Searchable database of 619 cricketers with filters for role, tier, and matches played.
+  2. *📊 Telemetry & Factor Impact:* Hexagonal skill radar charts (0–100), correlation bar charts, and Strike Rate vs. Average scatter plots.
+  3. *⚡ AI Rating & Auction Valuation:* Interactive sliders with 1-click presets (Virat Kohli, Jasprit Bumrah, Andre Russell, Sunil Narine, Hardik Pandya). It calculates fair player rating and estimated auction purse (₹ Crores).
+  4. *🧩 Tactical Archetypes & 2D Map:* 2D interactive PCA scatter map of all 619 players, colored by K-Means tactical style or tier.
+  5. *🚀 What-If Franchise Simulator:* A training simulator showing how improving specific skills (like death overs strike rate) increases a player's rating and market value.
+  6. *🏆 Model Benchmarks & Defense:* Complete leaderboard comparing all models, interactive Confusion Matrix heatmaps, and Top 10 most important stats.
+- **WHEN:** Runs whenever you start the app (`streamlit run app.py`) or open the live deployment link in your browser.
+- **WHY:** Bridges complex machine learning algorithms and real-world team decision-makers. Franchise directors need clear visual tools, not raw terminal commands.
 
 ---
 
-### 2.2 Data Ingestion & Pipeline Layer (`src/` and `data/`)
-
-#### `src/cricket_data_pipeline.py` (Data Pipeline Engine)
-- **WHAT:** An end-to-end data processing script that aggregates raw delivery records into player-level career profiles with engineered T20 metrics.
-- **HOW:** Reads `data/raw/deliveries_2008_2024.csv` (260,920 balls) and `data/raw/matches_2008_2024.csv` (1,095 matches).
-  1. Computes batting statistics: `matches_played`, `total_runs`, `balls_faced`, `batting_average`, `batting_strike_rate`, `fours`, `sixes`, `boundary_run_pct`, `dot_ball_faced_pct`, `highest_score`, `thirties`, `fifties`.
-  2. Isolates overs 16–20 to compute `death_overs_strike_rate`.
-  3. Computes bowling statistics: `overs_bowled`, `wickets_taken`, `economy_rate`, `bowling_strike_rate`, `bowling_average`, `dot_ball_bowled_pct`, `three_plus_wickets`, and `death_overs_economy`.
-  4. Merges `player_of_match_awards` from match records.
-  5. Implements qualification filtering (minimum 3 matches or 20 balls faced/bowled), qualifying **619 professional cricketers**.
-  6. Computes composite indices (`batting_impact_index`, `bowling_impact_index`, `clutch_match_winner_index`).
-  7. Derives ground-truth continuous ratings (`overall_performance_rating` 50–95) and discrete tiers (`performance_tier_code`).
-  8. Serializes output to `data/processed/cricket_players_clean.csv`.
-- **WHEN:** Executed when updating the database with new match data or recalculating feature definitions (`python src/cricket_data_pipeline.py`).
-- **WHY:** Aggregating 260,920 raw deliveries into structured player-level features transforms unstructured event logs into clean ML-ready tabular vectors.
+#### `.streamlit/config.toml` (Theme Settings)
+- **WHAT:** Configuration file that styles the Streamlit web application.
+- **HOW:** Sets up a high-contrast dark theme with Slate Navy background (`#0F172A`) and Franchise Gold accents (`#F59E0B`).
+- **WHEN:** Loaded automatically by Streamlit before `app.py` starts.
+- **WHY:** Ensures the app looks sleek, modern, and professional on all devices and browsers, avoiding generic browser defaults.
 
 ---
 
-#### `data/processed/cricket_players_clean.csv` (Cleaned Qualified Dataset)
-- **WHAT:** The curated tabular dataset containing 619 qualified professional IPL cricketers and 32 columns (150 KB).
-- **HOW:** Stored in CSV format with 25 numerical metrics, categorical role labels, continuous rating targets, discrete talent tiers, and estimated auction values.
-- **WHEN:** Loaded at runtime by `app.py` via `@st.cache_data` and by `src/train_cricket_models.py` during training.
-- **WHY:** By keeping this cleaned dataset lightweight (150 KB), GitHub commits remain fast and Streamlit Cloud deployments cold-boot in seconds without needing to parse the heavy 69 MB raw delivery logs on every container restart.
+### 2.2 Data Pipeline Layer (`src/` and `data/`)
+
+#### `src/cricket_data_pipeline.py` (Data Cleaning & Feature Engineering Script)
+- **WHAT:** A Python script that reads 260,920 raw ball deliveries and aggregates them into clean player-level profiles.
+- **HOW:**
+  1. Reads `deliveries_2008_2024.csv` and `matches_2008_2024.csv`.
+  2. Calculates batting stats: runs, balls faced, strike rate, boundaries, fifties.
+  3. Filters balls in overs 16–20 to compute `death_overs_strike_rate`.
+  4. Calculates bowling stats: overs bowled, wickets, economy rate, and `death_overs_economy`.
+  5. Counts Player of the Match awards for clutch resilience.
+  6. Filters players with at least 3 matches or 20 balls faced/bowled, leaving **619 qualified cricketers**.
+  7. Calculates 3 composite indices: Batting Impact, Bowling Impact, and Clutch Match-Winner Index.
+  8. Saves the final clean table to `data/processed/cricket_players_clean.csv`.
+- **WHEN:** Run whenever raw match records are updated (`python src/cricket_data_pipeline.py`).
+- **WHY:** Raw ball logs cannot be fed directly into machine learning models; they must first be converted into clean player summaries.
 
 ---
 
-#### `data/raw/matches_2008_2024.csv` (IPL Match Summaries)
-- **WHAT:** Tabular records of all 1,095 IPL matches played between 2008 and 2024 (218 KB).
-- **HOW:** Contains match metadata: `match_id`, `season`, `city`, `date`, `team1`, `team2`, `toss_winner`, `winner`, `player_of_match`, `venue`.
-- **WHEN:** Loaded by `src/cricket_data_pipeline.py` to extract `player_of_match` awards for clutch index calculation.
-- **WHY:** Match-winning awards represent independent umpire/commentator assessments of high-pressure impact, providing an external ground-truth validation of clutch capability.
+#### `data/processed/cricket_players_clean.csv` (Clean Analytical Dataset)
+- **WHAT:** The final cleaned spreadsheet containing 619 qualified IPL cricketers and 32 columns (150 KB).
+- **HOW:** Contains 25 numerical metrics, player roles, continuous rating scores, discrete talent tiers, and estimated auction prices.
+- **WHEN:** Read by `app.py` and `train_cricket_models.py`.
+- **WHY:** Keeping this file small (150 KB) allows the cloud web app to start up in seconds, without needing to process the heavy 69 MB ball-by-ball file every time someone opens the website.
 
 ---
 
-#### `data/raw/deliveries_2008_2024.csv` (Raw Ball-by-Ball Logs)
-- **WHAT:** Granular delivery-by-delivery event data covering 260,920 deliveries across 17 IPL seasons (69 MB).
-- **HOW:** Each row records ball-level events: `match_id`, `inning`, `batting_team`, `bowling_team`, `over`, `ball`, `batter`, `bowler`, `batsman_runs`, `extra_runs`, `is_wicket`, `dismissal_kind`.
-- **WHEN:** Ingested once by `src/cricket_data_pipeline.py` to produce the cleaned player dataset. Ignored by `.gitignore` to keep cloud repositories lean.
-- **WHY:** Granular ball-by-ball delivery data is mandatory to compute situational metrics (e.g. death overs strike rate in overs 16–20 and dot ball percentages) that cannot be found on standard season aggregate scorecards.
+#### `data/raw/matches_2008_2024.csv` (IPL Match Records)
+- **WHAT:** Summary of all 1,095 IPL matches played between 2008 and 2024 (218 KB).
+- **HOW:** Records match dates, teams, venues, match winners, and Player of the Match awards.
+- **WHEN:** Used by `cricket_data_pipeline.py` to extract clutch match-winner awards.
+- **WHY:** Player of the Match awards are official expert assessments of high-pressure impact.
 
 ---
 
-### 2.3 Machine Learning Pipeline & Serialized Artifacts (`models/` and `src/`)
+#### `data/raw/deliveries_2008_2024.csv` (Raw Ball-by-Ball Data)
+- **WHAT:** Every single delivery bowled in IPL history (260,920 rows, 69 MB).
+- **HOW:** Records batter, bowler, runs scored, extras, and wickets on every ball.
+- **WHEN:** Processed once by `src/cricket_data_pipeline.py`. Ignored by Git (`.gitignore`) to keep the repository lightweight.
+- **WHY:** Necessary to calculate situational metrics (like death overs strike rate in overs 16–20 and dot ball percentages) that standard scorecards do not show.
 
-#### `src/train_cricket_models.py` (Model Training & Evaluation Script)
-- **WHAT:** The master training script that fits, cross-validates, evaluates, and serializes all 12 machine learning artifacts (11 models + 1 scaler) and metadata (305 lines of Python).
+---
+
+### 2.3 Machine Learning Layer (`models/` and `src/`)
+
+#### `src/train_cricket_models.py` (Master Training & Evaluation Script)
+- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 11 Machine Learning models and the StandardScaler.
 - **HOW:**
   1. Loads `cricket_players_clean.csv`.
-  2. Applies one-hot encoding with `drop_first=True`.
-  3. Executes an 80/20 train/test split stratified on `talent_tier`.
-  4. Fits `StandardScaler` on `X_train` and transforms both sets.
-  5. Trains and cross-validates 4 regression models (Linear, Polynomial, Random Forest, MLP) via 5-Fold CV.
-  6. Trains and cross-validates 5 classification models (KNN, Random Forest, Logistic, Decision Tree, MLP) via Stratified 5-Fold CV.
-  7. Performs K-Means clustering ($k=2 \dots 7$) with Elbow and Silhouette scoring, saving optimal $k=5$.
-  8. Fits 2-component PCA on standardized features.
-  9. Extracts Gini feature importance rankings from tree ensembles.
-  10. Serializes all 12 model binaries via `joblib.dump()` and metrics to JSON.
-- **WHEN:** Executed during the offline training and model governance cycle (`python src/train_cricket_models.py`).
-- **WHY:** Centralizes all model training, hyperparameter configuration, and validation into a reproducible, audited script.
+  2. Applies One-Hot Encoding on `primary_role`.
+  3. Splits data into 80% training (495 players) and 20% testing (124 players).
+  4. Fits `StandardScaler` on training data and scales features.
+  5. Trains and cross-validates 4 regression models (Linear, Polynomial, Random Forest, MLP) using 5-Fold CV.
+  6. Trains and cross-validates 5 classification models (KNN, Random Forest, Logistic, Decision Tree, MLP) using 5-Fold Stratified CV.
+  7. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring.
+  8. Fits PCA (2 components) for 2D visualization.
+  9. Saves all 12 trained binary model files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
+- **WHEN:** Run during model development or retraining (`python src/train_cricket_models.py`).
+- **WHY:** Centralizes all model training and testing into one automated, reproducible script.
 
 ---
 
-#### Serialized Machine Learning Artifacts in `models/`
+#### Serialized Model Files in `models/`
 
-| Artifact Path | Format | Serialized Object & Hyperparameters | Role & Purpose |
-| :--- | :---: | :--- | :--- |
-| `models/scaler.joblib` | Joblib Binary | `StandardScaler(mean_, var_, scale_)` | Normalizes 29 raw features to $\mu=0, \sigma=1$ during training and live inference. |
-| `models/random_forest_regressor.joblib` | Joblib Binary | `RandomForestRegressor(n_estimators=180, max_depth=12)` | **Production Rating Engine:** Generates overall player rating ($R^2 = 0.9789$, RMSE = $1.25$). |
-| `models/linear_regression.joblib` | Joblib Binary | `LinearRegression()` | Ordinary Least Squares baseline benchmark model. |
-| `models/polynomial_regression.joblib` | Joblib Binary | `LinearRegression()` fitted on `PolynomialFeatures(degree=2)` | Degree-2 non-linear interaction model capturing skill synergy ($R^2 = 0.9087$). |
-| `models/mlp_regressor.joblib` | Joblib Binary | `MLPRegressor(hidden_layer_sizes=(64, 32), activation='relu')` | Deep neural network continuous regression benchmark. |
-| `models/knn_classifier.joblib` | Joblib Binary | `KNeighborsClassifier(n_neighbors=5, metric='euclidean')` | **Production Tier Classifier:** Categorizes players into talent tiers ($95.16\%$ Accuracy). |
-| `models/random_forest_classifier.joblib` | Joblib Binary | `RandomForestClassifier(n_estimators=180, criterion='gini')` | Production ensemble classifier & Gini feature importance attribution engine ($94.35\%$ Acc). |
-| `models/logistic_regression.joblib` | Joblib Binary | `LogisticRegression(multi_class='multinomial')` | Multinomial softmax probabilistic classification baseline ($87.90\%$ Acc). |
-| `models/decision_tree_classifier.joblib` | Joblib Binary | `DecisionTreeClassifier(max_depth=6, criterion='gini')` | White-box rule-based talent classification benchmark ($87.90\%$ Acc). |
-| `models/mlp_classifier.joblib` | Joblib Binary | `MLPClassifier(hidden_layer_sizes=(64, 32), activation='relu')` | Deep neural network multi-class tier classification benchmark ($92.74\%$ Acc). |
-| `models/kmeans_model.joblib` | Joblib Binary | Dictionary: `{'model': KMeans(n_clusters=5), 'features': cluster_features}` | Unsupervised clustering model discovering 5 tactical playing styles. |
-| `models/pca_model.joblib` | Joblib Binary | `PCA(n_components=2, random_state=42)` | Dimensionality reduction engine projecting 29 metrics onto 2D latent coordinates ($60.8\%$ var). |
-| `models/feature_metadata.json` | JSON | Feature lists, column orders, categorical role maps, talent tier definitions | Guarantees exact column ordering and schema consistency between training and web app. |
-| `models/metrics_summary.json` | JSON | Complete numerical benchmark tables, CV scores, confusion matrices, top 10 factors | Feeds live leaderboard tables and confusion matrix heatmaps in Tab 6 of `app.py`. |
+| File Name | Model Type | What It Does | Score in Project |
+| :--- | :--- | :--- | :--- |
+| `models/scaler.joblib` | StandardScaler | Rescales all 29 features to $\mu=0, \sigma=1$. | Prevents large numbers from overpowering small numbers. |
+| `models/random_forest_regressor.joblib` | Random Forest Regressor | **Production Rating Engine:** Predicts continuous player rating (50–95). | **$R^2 = 0.9789$, Error = 1.25 pts** (Winner) |
+| `models/linear_regression.joblib` | Linear Regression (OLS) | Baseline straight-line rating model. | $R^2 = 0.9490$, Error = 1.95 pts |
+| `models/polynomial_regression.joblib` | Polynomial Regression (Deg 2) | Tests multiplicative synergy between key stats. | $R^2 = 0.9087$, Error = 2.61 pts |
+| `models/mlp_regressor.joblib` | Multi-Layer Perceptron (Neural Net) | Deep neural network rating benchmark. | $R^2 = 0.5495$, Error = 5.81 pts |
+| `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=5$) | **Production Tier Classifier:** Assigns talent tier by finding 5 similar peers. | **95.16% Accuracy** (Top Classifier) |
+| `models/random_forest_classifier.joblib` | Random Forest Classifier | Ensemble of 180 trees voting on tier & feature importance. | 94.35% Accuracy (94.75% 5-fold CV) |
+| `models/logistic_regression.joblib` | Logistic Regression (Softmax) | Outputs exact risk probabilities for each tier. | 87.90% Accuracy |
+| `models/decision_tree_classifier.joblib` | Decision Tree (CART) | Visual IF-THEN flowchart for coaches. | 87.90% Accuracy |
+| `models/mlp_classifier.joblib` | Multi-Layer Perceptron (Neural Net) | Deep neural network tier classifier. | 92.74% Accuracy |
+| `models/kmeans_model.joblib` | K-Means Clustering ($k=5$) | Groups players into 5 tactical playing styles. | Discovered 5 real tactical archetypes ($s=0.285$) |
+| `models/pca_model.joblib` | Principal Component Analysis | Compresses 29 stats into 2 coordinates (X, Y) for 2D scatter plots. | Captures 60.79% of all information |
+| `models/feature_metadata.json` | JSON Metadata | Stores column order, feature names, and tier labels. | Guarantees consistency between training and the web app. |
+| `models/metrics_summary.json` | JSON Results | Stores test scores, CV scores, and confusion matrices. | Feeds the live model leaderboard in Tab 6 of `app.py`. |
 
 ---
 
-### 2.4 Research, Development & Automation Scripts
+### 2.4 Research, Development & Documentation Layer
 
 #### `notebooks/cricket_player_performance_analysis.ipynb` (Jupyter Research Notebook)
-- **WHAT:** A verified 22-cell data science notebook documenting the complete experimental workflow from exploratory data analysis to model benchmarking.
+- **WHAT:** An interactive 22-cell data science notebook documenting the complete research study.
 - **HOW:** Contains executable code cells paired with Markdown explanations:
-  - *Cells 1–4:* Problem formulation, data ingestion, null handling, statistical summaries.
+  - *Cells 1–4:* Problem formulation, data loading, missing value handling.
   - *Cells 5–8:* Exploratory Data Analysis, correlation heatmaps, role distributions.
-  - *Cells 9–12:* Preprocessing, one-hot encoding, stratified train/test split, standard scaling.
+  - *Cells 9–12:* One-hot encoding, stratified train/test split, standard scaling.
   - *Cells 13–15:* 4-model regression benchmark (Linear, Poly, Random Forest, MLP) with 5-Fold CV.
   - *Cells 16–18:* 5-model classification benchmark (KNN, RF, Logistic, Decision Tree, MLP) with confusion matrices.
-  - *Cells 19–20:* K-Means clustering ($k=5$), elbow method, silhouette analysis.
-  - *Cells 21–22:* PCA 2D latent projection and technical defense Q&A.
-- **WHEN:** Executed interactively by data scientists during offline research (`jupyter notebook`).
-- **WHY:** Provides an interactive, cell-by-cell sandbox for exploratory verification, visualization, and peer review.
+  - *Cells 19–20:* K-Means clustering ($k=5$) with Elbow and Silhouette charts.
+  - *Cells 21–22:* 2D PCA projection plot.
+- **WHEN:** Opened in Jupyter Notebook or VS Code for interactive experimentation and grading review.
+- **WHY:** Gives professors, examiners, and data scientists a transparent, cell-by-cell walkthrough of our research.
 
 ---
 
-#### `src/create_cricket_notebook.py` (Reproducible Notebook Generator)
-- **WHAT:** A Python utility script that programmatically synthesizes `cricket_player_performance_analysis.ipynb` as pure JSON.
-- **HOW:** Assembles notebook cells, markdown narratives, and code snippets into standard `nbformat` v4 structure and saves the `.ipynb` file.
-- **WHEN:** Executed whenever notebook code or narrative documentation needs automated re-generation (`python src/create_cricket_notebook.py`).
-- **WHY:** Guarantees 100% reproducibility of the research notebook without manual copy-pasting across environments.
-
+#### `src/create_cricket_notebook.py` (Automated Notebook Generator)
+- **WHAT:** A helper script that automatically builds `cricket_player_performance_analysis.ipynb` as pure JSON.
+- **HOW:** Assembles markdown text, code cells, and outputs into standard `nbformat` v4 structure.
+- **WHEN:** Run whenever the research notebook needs to be updated or refreshed (`python src/create_cricket_notebook.py`).
+- **WHY:** Ensures the notebook can be regenerated reliably without manual copy-pasting across computers.
 
 ---
 
-### 2.5 Governance, Environment & Repository Infrastructure
-
-#### `requirements.txt` (Dependency Specifications)
-- **WHAT:** Pinned production dependency manifest for the Python environment.
-- **HOW:** Specifies tested versions:
+#### `requirements.txt` (Python Package List)
+- **WHAT:** A simple text file listing the exact Python libraries required to run the project:
   ```text
   streamlit>=1.35.0
   scikit-learn>=1.4.0
@@ -221,72 +201,20 @@
   joblib>=1.3.0
   scipy>=1.11.0
   ```
-- **WHEN:** Utilized by `pip install -r requirements.txt` during local virtual environment setup and automatically parsed by Streamlit Community Cloud during build.
-- **WHY:** Guarantees deterministic, reproducible dependency resolution across local macOS workstations, Linux servers, and cloud containers.
+- **WHEN:** Used when setting up the environment (`pip install -r requirements.txt`) and read automatically by Streamlit Cloud during online deployment.
+- **WHY:** Guarantees that the code runs smoothly across Windows, Mac, Linux, and cloud servers.
 
 ---
 
-#### `.gitignore` (Git Exclusion Manifest)
-- **WHAT:** Git rules preventing untracked, heavy, or temporary files from polluting version control.
-- **HOW:** Contains:
-  ```text
-  .venv/
-  __pycache__/
-  *.pyc
-  .DS_Store
-  .ipynb_checkpoints/
-  data/raw/deliveries_*.csv
-  ```
-- **WHEN:** Evaluated by `git` during every `git add` and `git status` operation.
-- **WHY:** Crucial for cloud repository health: ignores the 69 MB raw delivery CSV (`deliveries_2008_2024.csv`) while ensuring the cleaned analytical dataset (`cricket_players_clean.csv`) and model binaries (`models/*.joblib`) are tracked. This keeps git pushes instant and prevents hitting GitHub's 100 MB file limit.
+#### `.gitignore` (Git Exclusion List)
+- **WHAT:** Tells Git which files to ignore so they are not uploaded to GitHub.
+- **HOW:** Ignores the `.venv/` virtual environment, Python cache files (`__pycache__/`), and the large 69 MB raw delivery log.
+- **WHY:** Keeps the GitHub repository lightweight and prevents hitting GitHub's 100 MB file size limit, while keeping all clean datasets and trained models safely tracked.
 
 ---
 
-#### `README.md` (Executive Repository Overview)
-- **WHAT:** The public GitHub repository landing page and developer quickstart guide (118 lines of Markdown).
-- **HOW:** Features project badges, problem statement formulation, executive highlights, architecture tables, experimental results leaderboards, and setup instructions.
-- **WHEN:** Rendered automatically by GitHub upon visiting the repository.
-- **WHY:** Serves as the primary public entry point for franchise stakeholders, open-source reviewers, and technical auditors.
-
----
-
-#### `FINAL_REPORT.md` (Academic & Franchise Defense Dossier)
-- **WHAT:** An exhaustive 10-section project thesis and organization defense document (250+ lines of Markdown).
-- **HOW:** Structured into formal case study sections:
-  1. *Executive Summary & Organizational Problem Definition*
-  2. *Data Sourcing, Verification & Preprocessing Decisions*
-  3. *Exploratory Telemetry & Factor Correlation Analysis*
-  4. *Supervised Continuous Regression Benchmark*
-  5. *Supervised Multi-Class Classification Benchmark*
-  6. *Unsupervised Clustering & Tactical Archetype Discovery*
-  7. *Dimensionality Reduction & 2D Latent Representation*
-  8. *Streamlit Application Architecture & Decision Support Design*
-  9. *Comprehensive Comparison Matrix*
-  10. *Viva Voce Examination Guide: Model Answers for Technical Defense*
-- **WHEN:** Used as the definitive written artifact for technical defense, academic evaluation, and franchise executive handover.
-- **WHY:** Fulfills all compliance requirements of Case Study no. 102 with rigorous mathematical justification and evidence.
-
----
-
-## 3. End-to-End System Execution Flow Matrix
-
-The following matrix illustrates how every file interacts across the five operational phases of the project lifecycle:
-
-| Component / File | Phase 1: Ingestion & Feature Engineering | Phase 2: Offline Training & Serialization | Phase 3: Research & Notebook Validation | Phase 4: Local & Cloud Web Deployment | Phase 5: Stakeholder Handover & Defense |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| `data/raw/deliveries_2008_2024.csv` | **Primary Input** | - | - | - | - |
-| `data/raw/matches_2008_2024.csv` | **Primary Input** | - | - | - | - |
-| `src/cricket_data_pipeline.py` | **Executes ETL** | - | - | - | - |
-| `data/processed/cricket_players_clean.csv` | **Output** | **Input** | **Input** | **Input (Cached)** | - |
-| `src/train_cricket_models.py` | - | **Executes Training** | - | - | - |
-| `models/*.joblib` & `*.json` | - | **Outputs** | **Inputs** | **Inputs (Cached)** | - |
-| `notebooks/*.ipynb` | - | - | **Interactive Execution** | - | **Research Proof** |
-| `src/create_cricket_notebook.py` | - | - | **Synthesizes Notebook** | - | - |
-| `app.py` | - | - | - | **Executes App** | **Live Demo** |
-| `.streamlit/config.toml` | - | - | - | **Configures UI** | - |
-| `requirements.txt` | **Builds Env** | **Builds Env** | **Builds Env** | **Cloud Build** | - |
-| `.gitignore` | **Filters Git** | **Filters Git** | **Filters Git** | **Filters Git** | - |
-| `README.md` | - | - | - | - | **Executive Overview** |
-| `FINAL_REPORT.md` | - | - | - | - | **Formal Dossier** |
-| `docs/MACHINE_LEARNING_GUIDE.*` | - | - | - | - | **ML Encyclopedia** |
-| `docs/PROJECT_ARCHITECTURE_GUIDE.*` | - | - | - | - | **System Blueprint** |
+#### `README.md` & `FINAL_REPORT.md` (Executive Project Reports)
+- **WHAT:** The public GitHub homepage (`README.md`) and the comprehensive formal project defense report (`FINAL_REPORT.md`).
+- **HOW:** Explains the project's background, quickstart commands, methodology proofs, and viva voce model answers.
+- **WHEN:** Read by GitHub visitors, technical auditors, and academic evaluators.
+- **WHY:** Clearly explains the business value of the project and satisfies the requirements of Case Study no. 102.
