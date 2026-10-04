@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CricMetrics Pro: Machine Learning Topics & Methodology Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+            @bottom-right {
+                content: "Page " counter(page);
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 8pt;
+                color: #64748B;
+            }
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 9.2pt;
+            line-height: 1.55;
+            color: #1E293B;
+            background: #FFFFFF;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0F172A;
+            font-weight: 700;
+            page-break-after: avoid;
+        }
+
+        h1 {
+            font-size: 20pt;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #0F172A;
+            border-bottom: 3px solid #F59E0B;
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #D97706;
+            margin-bottom: 14px;
+        }
+
+        h2 {
+            font-size: 13.5pt;
+            font-weight: 700;
+            color: #1E293B;
+            border-bottom: 1.5px solid #E2E8F0;
+            padding-bottom: 4px;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        h3 {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #B45309;
+            margin-top: 1.2em;
+            margin-bottom: 0.3em;
+        }
+
+        p {
+            margin: 0.4em 0 0.7em 0;
+            text-align: justify;
+        }
+
+        .callout {
+            border-left: 4px solid #F59E0B;
+            background: #FFFBEB;
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+            margin: 0.9em 0;
+            page-break-inside: avoid;
+            font-size: 8.8pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.9em 0 1.3em 0;
+            font-size: 8.2pt;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #CBD5E1;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #F1F5F9;
+            color: #0F172A;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #F8FAFC;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8pt;
+            background: #F1F5F9;
+            color: #B45309;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .pill {
+            display: inline-block;
+            font-size: 7.5pt;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            text-transform: uppercase;
+        }
+        .pill-what { background: #E0E7FF; color: #3730A3; }
+        .pill-when { background: #FEF3C7; color: #92400E; }
+        .pill-why  { background: #D1FAE5; color: #065F46; }
+        .pill-how  { background: #FCE7F3; color: #9D174D; }
+
+        .item-block {
+            margin-bottom: 1.1em;
+            page-break-inside: avoid;
+        }
+        .item-title {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 4px;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="subtitle">CASE STUDY NO. 102 | ENTERPRISE SPORTS MACHINE LEARNING FRAMEWORK</div>
+    <h1>CricMetrics Pro: Machine Learning Topics, Mathematical Formulations, & Implementation Deep-Dive</h1>
+
+    <div class="callout">
+        <strong>Executive Scope:</strong> This document provides an exhaustive, multi-dimensional technical examination of every Machine Learning concept, algorithm, mathematical formulation, and evaluation technique implemented in the <strong>CricMetrics Pro</strong> sports organization decision support system. For every topic, this guide explicitly details <strong>WHAT</strong> the concept is, <strong>WHEN</strong> it is invoked within the pipeline, <strong>WHY</strong> it was selected over alternatives, and <strong>HOW</strong> it is implemented in production code with empirical results.
+    </div>
+
+    <h2>1. System-Wide Machine Learning Formulation</h2>
+    <p>In accordance with Case Study no. 102, a professional sports organization (T20 cricket franchise) must investigate measurable factors associated with player performance to solve scouting, roster construction, and multi-crore auction valuation challenges. The system is formulated across four complementary machine learning paradigms:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ML Paradigm</th>
+                <th>Target Variable / Output</th>
+                <th>Core Organizational Objective</th>
+                <th>Primary Algorithm(s)</th>
+                <th>Benchmark Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Supervised Continuous Regression</strong></td>
+                <td>Overall Performance Rating (y &isin; [50.0, 95.0])</td>
+                <td>Predict continuous match impact score &amp; calculate fair auction purse (&inr; Crores)</td>
+                <td>Random Forest Regressor, Ridge (L2), Linear (OLS), Polynomial, MLP</td>
+                <td><strong>Random Forest: R&sup2; = 0.9789, RMSE = 1.2562</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Supervised Multi-Class Classification</strong></td>
+                <td>Talent Tier Code (y &isin; (0, 1, 2))</td>
+                <td>Categorize player into Developing, Core, or Elite tier for squad depth management</td>
+                <td>K-Nearest Neighbors (KNN), Random Forest, Logistic, Decision Tree, MLP</td>
+                <td><strong>KNN: 95.16% Accuracy, Macro F1 = 0.9501</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Unsupervised Clustering</strong></td>
+                <td>Tactical Playing Style (k=5 Archetypes)</td>
+                <td>Group athletes by multi-skill tactical fingerprints rather than nominal playing roles</td>
+                <td>K-Means Clustering (k=5), Silhouette Scoring, Elbow Curve</td>
+                <td><strong>5 Distinct Tactical Roles (s = 0.285)</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Dimensionality Reduction</strong></td>
+                <td>Latent 2D Coordinates ([z1, z2])</td>
+                <td>Project 29-dimensional performance vectors into an interpretable 2D tactical map</td>
+                <td>Principal Component Analysis (PCA)</td>
+                <td><strong>Top 2 Components Explain 60.79% Variance</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Data Preprocessing &amp; Feature Transformation</h2>
+
+    <div class="item-block">
+        <div class="item-title">2.1 One-Hot Encoding (<code>primary_role</code>)</div>
+        <p><span class="pill pill-what">WHAT</span> A mathematical mapping that converts a qualitative categorical variable with <em>K</em> discrete levels into <em>K-1</em> orthogonal binary indicator variables (x &isin; (0, 1)).</p>
+        <p><span class="pill pill-when">WHEN</span> Applied during the initial data transformation phase in <code>src/cricket_data_pipeline.py</code> and <code>src/train_cricket_models.py</code>, immediately before feeding tabular data into linear models, neural networks, and distance-based estimators.</p>
+        <p><span class="pill pill-why">WHY</span> Machine learning algorithms operate on numerical vectors in Euclidean or Hilbert spaces. Passing raw string categories or integer labels (1, 2, 3) imposes an artificial ordinal ranking that does not exist. Using <code>drop_first=True</code> prevents the <strong>Dummy Variable Trap</strong> (perfect multicollinearity, where the sum of indicator variables equals 1, rendering (X<sup>T</sup>X) singular and non-invertible in linear regression).</p>
+        <p><span class="pill pill-how">HOW</span> Implemented via Pandas <code>pd.get_dummies(df, columns=['primary_role'], drop_first=True, dtype=float)</code>. The 5 nominal roles (Specialist Batter, All-Rounder, Specialist Bowler, Bowling Specialist, Squad Batter) are mapped into 4 binary indicator columns, with All-Rounder serving as the reference baseline.</p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">2.2 Standard Scaling (Z-Score Normalization)</div>
+        <p><span class="pill pill-what">WHAT</span> A linear transformation that scales each continuous feature independently so that its empirical distribution exhibits a mean of zero (&mu; = 0) and a standard deviation of one (&sigma; = 1): <code>z = (x - &mu;) / &sigma;</code>.</p>
+        <p><span class="pill pill-when">WHEN</span> Executed strictly <strong>after</strong> the 80/20 train/test split. The <code>StandardScaler</code> is fitted exclusively on <code>X_train</code> and subsequently applied to transform <code>X_train</code>, <code>X_test</code>, and real-time user inputs in the Streamlit application.</p>
+        <p><span class="pill pill-why">WHY</span> In raw sports telemetry, <code>total_runs</code> spans [0, 8000+] while <code>economy_rate</code> spans [5.0, 12.0]. Without scaling, distance metrics in KNN, K-Means, and PCA would be 99.9% dominated by runs. Fitting the scaler strictly on training data eliminates <strong>Data Leakage</strong>.</p>
+        <p><span class="pill pill-how">HOW</span> Implemented using Scikit-Learn's <code>StandardScaler()</code>, serialized to <code>models/scaler.joblib</code>. In production, applied preserving feature names: <code>pd.DataFrame(scaler.transform(X), columns=feature_names)</code>.</p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">2.3 Domain-Specific Composite Feature Engineering</div>
+        <p><span class="pill pill-what">WHAT</span> Formulating non-linear composite domain metrics that synthesize multiple raw counting statistics into normalized, rate-based capability indices: <em>Batting Impact Index</em>, <em>Bowling Impact Index</em>, and <em>Clutch Match-Winner Index</em>.</p>
+        <p><span class="pill pill-when">WHEN</span> Computed during raw delivery aggregation in <code>src/cricket_data_pipeline.py</code> and dynamically recomputed in <code>app.py</code> during profile simulation.</p>
+        <p><span class="pill pill-why">WHY</span> Raw counting totals suffer from heavy tenure bias; players with long careers accumulate runs without necessarily winning matches. Composite indices isolate rate-of-impact, phase-specific lethality (death overs), and match-winning clutch capability.</p>
+        <p><span class="pill pill-how">HOW</span> Formulated using calibrated domain thresholds verified across 17 IPL seasons (260,920 deliveries). Overs 16–20 are isolated to compute death-overs strike rate and economy, joined with Player of the Match awards.</p>
+    </div>
+
+    <h2>3. Supervised Continuous Regression Framework</h2>
+
+    <div class="item-block">
+        <div class="item-title">3.1 Linear Regression (Ordinary Least Squares - OLS)</div>
+        <p><span class="pill pill-what">WHAT</span> Parametric linear model assuming &ycirc; = X&beta;, minimizing Residual Sum of Squares: min<sub>&beta;</sub> ||y - X&beta;||&sup2;.</p>
+        <p><span class="pill pill-when">WHEN</span> Baseline continuous performance estimator.</p>
+        <p><span class="pill pill-why">WHY</span> Provides transparent parameter interpretability where each coefficient represents the marginal rating change per standard deviation feature shift. However, OLS assumes strict linearity and suffers under multicollinearity.</p>
+        <p><span class="pill pill-how">HOW</span> Solved analytically via the Normal Equation: &beta; = (X<sup>T</sup>X)<sup>-1</sup> X<sup>T</sup>y. <strong>Test R&sup2; = 0.9490, 5-Fold CV R&sup2; = 0.8797 &plusmn; 0.0284, RMSE = 1.9534, MAE = 1.5364.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">3.2 Ridge Regression (L2 Tikhonov Regularization)</div>
+        <p><span class="pill pill-what">WHAT</span> Regularized linear regression adding an L2 penalty on weight magnitudes: min<sub>&beta;</sub> ||y - X&beta;||&sup2; + &alpha; ||&beta;||&sup2;.</p>
+        <p><span class="pill pill-when">WHEN</span> Evaluated alongside OLS to stabilize feature weights under collinearity.</p>
+        <p><span class="pill pill-why">WHY</span> When cricket metrics are heavily correlated (e.g. total runs and balls faced, r &gt; 0.95), OLS coefficient variances explode. Ridge introduces shrinkage, stabilizing weights and improving cross-validation reliability.</p>
+        <p><span class="pill pill-how">HOW</span> Solved via &beta; = (X<sup>T</sup>X + &alpha;I)<sup>-1</sup> X<sup>T</sup>y with &alpha;=1.0. <strong>Test R&sup2; = 0.9491, 5-Fold CV R&sup2; = 0.9000 &plusmn; 0.0215, RMSE = 1.9521, MAE = 1.5224.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">3.3 Polynomial Regression (Degree-2 Feature Synergy)</div>
+        <p><span class="pill pill-what">WHAT</span> Non-linear expansion generating all pairwise interaction products x<sub>i</sub>x<sub>j</sub> and quadratic terms x<sub>i</sub>&sup2;, expanding 29 inputs into 464 features.</p>
+        <p><span class="pill pill-when">WHEN</span> Tested to capture interactive synergy between skills (e.g. Strike Rate &times; Boundary %).</p>
+        <p><span class="pill pill-why">WHY</span> Cricket performance is multiplicative: high strike rate is exponentially more impactful when paired with high boundary hitting frequency.</p>
+        <p><span class="pill pill-how">HOW</span> <code>PolynomialFeatures(degree=2, include_bias=False)</code> followed by OLS. <strong>Test R&sup2; = 0.9112, 5-Fold CV R&sup2; = 0.8649 &plusmn; 0.0310, RMSE = 2.5779, MAE = 1.7280.</strong> (Suffered slight overfitting due to feature dimension expansion).</p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">3.4 Random Forest Regressor (Ensemble Bagging) &mdash; [PRODUCTION ENGINE]</div>
+        <p><span class="pill pill-what">WHAT</span> Ensemble of 100 de-correlated decision trees constructed via bootstrap aggregating (bagging) and random feature subspace selection, averaging predictions across all trees: &ycirc; = (1/B) &sum; T<sub>b</sub>(x).</p>
+        <p><span class="pill pill-when">WHEN</span> <strong>Selected as the Production Machine Learning Engine</strong> powering the continuous rating and auction valuation platform.</p>
+        <p><span class="pill pill-why">WHY</span> Effortlessly models complex non-linear boundary conditions (e.g. death overs strike rate &gt; 180 yields an exponential win surge; death economy &lt; 7.5 dominates win equity). Immune to multicollinearity and monotonic scaling.</p>
+        <p><span class="pill pill-how">HOW</span> <code>RandomForestRegressor(n_estimators=100, max_features='sqrt', random_state=42)</code>. <strong>Benchmark Winner: Test R&sup2; = 0.9789, 5-Fold CV R&sup2; = 0.9528 &plusmn; 0.0094, RMSE = 1.2562, MAE = 0.9024.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">3.5 Multi-Layer Perceptron (MLP) Regressor</div>
+        <p><span class="pill pill-what">WHAT</span> Deep artificial neural network with input layer (29 units), two hidden layers (64, 32 units) with ReLU activations, and linear output.</p>
+        <p><span class="pill pill-when">WHEN</span> Deep learning tabular regression benchmark.</p>
+        <p><span class="pill pill-why">WHY</span> Benchmarked to test whether deep representation learning beats tree ensembles on sports tabular data.</p>
+        <p><span class="pill pill-how">HOW</span> Adam optimizer (&eta;=0.001), ReLU, early stopping. <strong>Test R&sup2; = 0.5495, 5-Fold CV R&sup2; = 0.4503, RMSE = 5.8058.</strong> Proved that without tabular inductive bias, neural nets struggle on N&approx;600 sample tabular datasets.</p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>4. Supervised Multi-Class Classification Framework</h2>
+
+    <div class="item-block">
+        <div class="item-title">4.1 K-Nearest Neighbors (KNN) &mdash; [TOP CLASSIFIER]</div>
+        <p><span class="pill pill-what">WHAT</span> Instance-based non-parametric classifier identifying the <em>k</em> closest training points under Euclidean distance in standardized space and predicting class by majority vote: &ycirc; = argmax<sub>c</sub> &sum; I(y<sub>i</sub> = c).</p>
+        <p><span class="pill pill-when">WHEN</span> Production talent tier classification engine.</p>
+        <p><span class="pill pill-why">WHY</span> Sports scouting is inherently comparative (&ldquo;which historical players does this athlete resemble?&rdquo;). In standardized multi-metric space, players of identical talent naturally congregate in localized neighborhoods.</p>
+        <p><span class="pill pill-how">HOW</span> Configured with k=5, Euclidean metric, uniform weights. <strong>Classification Winner: 95.16% Test Accuracy, 5-Fold CV Accuracy = 90.30% &plusmn; 0.0221, Macro Precision = 0.9601, Macro Recall = 0.9421, Macro F1 = 0.9501.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">4.2 Random Forest Classifier</div>
+        <p><span class="pill pill-what">WHAT</span> Ensemble of 100 classification trees splitting nodes to minimize Gini Impurity: I<sub>G</sub>(t) = 1 - &sum; p(c|t)&sup2;.</p>
+        <p><span class="pill pill-when">WHEN</span> Primary competing classifier and feature importance attribution engine.</p>
+        <p><span class="pill pill-why">WHY</span> Provides high classification stability, handles non-linear boundaries, and produces Gini feature importance rankings.</p>
+        <p><span class="pill pill-how">HOW</span> 100 trees, Gini criterion, max_features='sqrt'. <strong>Test Accuracy = 94.35%, 5-Fold CV Accuracy = 94.75% &plusmn; 0.0142, Macro Precision = 0.9496, Macro Recall = 0.9426, Macro F1 = 0.9459.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">4.3 Logistic Regression (Multinomial Softmax)</div>
+        <p><span class="pill pill-what">WHAT</span> Linear probabilistic classifier estimating class probabilities via the Softmax function: P(Y=c|x) = exp(&beta;<sub>c</sub><sup>T</sup>x) / &sum; exp(&beta;<sub>j</sub><sup>T</sup>x), trained with Cross-Entropy loss.</p>
+        <p><span class="pill pill-when">WHEN</span> Parametric probabilistic baseline for talent tier estimation.</p>
+        <p><span class="pill pill-why">WHY</span> Outputs calibrated class probabilities for auction risk quantification.</p>
+        <p><span class="pill pill-how">HOW</span> Multinomial softmax, L2 regularization, lbfgs solver. <strong>Test Accuracy = 87.90%, 5-Fold CV Accuracy = 92.53% &plusmn; 0.0180, Macro F1 = 0.8853.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">4.4 Decision Tree Classifier (CART)</div>
+        <p><span class="pill pill-what">WHAT</span> Hierarchical orthogonal binary decision tree maximizing information gain (&Delta;I<sub>G</sub>) at each split.</p>
+        <p><span class="pill pill-when">WHEN</span> White-box rule-based benchmark.</p>
+        <p><span class="pill pill-why">WHY</span> Offers transparent &ldquo;if-then&rdquo; decision pathways for franchise coaching staff.</p>
+        <p><span class="pill pill-how">HOW</span> Max depth 6, Gini splitting. <strong>Test Accuracy = 87.90%, 5-Fold CV Accuracy = 89.90% &plusmn; 0.0195, Macro F1 = 0.8812.</strong></p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">4.5 Multi-Layer Perceptron (MLP) Classifier</div>
+        <p><span class="pill pill-what">WHAT</span> Deep neural network with (64, 32) hidden layers, ReLU, and 3-unit Softmax output layer.</p>
+        <p><span class="pill pill-when">WHEN</span> Deep learning classification benchmark.</p>
+        <p><span class="pill pill-why">WHY</span> Tests whether non-linear neural representations improve tier separation.</p>
+        <p><span class="pill pill-how">HOW</span> Adam optimizer, early stopping. <strong>Test Accuracy = 92.74%, 5-Fold CV Accuracy = 81.41% &plusmn; 0.0384, Macro F1 = 0.9287.</strong></p>
+    </div>
+
+    <h2>5. Unsupervised Tactical Archetypes (Clustering)</h2>
+
+    <div class="item-block">
+        <div class="item-title">5.1 K-Means Clustering (k=5 Archetypes)</div>
+        <p><span class="pill pill-what">WHAT</span> Centroid-based partitioning algorithm segmenting 619 cricketers into <em>k</em> disjoint clusters to minimize Within-Cluster Sum of Squares (Inertia): argmin &sum; ||x - &mu;<sub>i</sub>||&sup2;.</p>
+        <p><span class="pill pill-when">WHEN</span> Implemented in Tab 4 of <code>app.py</code> to uncover natural playing styles beyond nominal roles.</p>
+        <p><span class="pill pill-why">WHY</span> Traditional labels (&ldquo;Batter&rdquo; vs &ldquo;Bowler&rdquo;) obscure tactical specialization. Franchises require distinct archetypes (anchors vs death finishers) to optimize squad balance.</p>
+        <p><span class="pill pill-how">HOW</span> Lloyd's algorithm with k-means++ initialization, 15 restarts, trained on 11 key metrics. Discovered 5 archetypes:
+           <em>Cluster 0: Top-Order Anchor</em> (Kohli, Warner); <em>Cluster 1: Death Pace Spearhead</em> (Bumrah, Malinga); <em>Cluster 2: Explosive Death Finisher</em> (Russell, Klaasen); <em>Cluster 3: Mystery Spin Maestro</em> (Narine, Rashid Khan); <em>Cluster 4: Dual All-Rounder</em> (Jadeja, Hardik Pandya).
+        </p>
+    </div>
+
+    <div class="item-block">
+        <div class="item-title">5.2 Elbow Method &amp; Silhouette Analysis</div>
+        <p><span class="pill pill-what">WHAT</span> Quantitative cluster validation: Elbow method detects inertia inflection; Silhouette Coefficient measures sample cohesion vs separation: s = (b - a) / max(a, b) &isin; [-1, 1].</p>
+        <p><span class="pill pill-when">WHEN</span> Cluster optimization across k &isin; [2, 7].</p>
+        <p><span class="pill pill-why">WHY</span> Replaces subjective human guesses with objective mathematical validation.</p>
+        <p><span class="pill pill-how">HOW</span> Evaluated in <code>train_cricket_models.py</code>; k=5 achieved optimal silhouette score (s=0.285) with distinct sports operational profiles.</p>
+    </div>
+
+    <h2>6. Dimensionality Reduction (Principal Component Analysis - PCA)</h2>
+    <p><span class="pill pill-what">WHAT</span> Unsupervised orthogonal linear transformation projecting 29-dimensional standardized data onto eigenvectors of the sample covariance matrix &Sigma; = (1/n) X<sup>T</sup>X ordered by decreasing eigenvalue &lambda;<sub>i</sub>.</p>
+    <p><span class="pill pill-when">WHEN</span> Production 2D Latent Tactical Map in Tab 4 of <code>app.py</code> mapping all 619 cricketers.</p>
+    <p><span class="pill pill-why">WHY</span> Human executives cannot visualize 29 dimensions. PCA compresses the space into a 2D Cartesian plane while preserving 60.79% of total variance.</p>
+    <p><span class="pill pill-how">HOW</span> <code>PCA(n_components=2)</code> fitted on standardized features:
+       <strong>PC1 (T20 Match Impact &amp; Volume, 42.2% variance)</strong> captures career impact and clutch awards; <strong>PC2 (Batting vs Bowling Bias, 18.6% variance)</strong> cleanly separates specialist bowlers (negative axis) from top-order batters (positive axis).</p>
+
+    <h2>7. Model Evaluation, Validation &amp; Governance Suite</h2>
+    <div class="item-block">
+        <p><strong>Stratified Train/Test Split (80/20):</strong> Preserves exact class ratios across Developing, Core, and Elite tiers, preventing minority elite talent from being underrepresented.</p>
+        <p><strong>5-Fold Cross Validation:</strong> Evaluates models across 5 rotating folds, reporting Mean &plusmn; Std Dev to verify generalizability and guard against overfitting.</p>
+        <p><strong>Quantitative Metrics Suite:</strong> R&sup2; (variance explained), RMSE (quadratic error penalty), MAE (expected error), 3&times;3 Confusion Matrix, and Macro-averaged Precision, Recall, and F1-Score.</p>
+        <p><strong>Gini Impurity Feature Importance Attribution:</strong> Quantifies total decrease in node impurity brought by each feature across all trees in the Random Forest. Proves that phase-specific impact (death overs strike rate) and clutch match-winning capability dominate valuation over nominal career averages.</p>
+    </div>
+
+    <h2>8. Master Machine Learning Reference Matrix</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ML Topic / Algorithm</th>
+                <th>WHAT It Is</th>
+                <th>WHEN It Is Used</th>
+                <th>WHY It Was Chosen</th>
+                <th>HOW It Is Implemented</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>One-Hot Encoding</strong></td>
+                <td>Binary indicator mapping for categories</td>
+                <td>Preprocessing pipeline before model ingestion</td>
+                <td>Eliminates artificial ordinal bias; drop_first=True prevents collinearity</td>
+                <td><code>pd.get_dummies(..., drop_first=True)</code> creating 4 binary columns</td>
+            </tr>
+            <tr>
+                <td><strong>StandardScaler (Z-Score)</strong></td>
+                <td>Rescales variables to &mu;=0, &sigma;=1</td>
+                <td>Immediately after train/test split; fitted on X_train only</td>
+                <td>Prevents scale dominance in Euclidean metrics (KNN, K-Means, PCA)</td>
+                <td>z = (x - &mu;)/&sigma;, serialized to <code>models/scaler.joblib</code></td>
+            </tr>
+            <tr>
+                <td><strong>Composite Indices</strong></td>
+                <td>Nonlinear rate-based performance synthesizers</td>
+                <td>Data aggregation (src/) &amp; profile simulation (app.py)</td>
+                <td>Neutralizes tenure bias; rewards phase-specific death impact &amp; clutch wins</td>
+                <td>Formulations weighting boundaries, death strike rate, awards</td>
+            </tr>
+            <tr>
+                <td><strong>Linear Regression (OLS)</strong></td>
+                <td>Minimizes RSS: min ||y - X&beta;||&sup2;</td>
+                <td>Baseline continuous rating estimation</td>
+                <td>Provides benchmark coefficient interpretability</td>
+                <td>Normal equation; Test R&sup2; = 0.9490, RMSE = 1.9534</td>
+            </tr>
+            <tr>
+                <td><strong>Ridge Regression (L2)</strong></td>
+                <td>Regularized OLS adding &alpha; ||&beta;||&sup2;</td>
+                <td>Benchmark regression to mitigate multicollinearity</td>
+                <td>Shrinks collinear coefficients smoothly, reducing variance</td>
+                <td>&beta; = (X<sup>T</sup>X + &alpha;I)<sup>-1</sup> X<sup>T</sup>y; Test R&sup2; = 0.9491, 5-Fold = 0.9000</td>
+            </tr>
+            <tr>
+                <td><strong>Polynomial Regression</strong></td>
+                <td>Expands inputs to degree-2 interaction terms</td>
+                <td>Investigating non-linear skill synergy</td>
+                <td>Captures multiplicative value (e.g. Strike Rate &times; Boundary %)</td>
+                <td><code>PolynomialFeatures(degree=2)</code>; Test R&sup2; = 0.9112, RMSE = 2.5779</td>
+            </tr>
+            <tr>
+                <td><strong>Random Forest Regressor</strong></td>
+                <td>Bagged ensemble of 100 de-correlated trees</td>
+                <td><strong>Production Continuous Rating Engine</strong></td>
+                <td>Handles non-linear cricket thresholds and outliers without overfitting</td>
+                <td>100 trees, MSE split; <strong>Winner: R&sup2; = 0.9789, RMSE = 1.2562</strong></td>
+            </tr>
+            <tr>
+                <td><strong>MLP Regressor</strong></td>
+                <td>Deep feedforward neural network with ReLU</td>
+                <td>Deep learning tabular benchmark</td>
+                <td>Evaluates if deep representation learning beats tree ensembles</td>
+                <td>Layers (64, 32), Adam, early stopping; Test R&sup2; = 0.5495, RMSE = 5.8058</td>
+            </tr>
+            <tr>
+                <td><strong>K-Nearest Neighbors (KNN)</strong></td>
+                <td>Instance-based majority vote among k closest peers</td>
+                <td><strong>Production Talent Tier Classifier</strong></td>
+                <td>Sports scouting relies on historical peer comparisons in skill space</td>
+                <td>k=5, Euclidean metric; <strong>Winner: 95.16% Acc, Macro F1 = 0.9501</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Random Forest Classifier</strong></td>
+                <td>Ensemble of 100 trees voting via Gini split</td>
+                <td>Primary competing classifier &amp; feature attribution</td>
+                <td>Provides calibrated class probabilities and Gini feature importances</td>
+                <td>100 trees, Gini split; <strong>94.35% Acc, 5-Fold CV Acc = 94.75%</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Logistic Regression</strong></td>
+                <td>Multinomial softmax regression with Cross-Entropy</td>
+                <td>Probabilistic talent classification baseline</td>
+                <td>Direct posterior probability estimates P(y=c|x) for auction risk analysis</td>
+                <td>Multinomial softmax with L2 penalty; Test Accuracy = 87.90%</td>
+            </tr>
+            <tr>
+                <td><strong>Decision Tree (CART)</strong></td>
+                <td>Recursive binary partitioning minimizing Gini</td>
+                <td>White-box rule-based benchmark</td>
+                <td>Transparent &ldquo;if-then&rdquo; decision pathways for franchise coaching staff</td>
+                <td>Max depth 6, Gini splitting; Test Accuracy = 87.90%</td>
+            </tr>
+            <tr>
+                <td><strong>MLP Classifier</strong></td>
+                <td>Deep neural network with Softmax output layer</td>
+                <td>Deep learning classification benchmark</td>
+                <td>Tests whether non-linear latent layers separate boundary talent tiers</td>
+                <td>Layers (64, 32), ReLU, Adam, Softmax; Test Accuracy = 92.74%</td>
+            </tr>
+            <tr>
+                <td><strong>K-Means Clustering</strong></td>
+                <td>Unsupervised partition minimizing WCSS / inertia</td>
+                <td>Tab 4 Tactical Archetypes &amp; Roster Balance</td>
+                <td>Discovers real playing styles beyond simplistic nominal roles</td>
+                <td>Lloyd's algorithm (k=5, k-means++); Discovered 5 franchise archetypes</td>
+            </tr>
+            <tr>
+                <td><strong>Elbow &amp; Silhouette</strong></td>
+                <td>Quantitative cluster validation criteria</td>
+                <td>Cluster count optimization across k &isin; [2, 7]</td>
+                <td>Replaces subjective human bias with objective mathematical validation</td>
+                <td>Evaluated inertia inflection and silhouette score (s=0.285 at k=5)</td>
+            </tr>
+            <tr>
+                <td><strong>PCA</strong></td>
+                <td>Orthogonal linear projection onto variance axes</td>
+                <td>Tab 4 2D Latent Tactical Map</td>
+                <td>Compresses 29 dimensions into 2D Cartesian plane for human visualization</td>
+                <td>SVD of covariance matrix; <strong>Top 2 components explain 60.79% variance</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Stratified Split (80/20)</strong></td>
+                <td>Preserves class distribution in train/test splits</td>
+                <td>Foundation of training pipeline</td>
+                <td>Prevents minority elite talent from being underrepresented in test sets</td>
+                <td><code>train_test_split(..., stratify=y_clf)</code> partitioning 495 train / 124 test</td>
+            </tr>
+            <tr>
+                <td><strong>5-Fold Cross Validation</strong></td>
+                <td>Resampling on 5 rotating folds (Mean &plusmn; Std)</td>
+                <td>Cross-validation across all 10 models</td>
+                <td>Proves models generalize and diagnoses variance/overfitting</td>
+                <td>KFold and StratifiedKFold reporting mean and standard deviation</td>
+            </tr>
+            <tr>
+                <td><strong>Gini Feature Importance</strong></td>
+                <td>Total reduction in node impurity brought by feature</td>
+                <td>Explainable AI in Tab 6 of <code>app.py</code></td>
+                <td>Transparently justifies to franchise owners what drives the AI valuation</td>
+                <td>Extracted from Random Forest trees; reveals clutch and death strike rate dominance</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
