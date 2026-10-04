@@ -274,7 +274,8 @@ with st.sidebar:
             "🚀 What-If Franchise Simulator",
             "🏆 Model Benchmarks & Defense"
         ],
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="war_room_nav"
     )
     
     st.markdown("---")
@@ -360,13 +361,13 @@ if menu == "🏛️ War Room & Roster Intel":
     
     f1, f2, f3, f4 = st.columns(4)
     with f1:
-        sel_role = st.multiselect("Playing Role:", df["primary_role"].unique().tolist(), default=df["primary_role"].unique().tolist())
+        sel_role = st.multiselect("Playing Role:", df["primary_role"].unique().tolist(), default=df["primary_role"].unique().tolist(), key="filter_role")
     with f2:
-        sel_tier = st.multiselect("Talent Tier:", df["performance_tier"].unique().tolist(), default=df["performance_tier"].unique().tolist())
+        sel_tier = st.multiselect("Talent Tier:", df["performance_tier"].unique().tolist(), default=df["performance_tier"].unique().tolist(), key="filter_tier")
     with f3:
-        min_matches = st.slider("Minimum Matches Played:", 3, 200, 15)
+        min_matches = st.slider("Minimum Matches Played:", 3, 200, 15, key="filter_min_matches")
     with f4:
-        search_query = st.text_input("Search Player by Name:", placeholder="e.g. Kohli, Bumrah, Dhoni")
+        search_query = st.text_input("Search Player by Name:", placeholder="e.g. Kohli, Bumrah, Dhoni", key="filter_search_name")
         
     filtered = df[
         (df["primary_role"].isin(sel_role)) &
@@ -460,8 +461,21 @@ elif menu == "📊 Telemetry & Factor Impact":
             'batting_strike_rate', 'boundary_run_pct', 'death_overs_strike_rate', 
             'dot_ball_bowled_pct', 'batting_impact_index', 'bowling_impact_index'
         ]
-        # Normalize radar metrics 0-100 for visual comparison
+        radar_display_names = [
+            'Batting SR', 'Boundary Run %', 'Death Overs SR', 
+            'Dot Ball Bowled %', 'Batting Impact', 'Bowling Impact'
+        ]
+        
+        # Standardize radar metrics to a 0-100 index for clean visual comparison
         role_avg = df.groupby("primary_role")[radar_cols].mean().reset_index()
+        benchmarks = {
+            'batting_strike_rate': 160.0,
+            'boundary_run_pct': 75.0,
+            'death_overs_strike_rate': 200.0,
+            'dot_ball_bowled_pct': 45.0,
+            'batting_impact_index': 90.0,
+            'bowling_impact_index': 90.0
+        }
         
         fig_rad = go.Figure()
         role_colors = {
@@ -474,16 +488,20 @@ elif menu == "📊 Telemetry & Factor Impact":
         
         for _, row in role_avg.iterrows():
             role = row["primary_role"]
+            r_vals = [min(float(row[m]) / benchmarks[m] * 100.0, 100.0) for m in radar_cols]
             fig_rad.add_trace(go.Scatterpolar(
-                r=[row[m] for m in radar_cols] + [row[radar_cols[0]]],
-                theta=radar_cols + [radar_cols[0]],
+                r=r_vals + [r_vals[0]],
+                theta=radar_display_names + [radar_display_names[0]],
                 fill='toself',
                 name=role,
                 line=dict(color=role_colors.get(role, "#FBBF24"))
             ))
             
         fig_rad.update_layout(
-            polar=dict(radialaxis=dict(visible=True, color="#94A3B8"), bgcolor="rgba(0,0,0,0)"),
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 100], color="#94A3B8", ticksuffix="%"),
+                bgcolor="rgba(0,0,0,0)"
+            ),
             showlegend=True
         )
         st.plotly_chart(style_chart(fig_rad, height=480), use_container_width=True)
@@ -553,38 +571,77 @@ elif menu == "⚡ AI Rating & Auction Valuation":
         }
     }
     
-    preset_choice = st.selectbox("Choose a pre-configured template (or customize below):", list(presets.keys()))
-    default_vals = presets[preset_choice]
+    def apply_preset():
+        chosen = presets[st.session_state["preset_selector"]]
+        st.session_state["sim_role"] = chosen["role"]
+        st.session_state["sim_runs"] = chosen["runs"]
+        st.session_state["sim_sr"] = chosen["sr"]
+        st.session_state["sim_avg"] = chosen["avg"]
+        st.session_state["sim_bound"] = chosen["bound"]
+        st.session_state["sim_death_sr"] = chosen["death_sr"]
+        st.session_state["sim_wkts"] = chosen["wkts"]
+        st.session_state["sim_econ"] = chosen["econ"]
+        st.session_state["sim_dot_bowl"] = chosen["dot_bowl"]
+        st.session_state["sim_death_econ"] = chosen["death_econ"]
+        st.session_state["sim_matches"] = chosen["matches"]
+        st.session_state["sim_mom"] = chosen["mom"]
+
+    default_key = list(presets.keys())[0]
+    if "sim_runs" not in st.session_state:
+        init_p = presets[default_key]
+        st.session_state["sim_role"] = init_p["role"]
+        st.session_state["sim_runs"] = init_p["runs"]
+        st.session_state["sim_sr"] = init_p["sr"]
+        st.session_state["sim_avg"] = init_p["avg"]
+        st.session_state["sim_bound"] = init_p["bound"]
+        st.session_state["sim_death_sr"] = init_p["death_sr"]
+        st.session_state["sim_wkts"] = init_p["wkts"]
+        st.session_state["sim_econ"] = init_p["econ"]
+        st.session_state["sim_dot_bowl"] = init_p["dot_bowl"]
+        st.session_state["sim_death_econ"] = init_p["death_econ"]
+        st.session_state["sim_matches"] = init_p["matches"]
+        st.session_state["sim_mom"] = init_p["mom"]
+
+    preset_choice = st.selectbox(
+        "Choose a pre-configured template (or customize below):",
+        list(presets.keys()),
+        key="preset_selector",
+        on_change=apply_preset
+    )
     
     col_input, col_card = st.columns([3, 2])
     
     with col_input:
         st.markdown("#### Performance Metric Inputs")
-        p_role = st.selectbox("Playing Role", ["Specialist Batter", "All-Rounder", "Specialist Bowler", "Bowling Specialist", "Squad Batter"],
-                              index=["Specialist Batter", "All-Rounder", "Specialist Bowler", "Bowling Specialist", "Squad Batter"].index(default_vals["role"]))
+        p_role = st.selectbox(
+            "Playing Role",
+            ["Specialist Batter", "All-Rounder", "Specialist Bowler", "Bowling Specialist", "Squad Batter"],
+            key="sim_role"
+        )
         
         t_bat, t_bowl, t_match = st.tabs(["Batting Telemetry", "Bowling Telemetry", "Experience & Clutch"])
         
         with t_bat:
-            val_runs = st.slider("Total Career Runs", 0, 8500, default_vals["runs"])
-            val_sr = st.slider("Batting Strike Rate", 80.0, 210.0, default_vals["sr"])
-            val_avg = st.slider("Batting Average", 5.0, 50.0, default_vals["avg"])
-            val_bound = st.slider("Boundary Run %", 10.0, 85.0, default_vals["bound"])
-            val_death_sr = st.slider("Death Overs Strike Rate (Overs 16-20)", 90.0, 250.0, default_vals["death_sr"])
+            val_runs = st.slider("Total Career Runs", 0, 8500, key="sim_runs")
+            val_sr = st.slider("Batting Strike Rate", 80.0, 210.0, key="sim_sr")
+            val_avg = st.slider("Batting Average", 5.0, 50.0, key="sim_avg")
+            val_bound = st.slider("Boundary Run %", 10.0, 85.0, key="sim_bound")
+            val_death_sr = st.slider("Death Overs Strike Rate (Overs 16-20)", 90.0, 250.0, key="sim_death_sr")
             
         with t_bowl:
-            val_wkts = st.slider("Wickets Taken", 0, 220, default_vals["wkts"])
-            val_econ = st.slider("Economy Rate", 5.5, 12.5, default_vals["econ"])
-            val_dot_bowl = st.slider("Dot Ball Bowled %", 15.0, 55.0, default_vals["dot_bowl"])
-            val_death_econ = st.slider("Death Overs Economy (Overs 16-20)", 6.0, 14.0, default_vals["death_econ"])
+            val_wkts = st.slider("Wickets Taken", 0, 220, key="sim_wkts")
+            val_econ = st.slider("Economy Rate", 5.5, 12.5, key="sim_econ")
+            val_dot_bowl = st.slider("Dot Ball Bowled %", 15.0, 55.0, key="sim_dot_bowl")
+            val_death_econ = st.slider("Death Overs Economy (Overs 16-20)", 6.0, 14.0, key="sim_death_econ")
             
         with t_match:
-            val_matches = st.slider("Matches Played", 5, 260, default_vals["matches"])
-            val_mom = st.slider("Player of the Match Awards", 0, 25, default_vals["mom"])
+            val_matches = st.slider("Matches Played", 5, 260, key="sim_matches")
+            val_mom = st.slider("Player of the Match Awards", 0, 25, key="sim_mom")
             
         chosen_reg_name = st.selectbox(
             "Evaluation Model Engine:",
-            ["Random Forest Regressor (Recommended - 97.9% R²)", "Ridge Regression (L2)", "Linear Regression (OLS)", "MLP Neural Network"]
+            ["Random Forest Regressor (Recommended - 97.9% R²)", "Ridge Regression (L2)", "Linear Regression (OLS)", "MLP Neural Network"],
+            key="sim_reg_engine"
         )
 
     # Compute composite indices matching pipeline
@@ -756,7 +813,13 @@ elif menu == "🧩 Tactical Archetypes & 2D Map":
     p_col1, p_col2 = st.columns([3, 1])
     with p_col2:
         st.markdown("#### Map Filters")
-        color_choice = st.radio("Color Players By:", ["Tactical Archetype", "primary_role", "performance_tier"])
+        color_label = st.radio("Color Players By:", ["Tactical Archetype", "Playing Role", "Talent Tier"], key="pca_color_choice")
+        color_map = {
+            "Tactical Archetype": "Tactical Archetype",
+            "Playing Role": "primary_role",
+            "Talent Tier": "performance_tier"
+        }
+        color_choice = color_map[color_label]
         st.caption("PC1 isolates overall T20 performance and career experience. PC2 separates specialist pacers/spinners from top-order batters.")
         
     with p_col1:
@@ -792,7 +855,8 @@ elif menu == "🚀 What-If Franchise Simulator":
     player_choices = df.sort_values("overall_performance_rating", ascending=False)["player_name"].tolist()
     selected_player = st.selectbox(
         "Choose an existing player from the database (ranked by rating):",
-        player_choices
+        player_choices,
+        key="whatif_player_select"
     )
     p_data = df[df["player_name"] == selected_player].iloc[0]
     
@@ -814,10 +878,10 @@ elif menu == "🚀 What-If Franchise Simulator":
         
     with c_train:
         st.markdown("#### Prescribe Targeted Training Focus")
-        d_sr = st.slider("Death Overs Strike Rate Boost (Δ)", -10.0, 35.0, 15.0)
-        d_bound = st.slider("Boundary Hitting Frequency (Δ %)", -5.0, 15.0, 6.0)
-        d_econ = st.slider("Economy Rate Improvement (Δ RPO reduction)", -2.0, 2.0, 0.8)
-        d_dots = st.slider("Dot Ball Bowling Mastery (Δ %)", -5.0, 15.0, 8.0)
+        d_sr = st.slider("Death Overs Strike Rate Boost (Δ)", -10.0, 35.0, 15.0, key="whatif_d_sr")
+        d_bound = st.slider("Boundary Hitting Frequency (Δ %)", -5.0, 15.0, 6.0, key="whatif_d_bound")
+        d_econ = st.slider("Economy Rate Improvement (Δ RPO reduction)", -2.0, 2.0, 0.8, key="whatif_d_econ")
+        d_dots = st.slider("Dot Ball Bowling Mastery (Δ %)", -5.0, 15.0, 8.0, key="whatif_d_dots")
         
     # Projected Rating Calculation
     gain = (d_sr * 0.08) + (d_bound * 0.12) + (d_econ * 1.5) + (d_dots * 0.10)
@@ -900,7 +964,7 @@ elif menu == "🏆 Model Benchmarks & Defense":
     with c_m1:
         st.markdown("#### Model Selector")
         clf_options = list(metrics["classification"].keys())
-        sel_clf = st.selectbox("Inspect Confusion Matrix for:", clf_options, index=0)
+        sel_clf = st.selectbox("Inspect Confusion Matrix for:", clf_options, index=0, key="cm_clf_select")
         selected_stats = metrics["classification"][sel_clf]
         st.metric("Test Accuracy", f"{selected_stats['Test_Accuracy']*100:.2f}%")
         st.metric("Macro F1-Score", f"{selected_stats['Test_F1_Macro']:.4f}")
