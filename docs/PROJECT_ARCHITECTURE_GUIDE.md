@@ -47,8 +47,7 @@
 ├── src/
 │   ├── cricket_data_pipeline.py             # Raw delivery aggregation & multi-skill feature engineering
 │   ├── train_cricket_models.py              # Model training, 5-fold cross-validation & artifact serialization
-│   ├── create_cricket_notebook.py           # Programmatic JSON generator for reproducible Jupyter notebook
-│   └── generate_all_docs.py                 # Automated PDF documentation generator and builder
+│   └── create_cricket_notebook.py           # Programmatic JSON generator for reproducible Jupyter notebook
 └── docs/
     ├── MACHINE_LEARNING_GUIDE.md & .pdf     # In-depth guide to all ML topics (What, When, Why, How)
     └── PROJECT_ARCHITECTURE_GUIDE.md & .pdf # File-by-file architectural blueprint (This document)
@@ -205,13 +204,6 @@
 - **WHEN:** Executed whenever notebook code or narrative documentation needs automated re-generation (`python src/create_cricket_notebook.py`).
 - **WHY:** Guarantees 100% reproducibility of the research notebook without manual copy-pasting across environments.
 
----
-
-#### `src/generate_all_docs.py`, `src/build_ml_guide.py`, `src/build_project_guide.py` (Documentation Suite)
-- **WHAT:** Automated documentation generators that construct comprehensive technical guides in Markdown, publication-styled HTML, and convert them to PDFs.
-- **HOW:** Programmatically compiles technical text, tables, formulas, and CSS styles, then invokes Google Chrome headless (`--headless --disable-gpu --print-to-pdf`) to render vector-sharp PDF files.
-- **WHEN:** Executed when updating system documentation or exporting stakeholder dossiers.
-- **WHY:** Provides franchise executives with immediate, beautifully formatted printable PDF documentation alongside version-controlled Markdown files.
 
 ---
 
