@@ -277,17 +277,6 @@ with st.sidebar:
         label_visibility="collapsed",
         key="war_room_nav"
     )
-    
-    st.markdown("---")
-    st.caption("Franchise Intelligence Overview")
-    st.markdown("""
-    - **Total Players:** 619 Pro Cricketers
-    - **Total Deliveries:** 260,920 Balls
-    - **ML Rating Accuracy:** $R^2 = 0.9789$
-    - **Tier Classification:** $95.16\%$ Accuracy
-    - **Archetypes:** 5 Tactical Clusters
-    """)
-    st.caption("Enterprise Sports Analytics Suite")
 
 
 # =============================================================================
