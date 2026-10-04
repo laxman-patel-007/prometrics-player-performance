@@ -990,14 +990,3 @@ elif menu == "🏆 Model Benchmarks & Defense":
         fig_b2 = px.bar(imp_clf, x="Weight", y="Factor", orientation="h", color="Weight", color_continuous_scale="Cividis")
         fig_b2.update_layout(yaxis=dict(autorange="reversed"), coloraxis_showscale=False)
         st.plotly_chart(style_chart(fig_b2, height=360), use_container_width=True)
-        
-    st.markdown("---")
-    st.subheader("5. Technical Defense & Viva Voce Q&A for Organizations")
-    st.markdown("""
-    - **Q1: Why did Random Forest Regressor achieve an exceptional $R^2 = 0.9789$ and RMSE of $1.25$?**  
-      *A:* Cricket performance has complex non-linear thresholds: a strike rate of 150+ in death overs is exponentially more valuable than a strike rate of 120 in powerplays; similarly, bowling economy below 7.5 in death overs has an outsized win contribution. Random Forest effortlessly partitions these multi-dimensional boundary conditions.
-    - **Q2: Why is the Clutch Match-Winner Index so influential in player valuation?**  
-      *A:* Franchise cricket is outcome-driven. Players who routinely deliver in clutch situations (earning Player of the Match awards and scoring match-winning fifties) have demonstrated psychological resilience under extreme franchise pressure.
-    - **Q3: How does this system provide real economic value to an IPL franchise?**  
-      *A:* During IPL mega-auctions with ₹100+ Crore purse limits, emotional bidding wars often result in overpaying for brand names. CricMetrics Pro gives franchise directors quantitative valuation anchors to recruit high-performing, undervalued tactical archetypes ("Moneyball for Cricket").
-    """)
