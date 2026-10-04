@@ -378,27 +378,29 @@ if menu == "🏛️ War Room & Roster Intel":
         
     st.caption(f"Displaying {len(filtered)} players matching filters")
     
-    display_cols = [
-        "player_name", "primary_role", "matches_played", "total_runs", "batting_strike_rate", 
-        "batting_average", "wickets_taken", "economy_rate", "death_overs_strike_rate", 
-        "overall_performance_rating", "performance_tier", "estimated_auction_val_cr"
-    ]
-    
-    st.dataframe(
-        filtered[display_cols].sort_values("overall_performance_rating", ascending=False),
-        column_config={
-            "overall_performance_rating": st.column_config.ProgressColumn(
-                "Performance Rating", format="%.1f", min_value=50, max_value=95
-            ),
-            "estimated_auction_val_cr": st.column_config.NumberColumn(
-                "Est. Auction (₹ Cr)", format="₹%.1f Cr"
-            ),
-            "batting_strike_rate": st.column_config.NumberColumn("Bat SR", format="%.1f"),
-            "economy_rate": st.column_config.NumberColumn("Econ Rate", format="%.2f")
-        },
-        use_container_width=True,
-        height=380
-    )
+    if filtered.empty:
+        st.info("⚠️ No players matched the selected filters. Please broaden your selection criteria above.")
+    else:
+        display_cols = [
+            "player_name", "primary_role", "matches_played", "total_runs", "batting_strike_rate", 
+            "batting_average", "wickets_taken", "economy_rate", "death_overs_strike_rate", 
+            "overall_performance_rating", "performance_tier", "estimated_auction_val_cr"
+        ]
+        
+        st.dataframe(
+            filtered[display_cols].sort_values("overall_performance_rating", ascending=False),
+            column_config={
+                "overall_performance_rating": st.column_config.ProgressColumn(
+                    "Performance Rating", format="%.1f", min_value=50, max_value=95
+                ),
+                "estimated_auction_val_cr": st.column_config.NumberColumn(
+                    "Est. Auction (₹ Cr)", format="₹%.1f Cr"
+                ),
+                "batting_strike_rate": st.column_config.NumberColumn("Bat SR", format="%.1f"),
+                "economy_rate": st.column_config.NumberColumn("Econ Rate", format="%.2f")
+            },
+            height=380
+        )
 
 
 # =============================================================================
@@ -738,8 +740,7 @@ elif menu == "🧩 Tactical Archetypes & 2D Map":
     for c in feature_cols:
         if c not in X_all.columns:
             X_all[c] = 0.0
-    X_all = X_all[feature_cols]
-    X_scaled_all = models["scaler"].transform(X_all)
+    X_scaled_all = pd.DataFrame(models["scaler"].transform(X_all), columns=feature_cols)
     pca_coords = models["pca"].transform(X_scaled_all)
 
     df_pca = df.copy()
@@ -747,10 +748,9 @@ elif menu == "🧩 Tactical Archetypes & 2D Map":
     df_pca["PC2 (Batting vs Bowling Bias)"] = pca_coords[:, 1]
     
     cluster_cols = models["kmeans"]["features"]
-    cluster_indices = [feature_cols.index(c) for c in cluster_cols]
     df_pca["Tactical Archetype"] = [
         metrics["unsupervised"]["archetype_names"][str(c)] 
-        for c in models["kmeans"]["model"].predict(X_scaled_all[:, cluster_indices])
+        for c in models["kmeans"]["model"].predict(X_scaled_all[cluster_cols])
     ]
 
     p_col1, p_col2 = st.columns([3, 1])
@@ -789,9 +789,10 @@ elif menu == "🚀 What-If Franchise Simulator":
     </div>
     """, unsafe_allow_html=True)
     
+    player_choices = df.sort_values("overall_performance_rating", ascending=False)["player_name"].tolist()
     selected_player = st.selectbox(
-        "Choose an existing player from the database:",
-        df["player_name"].tolist()
+        "Choose an existing player from the database (ranked by rating):",
+        player_choices
     )
     p_data = df[df["player_name"] == selected_player].iloc[0]
     
@@ -873,8 +874,7 @@ elif menu == "🏆 Model Benchmarks & Defense":
             "CV_R2_mean": st.column_config.NumberColumn("5-Fold CV R²", format="%.4f"),
             "Test_RMSE": st.column_config.NumberColumn("Test RMSE", format="%.4f"),
             "Test_MAE": st.column_config.NumberColumn("Test MAE", format="%.4f")
-        },
-        use_container_width=True
+        }
     )
     
     st.markdown("---")
@@ -890,13 +890,40 @@ elif menu == "🏆 Model Benchmarks & Defense":
             "Test_F1_Macro": st.column_config.NumberColumn("Macro F1", format="%.4f"),
             "Test_Precision": st.column_config.NumberColumn("Precision", format="%.4f"),
             "Test_Recall": st.column_config.NumberColumn("Recall", format="%.4f")
-        },
-        use_container_width=True
+        }
     )
     
     st.markdown("---")
     
-    st.subheader("3. Feature Importance Analysis (What Drives the AI?)")
+    st.subheader("3. Talent Tier Classification Confusion Matrix")
+    c_m1, c_m2 = st.columns([1, 2])
+    with c_m1:
+        st.markdown("#### Model Selector")
+        clf_options = list(metrics["classification"].keys())
+        sel_clf = st.selectbox("Inspect Confusion Matrix for:", clf_options, index=0)
+        selected_stats = metrics["classification"][sel_clf]
+        st.metric("Test Accuracy", f"{selected_stats['Test_Accuracy']*100:.2f}%")
+        st.metric("Macro F1-Score", f"{selected_stats['Test_F1_Macro']:.4f}")
+        st.caption("Diagonal elements represent correct tier classifications. Off-diagonals represent misclassifications.")
+        
+    with c_m2:
+        cm_data = metrics["classification"][sel_clf]["Confusion_Matrix"]
+        tier_names = ["Developing / Squad", "Core / Star", "Elite / Marquee"]
+        fig_cm = px.imshow(
+            cm_data,
+            labels=dict(x="Predicted Talent Tier", y="Actual Ground Truth Tier", color="Player Count"),
+            x=tier_names,
+            y=tier_names,
+            text_auto=True,
+            color_continuous_scale="Blues",
+            title=f"Confusion Matrix: {sel_clf}"
+        )
+        fig_cm.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(style_chart(fig_cm, height=350), use_container_width=True)
+
+    st.markdown("---")
+    
+    st.subheader("4. Feature Importance Analysis (What Drives the AI?)")
     b1, b2 = st.columns(2)
     with b1:
         st.markdown("#### Regression Factor Importance (Random Forest)")
@@ -912,7 +939,7 @@ elif menu == "🏆 Model Benchmarks & Defense":
         st.plotly_chart(style_chart(fig_b2, height=360), use_container_width=True)
         
     st.markdown("---")
-    st.subheader("4. Technical Defense & Viva Voce Q&A for Organizations")
+    st.subheader("5. Technical Defense & Viva Voce Q&A for Organizations")
     st.markdown("""
     - **Q1: Why did Random Forest Regressor achieve an exceptional $R^2 = 0.9789$ and RMSE of $1.25$?**  
       *A:* Cricket performance has complex non-linear thresholds: a strike rate of 150+ in death overs is exponentially more valuable than a strike rate of 120 in powerplays; similarly, bowling economy below 7.5 in death overs has an outsized win contribution. Random Forest effortlessly partitions these multi-dimensional boundary conditions.
