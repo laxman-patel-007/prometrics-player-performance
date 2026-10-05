@@ -28,9 +28,6 @@
 │       └── deliveries_2008_2024.csv         # 260,920 ball-by-ball records from 17 IPL seasons (69 MB)
 ├── models/
 │   ├── scaler.joblib                        # StandardScaler tool to normalize numbers (mean=0, std=1)
-│   ├── random_forest_regressor.joblib       # Best rating model (R² = 0.9789, error = 1.25 points)
-│   ├── linear_regression.joblib             # Baseline straight-line rating model (R² = 0.9490)
-│   ├── polynomial_regression.joblib         # Interaction regression model (R² = 0.9087)
 │   ├── knn_classifier.joblib                # Best talent tier classifier (95.16% Accuracy)
 │   ├── random_forest_classifier.joblib      # Production tier classifier & feature importance (94.35%)
 │   ├── logistic_regression.joblib           # Probabilistic tier classifier (87.90% Accuracy)
@@ -40,10 +37,10 @@
 │   ├── feature_metadata.json                # Column names, order, and tier labels
 │   └── metrics_summary.json                 # Test scores, cross-validation numbers, and confusion matrices
 ├── notebooks/
-│   └── cricket_player_performance_analysis.ipynb # 22-cell Jupyter research notebook with charts
+│   └── cricket_player_performance_analysis.ipynb # 21-cell Jupyter research notebook with charts
 ├── src/
 │   ├── cricket_data_pipeline.py             # Script that cleans 260k balls into 619 player rows
-│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 9 ML models
+│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 6 ML models
 │   └── create_cricket_notebook.py           # Script that automatically builds the Jupyter notebook
 └── docs/
     ├── ML_MODELS_GUIDE.md & .pdf            # Simple & easy guide to all ML models (What, When, Why, How)
@@ -124,17 +121,16 @@
 ### 2.3 Machine Learning Layer (`models/` and `src/`)
 
 #### `src/train_cricket_models.py` (Master Training & Evaluation Script)
-- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 9 Machine Learning models and the StandardScaler.
+- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 6 Machine Learning models (4 Classification, 1 Clustering, 1 PCA) and the StandardScaler.
 - **HOW:**
   1. Loads `cricket_players_clean.csv`.
   2. Applies One-Hot Encoding on `primary_role`.
   3. Splits data into 80% training (495 players) and 20% testing (124 players).
   4. Fits `StandardScaler` on training data and scales features.
-  5. Trains and cross-validates 3 regression models (Linear, Polynomial, Random Forest) using 5-Fold CV.
-  6. Trains and cross-validates 4 classification models (KNN, Random Forest, Logistic, Decision Tree) using 5-Fold Stratified CV.
-  7. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring.
-  8. Fits PCA (2 components) for 2D visualization.
-  9. Saves all 10 trained binary model and transformer files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
+  5. Trains and cross-validates 4 classification models (KNN, Random Forest, Logistic, Decision Tree) using 5-Fold Stratified CV.
+  6. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring.
+  7. Fits PCA (2 components) for 2D visualization.
+  8. Saves all 7 trained binary model and transformer files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
 - **WHEN:** Run during model development or retraining (`python src/train_cricket_models.py`).
 - **WHY:** Centralizes all model training and testing into one automated, reproducible script.
 
@@ -145,11 +141,8 @@
 | File Name | Model Type | What It Does | Score in Project |
 | :--- | :--- | :--- | :--- |
 | `models/scaler.joblib` | StandardScaler | Rescales all 29 features to $\mu=0, \sigma=1$. | Prevents large numbers from overpowering small numbers. |
-| `models/random_forest_regressor.joblib` | Random Forest Regressor | **Production Rating Engine:** Predicts continuous player rating (50–95). | **$R^2 = 0.9789$, Error = 1.25 pts** (Winner) |
-| `models/linear_regression.joblib` | Linear Regression (OLS) | Baseline straight-line rating model. | $R^2 = 0.9490$, Error = 1.95 pts |
-| `models/polynomial_regression.joblib` | Polynomial Regression (Deg 2) | Tests multiplicative synergy between key stats. | $R^2 = 0.9087$, Error = 2.61 pts |
-| `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=5$) | **Production Tier Classifier:** Assigns talent tier by finding 5 similar peers. | **95.16% Accuracy** (Top Classifier) |
-| `models/random_forest_classifier.joblib` | Random Forest Classifier | Ensemble of 180 trees voting on tier & feature importance. | 94.35% Accuracy (94.75% 5-fold CV) |
+| `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=7$) | **Top Accuracy Classifier:** Assigns talent tier by finding 7 similar peers. | **95.16% Accuracy** (Top Classifier) |
+| `models/random_forest_classifier.joblib` | Random Forest Classifier | Ensemble of 150 trees voting on tier & feature importance. | 94.35% Accuracy (94.75% 5-fold CV) |
 | `models/logistic_regression.joblib` | Logistic Regression (Softmax) | Outputs exact risk probabilities for each tier. | 87.90% Accuracy |
 | `models/decision_tree_classifier.joblib` | Decision Tree (CART) | Visual IF-THEN flowchart for coaches. | 87.90% Accuracy |
 | `models/kmeans_model.joblib` | K-Means Clustering ($k=5$) | Groups players into 5 tactical playing styles. | Discovered 5 real tactical archetypes ($s=0.285$) |
@@ -162,15 +155,17 @@
 ### 2.4 Research, Development & Documentation Layer
 
 #### `notebooks/cricket_player_performance_analysis.ipynb` (Jupyter Research Notebook)
-- **WHAT:** An interactive 22-cell data science notebook documenting the complete research study.
+- **WHAT:** An interactive 21-cell data science notebook documenting the complete research study.
 - **HOW:** Contains executable code cells paired with Markdown explanations:
   - *Cells 1–4:* Problem formulation, data loading, missing value handling.
   - *Cells 5–8:* Exploratory Data Analysis, correlation heatmaps, role distributions.
   - *Cells 9–12:* One-hot encoding, stratified train/test split, standard scaling.
-  - *Cells 13–15:* 3-model regression benchmark (Linear, Poly, Random Forest) with 5-Fold CV.
-  - *Cells 16–18:* 4-model classification benchmark (KNN, RF, Logistic, Decision Tree) with confusion matrices.
-  - *Cells 19–20:* K-Means clustering ($k=5$) with Elbow and Silhouette charts.
-  - *Cells 21–22:* 2D PCA projection plot.
+  - *Cells 13–15:* 4-model classification benchmark (KNN, RF, Logistic, Decision Tree) with 5-Fold Stratified CV.
+  - *Cells 16–17:* Confusion matrix diagnostics (KNN vs Random Forest).
+  - *Cell 18:* Random Forest feature importances (Gini reduction weights).
+  - *Cell 19:* K-Means clustering ($k=5$) with Elbow and Silhouette charts.
+  - *Cell 20:* 2D PCA scree plot and explained variance.
+  - *Cell 21:* Technical Defense & Viva Voce Q&A.
 - **WHEN:** Opened in Jupyter Notebook or VS Code for interactive experimentation and grading review.
 - **WHY:** Gives professors, examiners, and data scientists a transparent, cell-by-cell walkthrough of our research.
 

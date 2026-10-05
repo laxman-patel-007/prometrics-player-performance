@@ -221,13 +221,10 @@ def load_datasets():
 def load_models():
     models = {
         "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
-        "linear_reg": joblib.load(os.path.join(BASE_DIR, "models/linear_regression.joblib")),
-        "poly_reg": joblib.load(os.path.join(BASE_DIR, "models/polynomial_regression.joblib")),
-        "rf_reg": joblib.load(os.path.join(BASE_DIR, "models/random_forest_regressor.joblib")),
-        "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
         "knn_clf": joblib.load(os.path.join(BASE_DIR, "models/knn_classifier.joblib")),
-        "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
         "rf_clf": joblib.load(os.path.join(BASE_DIR, "models/random_forest_classifier.joblib")),
+        "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
+        "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
         "kmeans": joblib.load(os.path.join(BASE_DIR, "models/kmeans_model.joblib")),
         "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
     }
@@ -286,8 +283,8 @@ if menu == "🏛️ War Room & Roster Intel":
         <div class="hero-title">Cricket Player Performance & Scouting Intelligence</div>
         <div class="hero-subtitle">
             An enterprise decision-support platform analyzing <strong>260,920 deliveries across 1,095 IPL matches (2008–2024)</strong>. 
-            Investigate measurable batting, bowling, and clutch factors to accurately predict player ratings ($R^2 = 0.9789$), 
-            evaluate talent tiers, discover tactical archetypes, and optimize franchise auction valuations.
+            Investigate measurable batting, bowling, and clutch factors to accurately predict talent tiers (<strong>95.16% Accuracy</strong>), 
+            discover tactical archetypes, and optimize franchise auction valuations.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -297,9 +294,9 @@ if menu == "🏛️ War Room & Roster Intel":
     with col1:
         st.metric("Qualified Cricketers", f"{len(df):,}", "17 IPL Seasons")
     with col2:
-        st.metric("Continuous Rating R²", f"{metrics['regression']['Random Forest Regressor']['Test_R2']:.4f}", "Random Forest")
+        st.metric("Top Tier Accuracy", f"{metrics['classification']['K-Nearest Neighbors (KNN)']['Test_Accuracy']*100:.2f}%", "KNN Classifier")
     with col3:
-        st.metric("Tier Classification Acc", f"{metrics['classification']['K-Nearest Neighbors (KNN)']['Test_Accuracy']*100:.1f}%", "KNN & RF (95%+)")
+        st.metric("5-Fold Stratified CV", f"{metrics['classification']['Random Forest Classifier']['CV_Accuracy_mean']*100:.2f}%", "Random Forest")
     with col4:
         st.metric("Tactical Archetypes", "5 Distinct Roles", "K-Means (k=5)")
         
@@ -624,10 +621,15 @@ elif menu == "⚡ AI Rating & Auction Valuation":
             val_matches = st.slider("Matches Played", 5, 260, key="sim_matches")
             val_mom = st.slider("Player of the Match Awards", 0, 25, key="sim_mom")
             
-        chosen_reg_name = st.selectbox(
-            "Evaluation Model Engine:",
-            ["Random Forest Regressor (Recommended - 97.9% R²)", "Linear Regression (OLS)", "Polynomial Regression (Deg 2)"],
-            key="sim_reg_engine"
+        chosen_clf_name = st.selectbox(
+            "Evaluation Classification Engine:",
+            [
+                "K-Nearest Neighbors (KNN - Top 95.2% Accuracy)",
+                "Random Forest Classifier (Ensemble of 150 Trees)",
+                "Multinomial Logistic Regression (Probabilistic Softmax)",
+                "Decision Tree Classifier (CART Flowchart)"
+            ],
+            key="sim_clf_engine"
         )
 
     # Compute composite indices matching pipeline
@@ -679,19 +681,34 @@ elif menu == "⚡ AI Rating & Auction Valuation":
     input_df = pd.DataFrame([input_dict])
     input_scaled = pd.DataFrame(models["scaler"].transform(input_df), columns=input_df.columns)
 
-    if "Linear" in chosen_reg_name:
-        pred_rating = models["linear_reg"].predict(input_scaled)[0]
-    elif "Polynomial" in chosen_reg_name:
-        poly_pkg = models["poly_reg"]
-        poly_in = poly_pkg["poly_transformer"].transform(input_df[poly_pkg["poly_cols"]])
-        pred_rating = poly_pkg["poly_model"].predict(poly_in)[0]
+    # Classification Model Inference
+    if "KNN" in chosen_clf_name:
+        clf_model = models["knn_clf"]
+    elif "Random Forest" in chosen_clf_name:
+        clf_model = models["rf_clf"]
+    elif "Logistic" in chosen_clf_name:
+        clf_model = models["log_clf"]
     else:
-        pred_rating = models["rf_reg"].predict(input_scaled)[0]
+        clf_model = models["dt_clf"]
+
+    pred_tier_code = int(clf_model.predict(input_scaled)[0])
+    tier_map = {0: "Developing / Squad", 1: "Core / Star", 2: "Elite / Marquee"}
+    tier_class_map = {0: "tier-dev", 1: "tier-star", 2: "tier-elite"}
+    tier_label = tier_map.get(pred_tier_code, "Developing / Squad")
+    tier_class = tier_class_map.get(pred_tier_code, "tier-dev")
+
+    tier_probs = None
+    if hasattr(clf_model, "predict_proba"):
+        tier_probs = clf_model.predict_proba(input_scaled)[0]
+
+    if tier_probs is not None:
+        pred_rating = (tier_probs[0] * 61.0) + (tier_probs[1] * 74.5) + (tier_probs[2] * 87.0)
+    else:
+        tier_base_rating = {0: 62.0, 1: 74.5, 2: 87.0}
+        pred_rating = tier_base_rating.get(pred_tier_code, 65.0)
 
     pred_rating = float(np.clip(pred_rating, 50.0, 95.0))
-    tier_label = "Elite / Marquee" if pred_rating >= 80.0 else "Core / Star" if pred_rating >= 68.0 else "Developing / Squad"
-    tier_class = "tier-elite" if pred_rating >= 80.0 else "tier-star" if pred_rating >= 68.0 else "tier-dev"
-    
+
     # Auction purse estimate
     auc_base = np.exp((pred_rating - 58.0) * 0.09) * 1.5
     if p_role == "All-Rounder":
@@ -701,17 +718,35 @@ elif menu == "⚡ AI Rating & Auction Valuation":
     pred_auction = round(float(np.clip(auc_base, 0.5, 24.5)), 1)
 
     with col_card:
+        probs_html = ""
+        if tier_probs is not None:
+            probs_html = f"""
+            <div style="margin-top: 0.6rem; font-size: 0.78rem; color: #CBD5E1; text-align: left; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-weight: 700; margin-bottom: 4px; color: #FBBF24;">Classification Probabilities:</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <span>👑 Elite / Marquee:</span> <strong>{tier_probs[2]*100:.1f}%</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <span>⭐ Core / Star:</span> <strong>{tier_probs[1]*100:.1f}%</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>🌱 Developing / Squad:</span> <strong>{tier_probs[0]*100:.1f}%</strong>
+                </div>
+            </div>
+            """
+
         st.markdown(f"""
         <div class="auction-card">
             <div style="font-size: 0.9rem; font-weight: 700; color: #94A3B8; text-transform: uppercase;">{p_role}</div>
             <div class="auction-rating">{pred_rating:.1f}</div>
             <div style="margin-bottom: 0.6rem;">
-                <span class="tier-badge {tier_class}">{tier_label}</span>
+                <span class="tier-badge {tier_class}" style="font-size: 0.95rem; padding: 0.4rem 0.9rem;">{tier_label}</span>
             </div>
-            <div style="font-size: 0.9rem; color: #94A3B8; margin-top: 0.5rem;">Estimated IPL Auction Purse Valuation</div>
+            {probs_html}
+            <div style="font-size: 0.9rem; color: #94A3B8; margin-top: 0.7rem;">Estimated IPL Auction Valuation</div>
             <div class="auction-price">₹{pred_auction} Cr</div>
             <hr style="border-color: rgba(255,255,255,0.1); margin: 0.8rem 0;">
-            <div style="font-size: 0.82rem; color: #94A3B8;">Engine: {chosen_reg_name}</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">Engine: {chosen_clf_name.split(' (')[0]}</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -909,27 +944,13 @@ elif menu == "🏆 Model Benchmarks & Defense":
         <div class="org-pill">Empirical Model Governance</div>
         <div class="hero-title">Model Evaluation Benchmarks & Technical Defense</div>
         <div class="hero-subtitle">
-            Comprehensive evaluation across 10 Machine Learning algorithms. 
-            Validated with 5-Fold Cross Validation, $R^2$, RMSE, MAE, Confusion Matrices, and Gini Feature Importance rankings.
+            Comprehensive empirical evaluation across 4 Supervised Classification algorithms, K-Means Clustering, and PCA. 
+            Validated with 5-Fold Stratified Cross Validation, Accuracy, Precision, Recall, Macro F1, Confusion Matrices, and Gini Feature Importance rankings.
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.subheader("1. Continuous Regression Models (Performance Rating Estimation)")
-    reg_df = pd.DataFrame(metrics["regression"]).T.reset_index().rename(columns={"index": "Algorithm"})
-    st.dataframe(
-        reg_df.sort_values("Test_R2", ascending=False),
-        column_config={
-            "Test_R2": st.column_config.NumberColumn("Test R²", format="%.4f"),
-            "CV_R2_mean": st.column_config.NumberColumn("5-Fold CV R²", format="%.4f"),
-            "Test_RMSE": st.column_config.NumberColumn("Test RMSE", format="%.4f"),
-            "Test_MAE": st.column_config.NumberColumn("Test MAE", format="%.4f")
-        }
-    )
-    
-    st.markdown("---")
-    
-    st.subheader("2. Multi-Class Talent Tier Classification Models")
+    st.subheader("1. Supervised Talent Tier Classification Benchmark (4 Algorithms)")
     clf_df = pd.DataFrame(metrics["classification"]).T.reset_index().rename(columns={"index": "Algorithm"})
     clf_df_clean = clf_df.drop(columns=["Confusion_Matrix"])
     st.dataframe(
@@ -937,15 +958,17 @@ elif menu == "🏆 Model Benchmarks & Defense":
         column_config={
             "Test_Accuracy": st.column_config.NumberColumn("Test Accuracy", format="%.2%"),
             "CV_Accuracy_mean": st.column_config.NumberColumn("5-Fold CV Acc", format="%.2%"),
+            "CV_Accuracy_std": st.column_config.NumberColumn("CV Std Dev", format="%.4f"),
             "Test_F1_Macro": st.column_config.NumberColumn("Macro F1", format="%.4f"),
             "Test_Precision": st.column_config.NumberColumn("Precision", format="%.4f"),
             "Test_Recall": st.column_config.NumberColumn("Recall", format="%.4f")
-        }
+        },
+        use_container_width=True
     )
     
     st.markdown("---")
     
-    st.subheader("3. Talent Tier Classification Confusion Matrix")
+    st.subheader("2. Talent Tier Classification Confusion Matrix")
     c_m1, c_m2 = st.columns([1, 2])
     with c_m1:
         st.markdown("#### Model Selector")
@@ -973,17 +996,43 @@ elif menu == "🏆 Model Benchmarks & Defense":
 
     st.markdown("---")
     
-    st.subheader("4. Feature Importance Analysis (What Drives the AI?)")
-    b1, b2 = st.columns(2)
+    st.subheader("3. Classification Feature Importance (Random Forest Gini Impurity)")
+    b1, b2 = st.columns([2, 1])
     with b1:
-        st.markdown("#### Regression Factor Importance (Random Forest)")
-        imp_reg = pd.DataFrame(list(metrics["feature_importances"]["regression_top10"].items()), columns=["Factor", "Weight"])
-        fig_b1 = px.bar(imp_reg, x="Weight", y="Factor", orientation="h", color="Weight", color_continuous_scale="Viridis")
-        fig_b1.update_layout(yaxis=dict(autorange="reversed"), coloraxis_showscale=False)
-        st.plotly_chart(style_chart(fig_b1, height=360), use_container_width=True)
-    with b2:
-        st.markdown("#### Classification Factor Importance (Random Forest)")
         imp_clf = pd.DataFrame(list(metrics["feature_importances"]["classification_top10"].items()), columns=["Factor", "Weight"])
         fig_b2 = px.bar(imp_clf, x="Weight", y="Factor", orientation="h", color="Weight", color_continuous_scale="Cividis")
         fig_b2.update_layout(yaxis=dict(autorange="reversed"), coloraxis_showscale=False)
-        st.plotly_chart(style_chart(fig_b2, height=360), use_container_width=True)
+        st.plotly_chart(style_chart(fig_b2, height=380), use_container_width=True)
+    with b2:
+        st.markdown("#### 🎯 Scouting Takeaways")
+        st.markdown("""
+        - **Clutch Match-Winner Index** and **Batting Impact Index** are the strongest drivers of elite status.
+        - **Player of the Match awards** heavily separate marquee leaders from core tournament starters.
+        - **Dot Ball % and Death Overs Economy** determine bowling tier separation.
+        """)
+
+    st.markdown("---")
+
+    st.subheader("4. Unsupervised & Dimensionality Reduction Architecture")
+    u1, u2 = st.columns(2)
+    with u1:
+        st.markdown(f"""
+        <div class="feature-card">
+            <div class="card-icon">🧩</div>
+            <div class="card-title">K-Means Clustering (k=5 Archetypes)</div>
+            <p><strong>Silhouette Score:</strong> {metrics['unsupervised']['silhouette_scores'][metrics['unsupervised']['k_range'].index(metrics['unsupervised']['optimal_k'])]:.4f}</p>
+            <p><strong>Inertia (Tightness):</strong> {metrics['unsupervised']['inertias'][metrics['unsupervised']['k_range'].index(metrics['unsupervised']['optimal_k'])]:.1f}</p>
+            <p style="color: #94A3B8; font-size: 0.85rem;">Validates that modern T20 cricketers group into 5 tactical clusters (Anchor, Finisher, Pacer, Spinner, All-Rounder) rather than broad binary labels.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with u2:
+        st.markdown(f"""
+        <div class="feature-card">
+            <div class="card-icon">🗺️</div>
+            <div class="card-title">Principal Component Analysis (PCA)</div>
+            <p><strong>Component 1 Variance:</strong> {metrics['pca']['explained_variance_ratio'][0]*100:.2f}%</p>
+            <p><strong>Component 2 Variance:</strong> {metrics['pca']['explained_variance_ratio'][1]*100:.2f}%</p>
+            <p><strong>Total 2D Variance Captured:</strong> {metrics['pca']['total_variance_explained']*100:.2f}%</p>
+            <p style="color: #94A3B8; font-size: 0.85rem;">Compresses 29-dimensional performance vectors into an interactive 2D map for roster balance visualization.</p>
+        </div>
+        """, unsafe_allow_html=True)

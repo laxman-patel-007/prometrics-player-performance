@@ -7,15 +7,14 @@
 
 ## 1. Quick Summary of All Models
 
-In this project, we analyze **619 real IPL cricketers** across **17 seasons (2008–2024)** using **260,920 deliveries**. We use **9 Machine Learning models** plus **2 data preparation tools** across 4 main areas:
+In this project, we analyze **619 real IPL cricketers** across **17 seasons (2008–2024)** using **260,920 deliveries**. We use **6 Machine Learning models** plus **2 data preparation tools** across 3 main areas:
 
 | Area | Goal | Models Used | Best Model |
 | :--- | :--- | :--- | :--- |
-| **1. Regression** | Predict a continuous player rating (50 to 95) and fair auction price (₹ Crores) | • Linear Regression<br>• Polynomial Regression<br>• Random Forest Regressor | **Random Forest Regressor**<br>($R^2 = 0.9789$, Error = 1.25 pts) |
-| **2. Classification** | Put players into 3 talent tiers:<br>• Elite / Marquee (Tier 1)<br>• Core / Star (Tier 2)<br>• Developing / Squad (Tier 0) | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
-| **3. Clustering** | Group players by tactical playing style without using preset labels | • K-Means Clustering ($k=5$) | **5 Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
-| **4. Dimensionality Reduction** | Compress 29 complex statistics into an easy 2D map (X, Y) | • Principal Component Analysis (PCA) | **2D Latent Map**<br>(Explains 60.8% of all variation) |
-| **5. Data Preparation** | Clean and scale data so models can read it properly | • StandardScaler ($Z$-score scaling)<br>• One-Hot Encoding | **StandardScaler** ($\mu=0, \sigma=1$) |
+| **1. Classification** | Put players into 3 talent tiers:<br>• Elite / Marquee (Tier 1)<br>• Core / Star (Tier 2)<br>• Developing / Squad (Tier 0) | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
+| **2. Clustering** | Group players by tactical playing style without using preset labels | • K-Means Clustering ($k=5$) | **5 Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
+| **3. Dimensionality Reduction** | Compress 29 complex statistics into an easy 2D map (X, Y) | • Principal Component Analysis (PCA) | **2D Latent Map**<br>(Explains 60.8% of all variation) |
+| **4. Data Preparation** | Clean and scale data so models can read it properly | • StandardScaler ($Z$-score scaling)<br>• One-Hot Encoding | **StandardScaler** ($\mu=0, \sigma=1$) |
 
 ---
 
@@ -48,73 +47,18 @@ Before feeding cricket numbers into machine learning models, we must prepare the
 
 ---
 
-## 3. Supervised Learning: Regression Models (Predicting Player Rating)
-
-Regression models predict a continuous number (here, the player's overall rating between 50 and 95).
-
----
-
-### 3.1 Linear Regression (Ordinary Least Squares - OLS)
-- **WHAT is it?**  
-  The most basic and well-known regression model. It draws a straight line (or flat plane) through the data. It gives each stat a fixed weight (coefficient):
-  $$\text{Rating} = \beta_0 + (\beta_1 \times \text{Runs}) + (\beta_2 \times \text{Strike Rate}) + (\beta_3 \times \text{Wickets}) + \dots$$
-- **WHEN is it used?**  
-  Used in Tab 3 and Tab 6 as our baseline reference model.
-- **WHY do we need it?**  
-  It is simple, extremely fast, and easy to interpret. You can look at the weights and clearly see: "Every extra Player of the Match award adds +0.8 points to the rating."
-- **HOW does it work & performance?**  
-  - It finds the line that minimizes the sum of squared differences between real ratings and predicted ratings.
-  - **Test $R^2$ Score:** `0.9490` (explains 94.9% of rating variance).
-  - **Average Error (RMSE):** `1.95` points out of 100.
-  - **Weakness:** It assumes performance grows in a straight line, but cricket has sharp jumps that straight lines cannot capture.
-
----
-
-### 3.2 Polynomial Regression (Degree 2)
-- **WHAT is it?**  
-  An upgrade to Linear Regression that also looks at combinations and squares of stats (for example: $\text{Strike Rate} \times \text{Boundary \%}$ or $\text{Death Economy} \times \text{Dot Ball \%}$).
-- **WHEN is it used?**  
-  Used when testing whether stats multiply each other's value.
-- **WHY do we need it?**  
-  Cricket skills are multiplicative! A strike rate of 160 is good, but having a strike rate of 160 **together with** a high boundary percentage (>65%) is massively more dangerous in death overs than hitting 160 with risky singles. Polynomial regression tests this synergy.
-- **HOW does it work & performance?**  
-  - We use Scikit-Learn's `PolynomialFeatures(degree=2)` on key impact stats, then fit a `LinearRegression()` model.
-  - **Test $R^2$ Score:** `0.9087`.
-  - **Average Error (RMSE):** `2.61` points.
-  - **Weakness:** Creating pairs of features increases the number of columns, which causes slight overfitting compared to tree models.
-
----
-
-### 3.3 Random Forest Regressor (Ensemble of Decision Trees) — 🏆 WINNER
-- **WHAT is it?**  
-  A team (ensemble) of **180 decision trees**. Each tree looks at random subsets of players and stats, makes its own prediction, and the forest takes the average of all 180 trees as the final answer.
-- **WHEN is it used?**  
-  **This is the main production engine** running in Tab 1, Tab 3, and Tab 5 of the Streamlit app. It powers the live auction purse calculator.
-- **WHY do we need it?**  
-  1. **Best Accuracy in the Project:** Achieved an outstanding $R^2 = 0.9789$ and lowest error (RMSE = 1.25 points).
-  2. **Handles Sudden Cricket Thresholds:** In T20 cricket, giving away 6.5 runs per over in the death overs (overs 16–20) is game-winning, while giving away 11.5 is disastrous. Decision trees effortlessly split players at these exact thresholds (e.g., `IF Death Econ < 7.5 THEN add big rating bonus`).
-  3. **No Overfitting:** Averaging 180 trees cancels out random noise and mistakes from individual trees.
-- **HOW does it work & performance?**  
-  - Built using `RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42)`.
-  - **Test $R^2$ Score:** `0.9789` (97.89% accurate).
-  - **Average Error (RMSE):** `1.2562` points (very small error).
-  - **Mean Absolute Error (MAE):** `0.9024` points.
-
-
----
-
-## 4. Supervised Learning: Classification Models (Talent Tiers)
+## 3. Supervised Learning: Classification Models (Talent Tiers)
 
 Classification models assign a player to one of **3 discrete talent categories**:
-- **Tier 1 (Elite / Marquee):** Rating $\ge 80.0$ (Match winners, captaincy candidates, high-value auction picks).
-- **Tier 2 (Core / Star):** Rating $68.0$ to $79.9$ (Consistent tournament starters and reliable anchors).
-- **Tier 0 (Developing / Squad):** Rating $< 68.0$ (Emerging domestic prospects and squad backup options).
+- **Tier 1 (Elite / Marquee):** High-impact star match winners, captaincy candidates, high-value auction picks.
+- **Tier 2 (Core / Star):** Consistent tournament starters and reliable anchors.
+- **Tier 0 (Developing / Squad):** Emerging domestic prospects and squad backup options.
 
 ---
 
-### 4.1 K-Nearest Neighbors (KNN, $k=5$) — 🏆 TOP ACCURACY
+### 3.1 K-Nearest Neighbors (KNN, $k=7$) — 🏆 TOP ACCURACY
 - **WHAT is it?**  
-  A model that classifies a player by finding the **5 most similar players** in cricket history and choosing the most common tier among those 5 neighbors.
+  A model that classifies a player by finding the **7 most similar players** in cricket history and choosing the most common tier among those neighbors.
 - **WHEN is it used?**  
   Used in Tab 2 and Tab 6 for talent tier classification.
 - **WHY do we need it?**  
@@ -123,68 +67,62 @@ Classification models assign a player to one of **3 discrete talent categories**
 - **HOW does it work & performance?**  
   - Calculates Euclidean distance across all 29 scaled stats:
     $$\text{Distance} = \sqrt{\sum (x_i - y_i)^2}$$
-  - Takes the 5 closest players ($k=5$) and takes a majority vote.
-  - **Test Accuracy:** `95.16%`.
-  - **Macro F1-Score:** `0.9501` (very balanced across all 3 tiers).
+  - Finds the 7 closest historical players and takes a distance-weighted vote.
+  - **Test Accuracy:** `95.16%` | **Macro F1-Score:** `0.9501` | **Precision:** `0.9601` | **Recall:** `0.9421`.
 
 ---
 
-### 4.2 Random Forest Classifier — 🏆 PRODUCTION TIER ENGINE
+### 3.2 Random Forest Classifier — 🏆 PRODUCTION TIER ENGINE
 - **WHAT is it?**  
-  An ensemble of **180 decision trees** voting on which tier a player belongs to.
+  A team of **150 decision trees** voting together on which tier a player belongs to.
 - **WHEN is it used?**  
   Powers the Tier Classification engine and the **Feature Importance Leaderboard** in Tab 6.
 - **WHY do we need it?**  
-  1. **Very High Accuracy:** `94.35%` on test data, and highest cross-validation score (`94.75%`).
-  2. **Explainability (Gini Importance):** Unlike "black-box" models, Random Forest tells team owners **why** it made a decision by ranking the top stats that decided the tiers.
+  1. **High & Stable Accuracy:** Achieved **94.35% test accuracy** and the highest cross-validation score (**94.75% across 5 folds**).
+  2. **Feature Importance (Explainability):** It tells franchise owners which stats matter most using Gini impurity.
 - **HOW does it work & performance?**  
-  - Built using `RandomForestClassifier(n_estimators=180, criterion='gini', random_state=42)`.
-  - **Test Accuracy:** `94.35%`.
-  - **5-Fold CV Accuracy:** `94.75%`.
+  - Built using `RandomForestClassifier(n_estimators=150, max_depth=10, random_state=42)`.
+  - **Test Accuracy:** `94.35%` | **5-Fold CV Score:** `94.75%` | **Macro F1:** `0.9459`.
   - **Top Factors Identified:** Clutch Match-Winner Index (12.8%), Batting Impact Index (11.6%), Player of the Match awards (7.8%).
 
 ---
 
-### 4.3 Decision Tree Classifier (CART)
+### 3.3 Decision Tree Classifier (CART)
 - **WHAT is it?**  
-  A visual flowchart that asks simple True/False questions step-by-step:
+  A visual flowchart of simple "IF-THEN" rules:
   - *Question 1:* Is `clutch_match_winner_index` $> 24.5$?
   - *If Yes:* Is `batting_impact_index` $> 62.0$? $\rightarrow$ **Elite Tier**
   - *If No:* Is `wickets_taken` $< 8$? $\rightarrow$ **Developing Tier**
 - **WHEN is it used?**  
-  Used when coaches or non-technical executives want a clear, rule-by-rule explanation without math formulas.
+  Used when coaches or non-technical executives want a clear, rule-by-rule explanation without complicated math.
 - **WHY do we need it?**  
-  It is the most interpretable model in machine learning. Anyone can trace the decision path on a sheet of paper.
+  It is the most interpretable model in data science. Anyone can trace the decision path on a sheet of paper.
 - **HOW does it work & performance?**  
-  - Uses the Gini Impurity formula to pick questions that cleanest separate the groups. Max depth is limited to 6 to prevent memorizing the data.
-  - **Test Accuracy:** `87.90%`.
-  - **Macro F1-Score:** `0.8812`.
+  - Uses the Gini Impurity formula to pick questions that cleanly split players into tiers.
+  - **Test Accuracy:** `87.90%` | **Macro F1-Score:** `0.8812`.
 
 ---
 
-### 4.4 Logistic Regression (Multinomial / Softmax)
+### 3.4 Logistic Regression (Multinomial / Softmax)
 - **WHAT is it?**  
-  A linear classification model that calculates the probability (from 0% to 100%) that a player belongs to each tier:
-  $$P(\text{Elite}) = 82\%, \quad P(\text{Core}) = 15\%, \quad P(\text{Developing}) = 3\%$$
+  A linear classification model that gives the exact probability percentage for each tier (for example: 85% Elite, 12% Core, 3% Developing).
 - **WHEN is it used?**  
-  Used as the standard baseline probabilistic classifier.
+  Used as a baseline probabilistic classifier.
 - **WHY do we need it?**  
   Franchise directors like to see risk percentages during auction bidding wars rather than just a flat "Yes/No" label.
 - **HOW does it work & performance?**  
   - Computes linear scores for each tier and uses the Softmax mathematical function to turn scores into probabilities that sum to 100%.
-  - **Test Accuracy:** `87.90%`.
-  - **Macro F1-Score:** `0.8853`.
-
+  - **Test Accuracy:** `87.90%` | **5-Fold CV Score:** `92.53%` | **Macro F1-Score:** `0.8853`.
 
 ---
 
-## 5. Unsupervised Learning: Clustering (Tactical Archetypes)
+## 4. Unsupervised Learning: Clustering (Tactical Archetypes)
 
-Unlike regression and classification, clustering has **no correct answer labels**. The computer looks at all players and groups them by similar playing styles on its own.
+Unlike classification, clustering has **no correct answer labels**. The computer looks at all players and groups them by similar playing styles on its own.
 
 ---
 
-### 5.1 K-Means Clustering ($k=5$)
+### 4.1 K-Means Clustering ($k=5$)
 - **WHAT is it?**  
   An algorithm that groups 619 cricketers into **5 tactical clusters** based on how close their stats are in multi-dimensional space.
 - **WHEN is it used?**  
@@ -207,11 +145,11 @@ Unlike regression and classification, clustering has **no correct answer labels*
 
 ---
 
-## 6. Dimensionality Reduction (Visualizing High-Dimensional Data)
+## 5. Dimensionality Reduction (Visualizing High-Dimensional Data)
 
 ---
 
-### 6.1 Principal Component Analysis (PCA, 2 Components)
+### 5.1 Principal Component Analysis (PCA, 2 Components)
 - **WHAT is it?**  
   A mathematical technique that compresses 29 different statistics down into **2 summary numbers (Component 1 and Component 2)** so that all 619 players can be drawn on a standard 2D scatter plot (X and Y axis).
 - **WHEN is it used?**  
@@ -227,7 +165,7 @@ Unlike regression and classification, clustering has **no correct answer labels*
 
 ---
 
-## 7. Model Evaluation & Validation Techniques
+## 6. Model Evaluation & Validation Techniques
 
 To ensure our models actually work on unseen matches and don't just memorize the past, we use rigorous testing methods:
 
@@ -235,25 +173,21 @@ To ensure our models actually work on unseen matches and don't just memorize the
    - 495 players (80%) are used to train the models.
    - 124 players (20%) are locked away in a vault and only used to test final performance.
    - "Stratified" means both sets have the exact same percentage of Elite, Core, and Developing players.
-2. **5-Fold Cross-Validation (Module VI):**
+2. **5-Fold Stratified Cross-Validation (Module VI):**
    - The training set is split into 5 equal parts. The model trains on 4 parts and tests on the 5th part, repeating this 5 times.
-   - We report the average and standard deviation (e.g. $0.9528 \pm 0.0129$). This proves the model is reliable and didn't just get lucky.
+   - We report the average and standard deviation (e.g. $0.9475 \pm 0.0142$). This proves the model is reliable and didn't just get lucky.
 3. **Evaluation Metrics Used:**
-   - **$R^2$ Score (Coefficient of Determination):** How much rating variation is explained ($1.0$ is perfect; Random Forest got $0.9789$).
-   - **RMSE (Root Mean Squared Error):** Average error in rating points ($1.25$ points).
-   - **Accuracy:** Percentage of correct tier predictions (KNN got $95.16\%$).
+   - **Accuracy:** Percentage of correct tier predictions (KNN got $95.16\%$, Random Forest got $94.35\%$).
    - **Macro F1-Score:** Balances precision and recall across small and large tiers so minority classes aren't ignored.
+   - **Precision & Recall:** Evaluates exact class sensitivity.
    - **Confusion Matrix:** A $3 \times 3$ grid showing where the model was right and where it made mistakes.
 
 ---
 
-## 8. Master Model Leaderboard & Comparison
+## 7. Master Model Leaderboard & Comparison
 
 | **Model Name** | Task | Syllabus Module | Test Score | 5-Fold CV Score | Why We Chose It |
 | :--- | :--- | :--- | :---: | :---: | :--- |
-| **Random Forest Regressor** | Continuous Rating | Module VIII | **$R^2 = 0.9789$**<br>(RMSE: 1.25) | **$0.9528 \pm 0.0129$** | **Production Winner:** Highest accuracy, handles non-linear cricket thresholds. |
-| **Linear Regression (OLS)** | Continuous Rating | Module IV | $R^2 = 0.9490$<br>(RMSE: 1.95) | $0.8797 \pm 0.0371$ | Baseline model; easy to explain exact weights. |
-| **Polynomial Regression** | Continuous Rating | Module IV | $R^2 = 0.9087$<br>(RMSE: 2.61) | $0.8739 \pm 0.0343$ | Tests multiplicative synergy between strike rate and boundaries. |
 | **K-Nearest Neighbors (KNN)** | Tier Classification | Module V | **$95.16\%$ Acc**<br>(F1: 0.9501) | $0.9030 \pm 0.0221$ | **Accuracy Winner:** Classifies players by finding historical peer matches. |
 | **Random Forest Classifier** | Tier Classification | Module VIII | $94.35\%$ Acc<br>(F1: 0.9459) | **$0.9475 \pm 0.0142$** | **Production Winner:** Stable across folds and gives Top 10 feature rankings. |
 | **Logistic Regression** | Tier Classification | Module V | $87.90\%$ Acc<br>(F1: 0.8853) | $0.9253 \pm 0.0180$ | Linear probabilistic model; gives exact risk percentages. |
@@ -266,4 +200,4 @@ To ensure our models actually work on unseen matches and don't just memorize the
 ### Key Takeaway for Viva & Interviews
 When asked: *"Why did you use these specific models?"*
 > **Answer:**  
-> *"Every model was chosen to fulfill our university syllabus and solve a real sports business problem. For ratings, **Random Forest Regressor** won ($R^2 = 0.9789$) because cricket performance has sharp non-linear thresholds in death overs that straight lines cannot capture. For talent tiers, **K-Nearest Neighbors** achieved top test accuracy ($95.16\%$) because evaluating players against similar historical peers is the natural way sports scouting works. Finally, **K-Means ($k=5$)** and **PCA** allow coaches to discover tactical playing styles and visualize complex 29-dimensional performance on a simple 2D map."*
+> *"Every model was chosen to fulfill our university syllabus and solve a real sports business problem. For talent tiers, **K-Nearest Neighbors** achieved top test accuracy ($95.16\%$) because evaluating players against similar historical peers is the natural way sports scouting works. **Random Forest Classifier** provides enterprise stability ($94.75\%$ 5-fold CV) and Gini feature rankings. **Logistic Regression** outputs exact class probabilities, and **Decision Tree** gives a clear visual flowchart. Finally, **K-Means ($k=5$)** and **PCA** allow coaches to discover tactical playing styles and visualize complex 29-dimensional performance on a simple 2D map."*

@@ -13,10 +13,9 @@ In modern T20 cricket, franchises (like IPL teams) spend ₹100+ Crores in playe
 
 | ML Task | What It Predicts / Outputs | Business Goal | Models Used | Best Model & Result |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Continuous Regression** | Overall Rating ($50.0$ to $95.0$) | Calculate fair player rating and auction purse (in ₹ Crores) | • Random Forest Regressor<br>• Linear Regression (OLS)<br>• Polynomial Regression | **Random Forest Regressor**<br>($R^2 = 0.9789$, Error = 1.25 pts) |
-| **2. Talent Classification** | Talent Tier Code (`0, 1, 2`) | Group players into Developing, Core, or Elite tiers | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
-| **3. Unsupervised Clustering** | Tactical Style (5 Archetypes) | Group athletes by how they actually play, not just "Batter/Bowler" | • K-Means Clustering ($k=5$ clusters) | **5 Clear Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
-| **4. Dimensionality Reduction** | 2D Coordinates ($[X, Y]$) | Compress 29 stats into an interactive 2D map | • Principal Component Analysis (PCA) | **Top 2 Components**<br>explain 60.79% of all variation |
+| **1. Talent Classification** | Talent Tier Code (`0, 1, 2`) | Group players into Developing, Core, or Elite tiers | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
+| **2. Unsupervised Clustering** | Tactical Style (5 Archetypes) | Group athletes by how they actually play, not just "Batter/Bowler" | • K-Means Clustering ($k=5$ clusters) | **5 Clear Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
+| **3. Dimensionality Reduction** | 2D Coordinates ($[X, Y]$) | Compress 29 stats into an interactive 2D map | • Principal Component Analysis (PCA) | **Top 2 Components**<br>explain 60.79% of all variation |
 
 ---
 
@@ -70,69 +69,18 @@ Raw career counting totals (like total runs) heavily favor older players who pla
 
 ---
 
-## 3. Supervised Learning: Continuous Rating Regression Models
-
-Regression models predict a continuous player overall rating between $50.0$ and $95.0$.
-
----
-
-### 3.1 Linear Regression (Ordinary Least Squares - OLS)
-- **WHAT is it?**  
-  The classic linear model that predicts rating as a weighted sum of stats:
-  $$\text{Rating} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p$$
-- **WHEN is it used?**  
-  Used as the baseline reference model to check how well a simple straight-line equation predicts player performance.
-- **WHY was it chosen?**  
-  It is very easy to interpret: each weight $\beta_j$ tells you exactly how many rating points a player gains for every unit increase in that stat.
-- **HOW does it work & results?**  
-  - Solved analytically using the standard formula $\hat{\beta} = (X^T X)^{-1} X^T y$.
-  - **Test $R^2$:** `0.9490` | **5-Fold CV $R^2$:** `0.8797` | **Test RMSE:** `1.95` points.
-  - **Limitation:** It assumes performance grows in a straight line, but cricket has non-linear jumps (e.g. death overs acceleration).
-
----
-
-### 3.2 Polynomial Regression (Degree 2)
-- **WHAT is it?**  
-  An extension of Linear Regression that creates squared terms ($x_i^2$) and interaction pairs ($x_i \times x_j$) between key stats.
-- **WHEN is it used?**  
-  Used to test if stats multiply each other's value (e.g., Strike Rate $\times$ Boundary %).
-- **WHY was it chosen?**  
-  In T20 cricket, skills multiply each other: a high strike rate (150+) is much more dangerous when paired with a high boundary percentage (>65%) than when hitting singles.
-- **HOW does it work & results?**  
-  - Generated using `PolynomialFeatures(degree=2, include_bias=False)` on key impact indices, followed by `LinearRegression()`.
-  - **Test $R^2$:** `0.9087` | **5-Fold CV $R^2$:** `0.8739` | **Test RMSE:** `2.61` points.
-  - **Limitation:** Creating paired terms multiplies feature count, causing slight overfitting compared to tree ensembles.
-
----
-
-### 3.3 Random Forest Regressor — 🏆 PRODUCTION WINNER
-- **WHAT is it?**  
-  A team (ensemble) of **180 decision trees**. Each tree trains on a random sample of players and random stats. The forest averages the votes of all 180 trees to produce the final rating.
-- **WHEN is it used?**  
-  **Selected as the main production engine** in Tab 1, Tab 3, and Tab 5 of the web app. It powers the live auction purse simulator.
-- **WHY was it chosen?**  
-  1. **Best Performance:** Achieved $R^2 = 0.9789$ and the lowest error (RMSE = 1.25 points).
-  2. **Handles Non-Linear Cricket Jumps:** An economy rate below 7.5 in the death overs is game-winning, while 11.5 is losing. Decision trees effortlessly split players at these exact thresholds.
-  3. **No Overfitting:** Averaging 180 trees cancels out random errors from individual trees.
-- **HOW does it work & results?**  
-  - Implemented using `RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42)`.
-  - **Test $R^2$:** `0.9789` | **5-Fold CV $R^2$:** `0.9528` | **Test RMSE:** `1.2562` points | **Test MAE:** `0.9024` points.
-
-
----
-
-## 4. Supervised Learning: Talent Tier Classification Models
+## 3. Supervised Learning: Talent Tier Classification Models
 
 Classification models place players into **3 talent tiers**:
-- **Tier 1 (Elite / Marquee):** Overall Rating $\ge 80.0$ (Star match-winners).
-- **Tier 2 (Core / Star):** Overall Rating $68.0$ to $79.9$ (Reliable tournament starters).
-- **Tier 0 (Developing / Squad):** Overall Rating $< 68.0$ (Emerging players & squad backups).
+- **Tier 1 (Elite / Marquee):** Overall Rating $\ge 80.0$ benchmark (Star match-winners).
+- **Tier 2 (Core / Star):** Overall Rating $68.0$ to $79.9$ benchmark (Reliable tournament starters).
+- **Tier 0 (Developing / Squad):** Overall Rating $< 68.0$ benchmark (Emerging players & squad backups).
 
 ---
 
-### 4.1 K-Nearest Neighbors (KNN, $k=5$) — 🏆 TOP ACCURACY
+### 3.1 K-Nearest Neighbors (KNN, $k=7$) — 🏆 TOP ACCURACY
 - **WHAT is it?**  
-  A simple, intuitive classifier: to classify a player, it looks at the **5 most similar players** in cricket history and picks the most common tier among them.
+  A simple, intuitive classifier: to classify a player, it looks at the **7 most similar players** in cricket history and picks the most common tier among them.
 - **WHEN is it used?**  
   Used in Tab 2 and Tab 6 for talent tier classification.
 - **WHY was it chosen?**  
@@ -141,27 +89,27 @@ Classification models place players into **3 talent tiers**:
 - **HOW does it work & results?**  
   - Measures Euclidean distance across all 29 scaled stats:
     $$d(p, q) = \sqrt{\sum (p_i - q_i)^2}$$
-  - Takes a majority vote of the 5 closest neighbors ($k=5$).
+  - Takes a distance-weighted vote of the 7 closest neighbors ($k=7$).
   - **Test Accuracy:** `95.16%` | **Macro F1-Score:** `0.9501` | **Precision:** `0.9601` | **Recall:** `0.9421`.
 
 ---
 
-### 4.2 Random Forest Classifier — 🏆 PRODUCTION TIER ENGINE
+### 3.2 Random Forest Classifier — 🏆 PRODUCTION TIER ENGINE
 - **WHAT is it?**  
-  An ensemble of **180 decision trees** voting on which tier a player belongs to.
+  An ensemble of **150 decision trees** voting on which tier a player belongs to.
 - **WHEN is it used?**  
   Powers the Tier Classification engine and the **Feature Importance Leaderboard** in Tab 6.
 - **WHY was it chosen?**  
   1. **Very High Accuracy:** `94.35%` on test data, and highest cross-validation score (`94.75%`).
   2. **Feature Importance (Explainability):** It tells franchise owners which stats matter most using Gini impurity.
 - **HOW does it work & results?**  
-  - Implemented using `RandomForestClassifier(n_estimators=180, criterion='gini', random_state=42)`.
+  - Implemented using `RandomForestClassifier(n_estimators=150, max_depth=10, random_state=42)`.
   - **Test Accuracy:** `94.35%` | **5-Fold CV Accuracy:** `94.75%` | **Macro F1:** `0.9459`.
   - **Top 3 Deciding Stats:** Clutch Match-Winner Index (12.8%), Batting Impact Index (11.6%), Player of the Match awards (7.8%).
 
 ---
 
-### 4.3 Decision Tree Classifier (CART)
+### 3.3 Decision Tree Classifier (CART)
 - **WHAT is it?**  
   A visual flowchart of simple "IF-THEN" rules:
   - *Rule 1:* Is `clutch_match_winner_index` $> 24.5$?
@@ -177,7 +125,7 @@ Classification models place players into **3 talent tiers**:
 
 ---
 
-### 4.4 Logistic Regression (Multinomial / Softmax)
+### 3.4 Logistic Regression (Multinomial / Softmax)
 - **WHAT is it?**  
   A linear model that outputs probability percentages for each tier (e.g., 85% Elite, 12% Core, 3% Developing).
 - **WHEN is it used?**  
@@ -186,18 +134,17 @@ Classification models place players into **3 talent tiers**:
   Gives team owners exact risk percentages during auction bidding wars rather than just a flat label.
 - **HOW does it work & results?**  
   - Uses the Softmax formula to turn raw scores into probabilities that sum to 100%.
-  - **Test Accuracy:** `87.90%` | **Macro F1:** `0.8853`.
-
+  - **Test Accuracy:** `87.90%` | **5-Fold CV Accuracy:** `92.53%` | **Macro F1:** `0.8853`.
 
 ---
 
-## 5. Unsupervised Learning: Clustering (Tactical Archetypes)
+## 4. Unsupervised Learning: Clustering (Tactical Archetypes)
 
 In clustering, the computer has **no labels or answers**. It looks at all 619 players and automatically groups them by similar playing styles.
 
 ---
 
-### 5.1 K-Means Clustering ($k=5$)
+### 4.1 K-Means Clustering ($k=5$)
 - **WHAT is it?**  
   An algorithm that groups 619 cricketers into **5 tactical clusters** based on how close their stats are to 5 cluster centers (centroids).
 - **WHEN is it used?**  
@@ -219,11 +166,11 @@ In clustering, the computer has **no labels or answers**. It looks at all 619 pl
 
 ---
 
-## 6. Dimensionality Reduction (Visualizing 29 Stats in 2D)
+## 5. Dimensionality Reduction (Visualizing 29 Stats in 2D)
 
 ---
 
-### 6.1 Principal Component Analysis (PCA, 2 Components)
+### 5.1 Principal Component Analysis (PCA, 2 Components)
 - **WHAT is it?**  
   A mathematical tool that compresses 29 different statistics down into **2 coordinates (Component 1 on X-axis, Component 2 on Y-axis)** so that all 619 players can be shown on a single 2D scatter plot.
 - **WHEN is it used?**  
@@ -239,7 +186,7 @@ In clustering, the computer has **no labels or answers**. It looks at all 619 pl
 
 ---
 
-## 7. Model Evaluation & Validation Methods
+## 6. Model Evaluation & Validation Methods
 
 To make sure our models work reliably on new matches, we use standard academic testing methods:
 
@@ -247,28 +194,26 @@ To make sure our models work reliably on new matches, we use standard academic t
    - 495 players (80%) are used to train the models.
    - 124 players (20%) are held out to test the models.
    - "Stratified" guarantees the same percentage of Elite, Core, and Developing players in both sets.
-2. **5-Fold Cross-Validation:**
+2. **5-Fold Stratified Cross-Validation:**
    - Splits training data into 5 equal parts. The model trains on 4 parts and tests on the 5th part, repeating 5 times.
-   - We report the average and standard deviation (e.g. $0.9528 \pm 0.0129$) to prove results are consistent.
+   - We report the average and standard deviation (e.g. $0.9475 \pm 0.0142$) to prove results are consistent.
 3. **Core Evaluation Metrics:**
-   - **$R^2$ Score:** How much variation the model explains ($1.0 = 100\%$ perfect). Random Forest scored **0.9789**.
-   - **RMSE:** Average rating error in points. Random Forest had only **1.25 points error**.
-   - **Accuracy:** % of correct tier classifications. KNN achieved **95.16%**.
+   - **Accuracy:** Overall percentage of correct tier predictions. KNN achieved **95.16%**.
    - **Macro F1-Score:** Harmonic mean of precision and recall, balancing small and large tiers equally.
+   - **Precision:** Of all players predicted as Elite, how many truly were Elite.
+   - **Recall:** Of all actual Elite players, how many did the model identify.
    - **Confusion Matrix:** A $3 \times 3$ table showing exact correct predictions vs. mistakes.
 
 ---
 
-## 8. Master Summary Table
+## 7. Master Summary Table
 
 | **Model Name** | Task | Syllabus Module | Test Score | 5-Fold CV Score | Why It Was Chosen |
 | :--- | :--- | :--- | :---: | :---: | :--- |
-| **Random Forest Regressor** | Player Rating | Module VIII | **$R^2 = 0.9789$**<br>(RMSE: 1.25) | **$0.9528 \pm 0.0129$** | **Production Winner:** Highest accuracy, handles non-linear cricket thresholds. |
-| **Linear Regression (OLS)** | Player Rating | Module IV | $R^2 = 0.9490$<br>(RMSE: 1.95) | $0.8797 \pm 0.0371$ | Baseline model; easy to explain exact feature weights. |
-| **Polynomial Regression** | Player Rating | Module IV | $R^2 = 0.9087$<br>(RMSE: 2.61) | $0.8739 \pm 0.0343$ | Tests multiplicative synergy between strike rate and boundary frequency. |
-| **K-Nearest Neighbors (KNN)** | Talent Tiers | Module V | **$95.16\%$ Acc**<br>(F1: 0.9501) | $0.9030 \pm 0.0221$ | **Accuracy Winner:** Classifies players by finding historical peer matches. |
+| **K-Nearest Neighbors (KNN, k=7)** | Talent Tiers | Module V | **$95.16\%$ Acc**<br>(F1: 0.9501) | $0.9030 \pm 0.0221$ | **Accuracy Winner:** Classifies players by finding historical peer matches. |
 | **Random Forest Classifier** | Talent Tiers | Module VIII | $94.35\%$ Acc<br>(F1: 0.9459) | **$0.9475 \pm 0.0142$** | **Production Winner:** Stable across folds and provides feature importance rankings. |
 | **Logistic Regression** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8853) | $0.9253 \pm 0.0180$ | Linear probabilistic model; gives exact risk percentages. |
 | **Decision Tree (CART)** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8812) | $0.8990 \pm 0.0195$ | 100% human-readable "IF-THEN" flowchart for coaches. |
 | **K-Means Clustering** | Tactical Styles | Module VII | **5 Clusters**<br>($s = 0.285$) | Validated via Elbow Curve | Discovered 5 real playing styles beyond simplistic Batter/Bowler tags. |
 | **PCA** | 2D Visualization | Module VIII | **$60.79\%$ Var**<br>(2 Components) | SVD Decomposition | Compresses 29 stats into an interactive 2D scatter plot. |
+

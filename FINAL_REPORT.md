@@ -16,12 +16,11 @@
 2. [Dataset Provenance, Feature Dictionary & Data Quality](#2-dataset-provenance-feature-dictionary--data-quality)
 3. [Exploratory Data Analysis (EDA) & Domain Observations](#3-exploratory-data-analysis-eda--domain-observations)
 4. [Data Preprocessing & Feature Engineering](#4-data-preprocessing--feature-engineering)
-5. [Supervised Learning: Continuous Rating Regression Models](#5-supervised-learning-continuous-rating-regression-models)
-6. [Supervised Learning: Talent Tier Classification Models](#6-supervised-learning-talent-tier-classification-models)
-7. [Unsupervised Learning: Tactical Archetype Clustering](#7-unsupervised-learning-tactical-archetype-clustering)
-8. [Dimensionality Reduction & PCA Analysis](#8-dimensionality-reduction--pca-analysis)
-9. [What-If Development & Auction Valuation Simulator](#9-what-if-development--auction-valuation-simulator)
-10. [Viva Voce Examination Guide: Model Answers](#10-viva-voce-examination-guide-model-answers)
+5. [Supervised Learning: Talent Tier Classification Models](#5-supervised-learning-talent-tier-classification-models)
+6. [Unsupervised Learning: Tactical Archetype Clustering](#6-unsupervised-learning-tactical-archetype-clustering)
+7. [Dimensionality Reduction & PCA Analysis](#7-dimensionality-reduction--pca-analysis)
+8. [What-If Development & Auction Valuation Simulator](#8-what-if-development--auction-valuation-simulator)
+9. [Viva Voce Examination Guide: Model Answers](#9-viva-voce-examination-guide-model-answers)
 
 ---
 
@@ -34,13 +33,12 @@ In modern professional sports organizations—specifically Indian Premier League
 
 A modern cricket organization requires an objective, measurable, and machine-learning-driven framework to:
 1. **Dissect and Quantify Performance Drivers:** Identify which measurable batting (Strike Rate, Boundary %, Death Overs SR), bowling (Economy Rate, Dot Ball %, Death Overs Economy), and clutch factors truly dictate match wins.
-2. **Predict Overall Continuous Rating (Regression):** Estimate an objective player rating $y \in [50.0, 95.0]$ using multi-dimensional telemetry.
-3. **Classify Strategic Talent Tiers (Classification):** Categorize players into actionable cohorts:
+2. **Classify Strategic Talent Tiers (Classification):** Categorize players into actionable cohorts:
    - **Tier 0:** *Developing / Squad Rotation* (Rating $< 68.0$)
    - **Tier 1:** *Core / Franchise Star* ($68.0 \le \text{Rating} < 80.0$)
    - **Tier 2:** *Elite / Marquee Pillar* ($\text{Rating} \ge 80.0$)
-4. **Discover Tactical Archetypes (Unsupervised Clustering):** Group players by their true playing fingerprint (e.g., separating Death-Over Finishers from Top-Order Anchors, and Mystery Spinners from Pace Spearheads).
-5. **Simulate Player Development & Auction Valuation (What-If Analysis):** Provide franchise directors and coaching staff with an empirical tool to project how targeted improvements in death-overs hitting or economy rate boost ratings and fair market auction valuations (₹ Crores).
+3. **Discover Tactical Archetypes (Unsupervised Clustering):** Group players by their true playing fingerprint (e.g., separating Death-Over Finishers from Top-Order Anchors, and Mystery Spinners from Pace Spearheads).
+4. **Simulate Player Development & Auction Valuation (What-If Analysis):** Provide franchise directors and coaching staff with an empirical tool to project how targeted improvements in death-overs hitting or economy rate boost ratings and fair market auction valuations (₹ Crores).
 
 ---
 
@@ -103,24 +101,7 @@ The dataset is aggregated from **260,920 real deliveries across 1,095 IPL matche
 
 ---
 
-## 5. Supervised Learning: Continuous Rating Regression Models
-
-We formulated the continuous regression task predicting $y \in [50.0, 95.0]$:
-
-$$\min_{\mathbf{w}} \sum_{i=1}^n \left( y_i - \hat{y}_i \right)^2$$
-
-### Experimental Results Leaderboard
-| Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test RMSE | Test $R^2$ Score |
-| :--- | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
-| **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
-| **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
-
-**Key Finding:** Random Forest Regressor significantly outperformed linear baselines ($R^2 = 0.9789$, $\text{RMSE} = 1.2562$), capturing the non-linear interaction thresholds between death-overs strike rate and boundary frequency.
-
----
-
-## 6. Supervised Learning: Talent Tier Classification Models
+## 5. Supervised Learning: Talent Tier Classification Models
 
 We formulated the multi-class classification problem predicting talent tiers (Developing=0, Star=1, Elite=2):
 
@@ -133,7 +114,7 @@ We formulated the multi-class classification problem predicting talent tiers (De
 
 ---
 
-## 7. Unsupervised Learning: Tactical Archetype Clustering
+## 6. Unsupervised Learning: Tactical Archetype Clustering
 
 Using K-Means Clustering on multi-dimensional skill vectors with Elbow and Silhouette validation ($k=5$):
 
@@ -146,7 +127,7 @@ Using K-Means Clustering on multi-dimensional skill vectors with Elbow and Silho
 
 ---
 
-## 8. Dimensionality Reduction & PCA Analysis
+## 7. Dimensionality Reduction & PCA Analysis
 
 Principal Component Analysis (PCA) projected the 29-dimensional space into 2 principal components explaining **60.79% of total variance**:
 - **PC1 (T20 Match Impact & Volume):** Captures total matches, clutch awards, and multi-skill volume.
@@ -154,7 +135,7 @@ Principal Component Analysis (PCA) projected the 29-dimensional space into 2 pri
 
 ---
 
-## 9. What-If Development & Auction Valuation Simulator
+## 8. What-If Development & Auction Valuation Simulator
 
 The system models how targeted interventions enhance player rating and auction valuation in ₹ Crores:
 
@@ -164,7 +145,7 @@ Where All-Rounders receive an auction premium multiplier of $1.25\times$.
 
 ---
 
-## 10. Viva Voce Examination Guide: Model Answers
+## 9. Viva Voce Examination Guide: Model Answers
 
 1. **Q: Why did you transition from nominal career runs to rate and phase metrics?**  
    *A:* In modern T20 franchise cricket, a batter scoring 40 runs off 20 balls in the death overs has a vastly higher win probability contribution than a batter scoring 50 off 45 balls in the middle overs. Evaluating rate metrics (Death Overs SR, Boundary %, Dot Ball %) eliminates the volume distortion of older players.

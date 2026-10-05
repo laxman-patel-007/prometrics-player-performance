@@ -73,7 +73,6 @@
     "death_overs_economy",
     "clutch_match_winner_index"
   ],
-  "target_reg": "overall_performance_rating",
   "target_clf": "performance_tier_code",
   "talent_tiers": {
     "0": "Developing / Squad",

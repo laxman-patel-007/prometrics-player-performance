@@ -22,7 +22,6 @@ CricMetrics Pro is an end-to-end Machine Learning decision support platform buil
 | **Problem Formulation** | Franchise Economics & Scouting | Evidence-based T20 player valuation, death-overs impact, and auction budget allocation. |
 | **Data Foundation** | Real IPL Ball-by-Ball Data | Aggregated 17 seasons of ball-by-ball deliveries (`deliveries_2008_2024.csv`, `matches_2008_2024.csv`). |
 | **Feature Engineering** | Batting, Bowling & Clutch Indices | Batting SR, Death Overs (16-20) SR, Boundary %, Economy Rate, Dot Ball %, Player of the Match awards. |
-| **Continuous Regression** | Rating Prediction ($R^2 = 0.9789$) | Random Forest Regressor, Linear Regression (OLS), Polynomial interaction. |
 | **Talent Classification** | Tier Categorization ($95.16\%$ Acc) | K-Nearest Neighbors (KNN), Random Forest Classifier, Logistic Regression, Decision Tree. |
 | **Tactical Clustering** | Unsupervised Style Discovery | K-Means Clustering ($k=5$) discovering Anchors, Death Finishers, Pace Spearheads, Mystery Spinners, and All-Rounders. |
 | **Dimensionality Reduction** | Latent 2D Tactical Map | Principal Component Analysis (PCA) mapping 619 players into 2D skill space (60.8% variance explained). |
@@ -66,7 +65,7 @@ jupyter notebook notebooks/cricket_player_performance_analysis.ipynb
 # Aggregate raw ball-by-ball deliveries into player-level clean dataset
 python src/cricket_data_pipeline.py
 
-# Train and serialize all 12+ Machine Learning models to models/
+# Train and serialize all Machine Learning models to models/
 python src/train_cricket_models.py
 
 # Regenerate clean Jupyter Notebook
@@ -77,12 +76,6 @@ python src/create_cricket_notebook.py
 
 ## 📊 Experimental Results Summary
 
-### Supervised Continuous Regression Benchmark (Predicting Overall Rating 50–95)
-| Model Architecture | 5-Fold CV $R^2$ (Mean $\pm$ Std) | Test MAE | Test RMSE | Test $R^2$ Score |
-| :--- | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
-| **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
-| **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
 
 ### Supervised Classification Benchmark (Predicting Talent Tier)
 | Model Architecture | 5-Fold CV Accuracy | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score |
@@ -103,8 +96,8 @@ python src/create_cricket_notebook.py
 
 ## 🏆 Franchise Governance & Viva Voce Q&A
 
-1. **Why is Random Forest superior to linear models for cricket?**  
-   T20 performance exhibits non-linear threshold dynamics: a death overs strike rate > 180 is exponentially more valuable than a middle overs strike rate of 125; a death economy < 8.0 RPO carries massive win equity. Decision tree ensembles naturally isolate these complex non-linear interaction surfaces.
+1. **Why does K-Nearest Neighbors (KNN) achieve top 95.16% test accuracy in talent tier classification?**  
+   In normalized multidimensional sports feature spaces, elite players (Bumrah, Kohli, Russell) form dense, distinct geometric clusters in proximity to other elite benchmarks. Evaluating players against their 7 nearest historical peers naturally mirrors real-world scouting peer comparisons.
 2. **How does this system support franchise auction economics?**  
    IPL teams frequently fall prey to emotional bidding wars for famous names. CricMetrics Pro uses 17 seasons of ball-by-ball telemetry to produce objective fair market valuations, enabling franchises to recruit high-performing, undervalued tactical archetypes ("Moneyball").
 3. **What is the organizational utility of the 5 archetypes?**  
