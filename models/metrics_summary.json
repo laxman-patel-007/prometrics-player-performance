@@ -1,4 +1,27 @@
 {
+  "regression": {
+    "Linear Regression": {
+      "Test_R2": 0.949,
+      "CV_R2_mean": 0.8797,
+      "CV_R2_std": 0.0371,
+      "Test_MAE": 1.5364,
+      "Test_RMSE": 1.9534
+    },
+    "Polynomial Regression": {
+      "Test_R2": 0.9941,
+      "CV_R2_mean": 0.9956,
+      "CV_R2_std": 0.0012,
+      "Test_MAE": 0.3647,
+      "Test_RMSE": 0.6648
+    },
+    "Random Forest Regressor": {
+      "Test_R2": 0.978,
+      "CV_R2_mean": 0.9522,
+      "CV_R2_std": 0.0128,
+      "Test_MAE": 0.9162,
+      "Test_RMSE": 1.2837
+    }
+  },
   "classification": {
     "K-Nearest Neighbors (KNN)": {
       "Test_Accuracy": 0.9516,
@@ -103,39 +126,17 @@
   },
   "unsupervised": {
     "optimal_k": 5,
-    "k_range": [
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
-    ],
-    "inertias": [
-      3990.9110124600957,
-      3223.1573628833057,
-      2694.9794301187553,
-      2414.250640858315,
-      2261.5636202548676,
-      2111.51893447726
-    ],
-    "silhouette_scores": [
-      0.2584649142262604,
-      0.2757802263681739,
-      0.2594396421249176,
-      0.24360067991511516,
-      0.21512384365668702,
-      0.21602929408185162
-    ],
+    "silhouette_score": 0.2676,
     "archetype_names": {
-      "0": "Tactical Anchor & Top-Order Accumulator",
-      "1": "High-Impact Pace Spearhead & Death Bowler",
-      "2": "Explosive Death-Over Finisher & Boundary Hitter",
-      "3": "Mystery / Control Spin Maestro",
+      "0": "Top-Order Anchor & Accumulator",
+      "1": "Powerplay & Middle-Overs Pace Specialist",
+      "2": "Death-Overs Finisher & Power Hitter",
+      "3": "Defensive Middle-Overs Economy Spinner",
       "4": "Elite Dual-Threat All-Rounder"
     }
   },
   "pca": {
+    "n_components": 2,
     "explained_variance_ratio": [
       0.3816,
       0.2263
@@ -143,6 +144,18 @@
     "total_variance_explained": 0.6079
   },
   "feature_importances": {
+    "regression_top10": {
+      "clutch_match_winner_index": 0.574,
+      "batting_impact_index": 0.2056,
+      "matches_played": 0.0439,
+      "bowling_impact_index": 0.0284,
+      "wickets_taken": 0.0272,
+      "boundary_run_pct": 0.0196,
+      "primary_role_Specialist Bowler": 0.0166,
+      "overs_bowled": 0.0142,
+      "player_of_match_awards": 0.0141,
+      "batting_strike_rate": 0.0117
+    },
     "classification_top10": {
       "clutch_match_winner_index": 0.1282,
       "batting_impact_index": 0.1163,

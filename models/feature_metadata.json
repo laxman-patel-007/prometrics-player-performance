@@ -68,15 +68,22 @@
     "overs_bowled",
     "wickets_taken",
     "economy_rate",
-    "bowling_strike_rate",
-    "dot_ball_bowled_pct",
     "death_overs_economy",
-    "clutch_match_winner_index"
+    "batting_impact_index",
+    "bowling_impact_index"
   ],
+  "target_reg": "overall_performance_rating",
   "target_clf": "performance_tier_code",
   "talent_tiers": {
     "0": "Developing / Squad",
     "1": "Core / Star",
     "2": "Elite / Marquee"
+  },
+  "archetypes": {
+    "0": "Top-Order Anchor & Accumulator",
+    "1": "Powerplay & Middle-Overs Pace Specialist",
+    "2": "Death-Overs Finisher & Power Hitter",
+    "3": "Defensive Middle-Overs Economy Spinner",
+    "4": "Elite Dual-Threat All-Rounder"
   }
 }

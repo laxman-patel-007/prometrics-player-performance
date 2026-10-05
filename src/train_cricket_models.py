@@ -1,11 +1,15 @@
 """
 Cricket ML Model Training Engine: Real IPL Player Performance
-Trains, evaluates, and persists Supervised Classification and Unsupervised Models:
-- Supervised Talent Tier Classification (Elite / Marquee, Core / Star, Developing / Squad)
+Trains, evaluates, and persists Supervised Regression, Supervised Classification, and Unsupervised Models:
+- Supervised Regression (Overall Rating Estimation & Fair Valuation):
+  * Linear Regression
+  * Polynomial Regression (Degree 2)
+  * Random Forest Regressor
+- Supervised Classification (Talent Tier Prediction):
   * K-Nearest Neighbors (KNN)
   * Random Forest Classifier
-  * Logistic Regression
-  * Decision Tree (CART)
+  * Multinomial Logistic Regression
+  * Decision Tree Classifier (CART)
 - Unsupervised Tactical Archetype Discovery (K-Means Clustering, k=5)
 - Latent Space Dimensionality Reduction (PCA, 2 Components)
 """
@@ -16,15 +20,17 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split, cross_val_score, KFold, StratifiedKFold
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LinearRegression, Ridge, LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import (
+    mean_squared_error, mean_absolute_error, r2_score,
     accuracy_score, precision_score, recall_score, f1_score, confusion_matrix,
     silhouette_score
 )
@@ -35,9 +41,9 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 def train_and_evaluate_models():
-    print(f"Loading cleaned cricket dataset from {DATA_PATH}...")
+    print(f"Loading cleaned cricket dataset from {DATA_PATH}...", flush=True)
     df = pd.read_csv(DATA_PATH)
-    print(f"Dataset Loaded: {len(df)} players, {df.shape[1]} columns.")
+    print(f"Dataset Loaded: {len(df)} players, {df.shape[1]} columns.", flush=True)
 
     # 1. Feature Definition
     num_features = [
@@ -56,11 +62,12 @@ def train_and_evaluate_models():
     df_encoded = pd.get_dummies(df[num_features + cat_features], columns=cat_features, drop_first=True, dtype=float)
     feature_names = df_encoded.columns.tolist()
 
+    y_reg = df['overall_performance_rating']
     y_clf = df['performance_tier_code']
 
     # Train / Test Split (80/20 Stratified on performance tier)
-    X_train_raw, X_test_raw, y_train_clf, y_test_clf = train_test_split(
-        df_encoded, y_clf, test_size=0.20, random_state=42, stratify=y_clf
+    X_train_raw, X_test_raw, y_train_reg, y_test_reg, y_train_clf, y_test_clf = train_test_split(
+        df_encoded, y_reg, y_clf, test_size=0.20, random_state=42, stratify=y_clf
     )
 
     # Standard Scaling
@@ -69,9 +76,66 @@ def train_and_evaluate_models():
     X_test = pd.DataFrame(scaler.transform(X_test_raw), columns=feature_names)
 
     joblib.dump(scaler, os.path.join(MODELS_DIR, "scaler.joblib"))
-    print("StandardScaler serialized.")
+    print("StandardScaler serialized.", flush=True)
 
-    # 2. Supervised Classification Models (Talent Tier Prediction)
+    # =========================================================================
+    # 2. Supervised Regression Models (Overall Rating Prediction)
+    # =========================================================================
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    reg_metrics = {}
+
+    # Regressor 1: Multiple Linear Regression
+    lr = LinearRegression()
+    lr_cv = cross_val_score(lr, X_train, y_train_reg, cv=kf, scoring='r2')
+    lr.fit(X_train, y_train_reg)
+    lr_preds = lr.predict(X_test)
+    reg_metrics['Linear Regression'] = {
+        'Test_R2': round(float(r2_score(y_test_reg, lr_preds)), 4),
+        'CV_R2_mean': round(float(lr_cv.mean()), 4),
+        'CV_R2_std': round(float(lr_cv.std()), 4),
+        'Test_MAE': round(float(mean_absolute_error(y_test_reg, lr_preds)), 4),
+        'Test_RMSE': round(float(np.sqrt(mean_squared_error(y_test_reg, lr_preds))), 4)
+    }
+    joblib.dump(lr, os.path.join(MODELS_DIR, "linear_regression.joblib"))
+
+    # Regressor 2: Polynomial Regression (Degree 2 with Ridge Regularization)
+    poly_reg = Pipeline([
+        ('poly', PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)),
+        ('ridge', Ridge(alpha=10.0, random_state=42))
+    ])
+    poly_cv = cross_val_score(poly_reg, X_train, y_train_reg, cv=kf, scoring='r2')
+    poly_reg.fit(X_train, y_train_reg)
+    poly_preds = poly_reg.predict(X_test)
+    reg_metrics['Polynomial Regression'] = {
+        'Test_R2': round(float(r2_score(y_test_reg, poly_preds)), 4),
+        'CV_R2_mean': round(float(poly_cv.mean()), 4),
+        'CV_R2_std': round(float(poly_cv.std()), 4),
+        'Test_MAE': round(float(mean_absolute_error(y_test_reg, poly_preds)), 4),
+        'Test_RMSE': round(float(np.sqrt(mean_squared_error(y_test_reg, poly_preds))), 4)
+    }
+    joblib.dump(poly_reg, os.path.join(MODELS_DIR, "polynomial_regression.joblib"))
+
+    # Regressor 3: Random Forest Regressor
+    rf_reg = RandomForestRegressor(n_estimators=150, max_depth=10, random_state=42, n_jobs=-1)
+    rf_reg_cv = cross_val_score(rf_reg, X_train, y_train_reg, cv=kf, scoring='r2')
+    rf_reg.fit(X_train, y_train_reg)
+    rf_preds = rf_reg.predict(X_test)
+    reg_metrics['Random Forest Regressor'] = {
+        'Test_R2': round(float(r2_score(y_test_reg, rf_preds)), 4),
+        'CV_R2_mean': round(float(rf_reg_cv.mean()), 4),
+        'CV_R2_std': round(float(rf_reg_cv.std()), 4),
+        'Test_MAE': round(float(mean_absolute_error(y_test_reg, rf_preds)), 4),
+        'Test_RMSE': round(float(np.sqrt(mean_squared_error(y_test_reg, rf_preds))), 4)
+    }
+    joblib.dump(rf_reg, os.path.join(MODELS_DIR, "random_forest_regressor.joblib"))
+
+    print("\n--- Regression Model Evaluation ---", flush=True)
+    for m, vals in reg_metrics.items():
+        print(f"{m:26s} | Test R²: {vals['Test_R2']:.4f} | 5-Fold CV: {vals['CV_R2_mean']:.4f} | RMSE: {vals['Test_RMSE']:.4f}", flush=True)
+
+    # =========================================================================
+    # 3. Supervised Classification Models (Talent Tier Prediction)
+    # =========================================================================
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     clf_metrics = {}
 
@@ -139,82 +203,93 @@ def train_and_evaluate_models():
     }
     joblib.dump(dt, os.path.join(MODELS_DIR, "decision_tree_classifier.joblib"))
 
-    print("\n--- Classification Model Evaluation ---")
+    print("\n--- Classification Model Evaluation ---", flush=True)
     for m, vals in clf_metrics.items():
-        print(f"{m:30s} | Test Acc: {vals['Test_Accuracy']*100:.2f}% | 5-Fold CV: {vals['CV_Accuracy_mean']*100:.2f}% | Macro F1: {vals['Test_F1_Macro']:.4f}")
+        print(f"{m:26s} | Test Acc: {vals['Test_Accuracy']*100:.2f}% | 5-Fold CV: {vals['CV_Accuracy_mean']*100:.2f}% | Macro F1: {vals['Test_F1_Macro']:.4f}", flush=True)
 
-    # 3. Unsupervised Tactical Archetypes (K-Means Clustering)
+    # =========================================================================
+    # 4. Unsupervised Tactical Archetypes (K-Means Clustering)
+    # =========================================================================
     cluster_features = [
         'batting_average', 'batting_strike_rate', 'boundary_run_pct', 
         'death_overs_strike_rate', 'overs_bowled', 'wickets_taken', 
-        'economy_rate', 'bowling_strike_rate', 'dot_ball_bowled_pct', 
-        'death_overs_economy', 'clutch_match_winner_index'
+        'economy_rate', 'death_overs_economy', 'batting_impact_index', 
+        'bowling_impact_index'
     ]
-    X_cluster = X_train[cluster_features]
-
-    inertias = []
-    silhouettes = []
-    k_range = list(range(2, 8))
-    for k in k_range:
-        km_test = KMeans(n_clusters=k, random_state=42, n_init=10)
-        k_labels = km_test.fit_predict(X_cluster)
-        inertias.append(float(km_test.inertia_))
-        silhouettes.append(float(silhouette_score(X_cluster, k_labels)))
+    scaler_cluster = StandardScaler()
+    X_cluster = scaler_cluster.fit_transform(df[cluster_features])
 
     optimal_k = 5
-    final_kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=15)
-    final_kmeans.fit(X_cluster)
-    joblib.dump({"model": final_kmeans, "features": cluster_features}, os.path.join(MODELS_DIR, "kmeans_model.joblib"))
+    kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+    clusters = kmeans.fit_predict(X_cluster)
+    sil_score = silhouette_score(X_cluster, clusters)
+    print(f"\nK-Means Clustering (k=5) Trained | Silhouette Score: {sil_score:.4f}", flush=True)
+
+    kmeans_bundle = {
+        "model": kmeans,
+        "scaler": scaler_cluster,
+        "features": cluster_features,
+        "silhouette_score": round(float(sil_score), 4)
+    }
+    joblib.dump(kmeans_bundle, os.path.join(MODELS_DIR, "kmeans_model.joblib"))
 
     archetype_names = {
-        "0": "Tactical Anchor & Top-Order Accumulator",
-        "1": "High-Impact Pace Spearhead & Death Bowler",
-        "2": "Explosive Death-Over Finisher & Boundary Hitter",
-        "3": "Mystery / Control Spin Maestro",
+        "0": "Top-Order Anchor & Accumulator",
+        "1": "Powerplay & Middle-Overs Pace Specialist",
+        "2": "Death-Overs Finisher & Power Hitter",
+        "3": "Defensive Middle-Overs Economy Spinner",
         "4": "Elite Dual-Threat All-Rounder"
     }
 
-    # 4. Dimensionality Reduction (PCA)
+    # =========================================================================
+    # 5. Dimensionality Reduction (PCA)
+    # =========================================================================
     pca = PCA(n_components=2, random_state=42)
     pca.fit(X_train)
     joblib.dump(pca, os.path.join(MODELS_DIR, "pca_model.joblib"))
 
-    # Feature Importances from Random Forest Classifier
+    # Feature Importances
+    imp_reg = dict(sorted(zip(feature_names, [round(float(x), 4) for x in rf_reg.feature_importances_]), key=lambda x: x[1], reverse=True)[:10])
     imp_clf = dict(sorted(zip(feature_names, [round(float(x), 4) for x in rf_clf.feature_importances_]), key=lambda x: x[1], reverse=True)[:10])
 
-    # 5. Save Metadata & Metrics Summaries
+    # =========================================================================
+    # 6. Save Metadata & Metrics Summaries
+    # =========================================================================
     metadata = {
         "num_features": num_features,
         "cat_features": cat_features,
         "encoded_feature_names": feature_names,
         "cluster_features": cluster_features,
+        "target_reg": "overall_performance_rating",
         "target_clf": "performance_tier_code",
-        "talent_tiers": {0: "Developing / Squad", 1: "Core / Star", 2: "Elite / Marquee"}
+        "talent_tiers": {0: "Developing / Squad", 1: "Core / Star", 2: "Elite / Marquee"},
+        "archetypes": archetype_names
     }
     with open(os.path.join(MODELS_DIR, "feature_metadata.json"), "w") as f:
         json.dump(metadata, f, indent=2)
 
     metrics_summary = {
+        "regression": reg_metrics,
         "classification": clf_metrics,
         "unsupervised": {
             "optimal_k": optimal_k,
-            "k_range": k_range,
-            "inertias": inertias,
-            "silhouette_scores": silhouettes,
+            "silhouette_score": round(float(sil_score), 4),
             "archetype_names": archetype_names
         },
         "pca": {
+            "n_components": 2,
             "explained_variance_ratio": [round(float(x), 4) for x in pca.explained_variance_ratio_],
             "total_variance_explained": round(float(pca.explained_variance_ratio_.sum()), 4)
         },
         "feature_importances": {
+            "regression_top10": imp_reg,
             "classification_top10": imp_clf
         }
     }
     with open(os.path.join(MODELS_DIR, "metrics_summary.json"), "w") as f:
         json.dump(metrics_summary, f, indent=2)
 
-    print("\n>>> All Cricket Classification & Unsupervised ML models trained and saved to models/ successfully! <<<")
+    print("\n>>> All Cricket ML models (Regression + Classification + Unsupervised) trained, evaluated, and saved to models/ successfully! <<<", flush=True)
 
 if __name__ == "__main__":
     train_and_evaluate_models()

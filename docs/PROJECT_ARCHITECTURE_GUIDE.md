@@ -13,23 +13,26 @@
 
 ```text
 /Users/laxmanpatel/Desktop/ML
-├── app.py                                   # Interactive Streamlit Web Application (6 Tabs)
+├── app.py                                   # Interactive Streamlit Web Application (6 Deliverable Tabs)
 ├── requirements.txt                         # List of Python packages needed to run the project
 ├── README.md                                # Project introduction and quickstart guide for GitHub
-├── FINAL_REPORT.md                          # Academic and viva voce project report
+├── FINAL_REPORT.md                          # Academic and viva voce project report (All 8 Deliverables)
 ├── .gitignore                               # Tells Git which heavy files to ignore (like raw data)
 ├── .streamlit/
-│   └── config.toml                          # Dark theme styling and settings for the Streamlit app
+│   └── config.toml                          # Dark theme styling, unbuffered logging & performance config
 ├── data/
 │   ├── processed/
-│   │   └── cricket_players_clean.csv        # Cleaned dataset of 619 cricketers with 27 calculated stats
+│   │   └── cricket_players_clean.csv        # Cleaned dataset of 619 cricketers with 32 calculated stats
 │   └── raw/
 │       ├── matches_2008_2024.csv            # 1,095 IPL match summaries (results, Player of the Match)
 │       └── deliveries_2008_2024.csv         # 260,920 ball-by-ball records from 17 IPL seasons (69 MB)
 ├── models/
 │   ├── scaler.joblib                        # StandardScaler tool to normalize numbers (mean=0, std=1)
-│   ├── knn_classifier.joblib                # Best talent tier classifier (95.16% Accuracy)
-│   ├── random_forest_classifier.joblib      # Production tier classifier & feature importance (94.35%)
+│   ├── linear_regression.joblib             # Continuous baseline regressor (R² = 0.9490)
+│   ├── polynomial_regression.joblib         # Continuous non-linear regressor (R² = 0.9941, CV = 0.9956)
+│   ├── random_forest_regressor.joblib       # Production continuous rating engine (R² = 0.9780)
+│   ├── knn_classifier.joblib                # Best talent tier classifier (95.16% Test Accuracy)
+│   ├── random_forest_classifier.joblib      # Production tier classifier & Gini feature importance (94.35%)
 │   ├── logistic_regression.joblib           # Probabilistic tier classifier (87.90% Accuracy)
 │   ├── decision_tree_classifier.joblib      # Visual IF-THEN flowchart classifier (87.90% Accuracy)
 │   ├── kmeans_model.joblib                  # K-Means model grouping players into 5 tactical styles
@@ -37,11 +40,11 @@
 │   ├── feature_metadata.json                # Column names, order, and tier labels
 │   └── metrics_summary.json                 # Test scores, cross-validation numbers, and confusion matrices
 ├── notebooks/
-│   └── cricket_player_performance_analysis.ipynb # 21-cell Jupyter research notebook with charts
+│   └── cricket_player_performance.ipynb     # 10-cell executable Jupyter research notebook with full outputs
 ├── src/
-│   ├── cricket_data_pipeline.py             # Script that cleans 260k balls into 619 player rows
-│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 6 ML models
-│   └── create_cricket_notebook.py           # Script that automatically builds the Jupyter notebook
+│   ├── cricket_data_pipeline.py             # Script that cleans 260k balls into 619 player profiles
+│   ├── train_cricket_models.py              # Master script that trains, tests, and serializes all 10 models
+│   └── create_cricket_notebook.py           # Automated generator for the reproducible Jupyter notebook
 └── docs/
     ├── ML_MODELS_GUIDE.md & .pdf            # Simple & easy guide to all ML models (What, When, Why, How)
     ├── MACHINE_LEARNING_GUIDE.md & .pdf     # In-depth guide to all ML topics and math formulas
@@ -55,22 +58,22 @@
 ### 2.1 Web Application Layer
 
 #### `app.py` (Interactive Streamlit Dashboard)
-- **WHAT:** The main web application that coaches, franchise directors, and analysts use to explore player data and test predictions (990+ lines of Python).
-- **HOW:** Built with Streamlit, Plotly, and Pandas. It loads all trained models into memory once (`@st.cache_resource`) and displays 6 interactive tabs:
-  1. *🏛️ War Room & Roster Intel:* Searchable database of 619 cricketers with filters for role, tier, and matches played.
-  2. *📊 Telemetry & Factor Impact:* Hexagonal skill radar charts (0–100), correlation bar charts, and Strike Rate vs. Average scatter plots.
-  3. *⚡ AI Rating & Auction Valuation:* Interactive sliders with 1-click presets (Virat Kohli, Jasprit Bumrah, Andre Russell, Sunil Narine, Hardik Pandya). It calculates fair player rating and estimated auction purse (₹ Crores).
-  4. *🧩 Tactical Archetypes & 2D Map:* 2D interactive PCA scatter map of all 619 players, colored by K-Means tactical style or tier.
-  5. *🚀 What-If Franchise Simulator:* A training simulator showing how improving specific skills (like death overs strike rate) increases a player's rating and market value.
-  6. *🏆 Model Benchmarks & Defense:* Complete leaderboard comparing all models, interactive Confusion Matrix heatmaps, and Top 10 most important stats.
-- **WHEN:** Runs whenever you start the app (`streamlit run app.py`) or open the live deployment link in your browser.
+- **WHAT:** The primary web application that sports executives, coaches, and scouts use to evaluate cricketers and simulate auction strategies (1,000+ lines of Python).
+- **HOW:** Built with Streamlit, Plotly, and Pandas. It loads all trained models into memory once (`@st.cache_resource`) and displays 6 tabs mapped directly to project deliverables:
+  1. *🏛️ Problem Definition & Business Context:* Formulates the sports business problem, research questions, franchise constraints, and solution architecture.
+  2. *📋 Dataset & Preprocessing Pipeline:* Documents data sources (260,920 deliveries), data quality challenges, missing value handling, one-hot encoding, and standard scaling.
+  3. *📊 Exploratory Analysis (EDA) & Factor Impact:* Hexagonal skill radar charts (0–100), correlation heatmaps, role distributions, and Strike Rate vs. Average scatter plots.
+  4. *⚡ Live AI Valuation Engine:* Interactive sliders with 1-click presets (Virat Kohli, Jasprit Bumrah, Andre Russell, Sunil Narine, Hardik Pandya). It calculates continuous player rating ($50–95$), estimated auction purse (₹ Crores), talent tier probabilities, and tactical archetype.
+  5. *🧩 Tactical Archetypes & 2D PCA Latent Space:* 2D interactive PCA scatter map of all 619 players, colored by K-Means tactical style ($k=5$) or talent tier.
+  6. *🏆 Model Benchmarks, Evaluation & Viva Defense:* Full leaderboard comparing all regression and classification models, interactive Confusion Matrix heatmaps, Top 10 feature rankings, and oral viva Q&A defense.
+- **WHEN:** Runs whenever you start the app locally (`streamlit run app.py`) or open the live deployment link in your browser.
 - **WHY:** Bridges complex machine learning algorithms and real-world team decision-makers. Franchise directors need clear visual tools, not raw terminal commands.
 
 ---
 
-#### `.streamlit/config.toml` (Theme Settings)
-- **WHAT:** Configuration file that styles the Streamlit web application.
-- **HOW:** Sets up a high-contrast dark theme with Slate Navy background (`#0F172A`) and Franchise Gold accents (`#F59E0B`).
+#### `.streamlit/config.toml` (Theme & Server Settings)
+- **WHAT:** Configuration file that styles and optimizes the Streamlit web application.
+- **HOW:** Sets up a high-contrast dark theme with Slate Navy background (`#0F172A`) and Franchise Gold accents (`#F59E0B`), enables unbuffered info-level logging, and configures headless execution.
 - **WHEN:** Loaded automatically by Streamlit before `app.py` starts.
 - **WHY:** Ensures the app looks sleek, modern, and professional on all devices and browsers, avoiding generic browser defaults.
 
@@ -89,7 +92,7 @@
   6. Filters players with at least 3 matches or 20 balls faced/bowled, leaving **619 qualified cricketers**.
   7. Calculates 3 composite indices: Batting Impact, Bowling Impact, and Clutch Match-Winner Index.
   8. Saves the final clean table to `data/processed/cricket_players_clean.csv`.
-- **WHEN:** Run whenever raw match records are updated (`python src/cricket_data_pipeline.py`).
+- **WHEN:** Run whenever raw match records are updated (`python3 src/cricket_data_pipeline.py`).
 - **WHY:** Raw ball logs cannot be fed directly into machine learning models; they must first be converted into clean player summaries.
 
 ---
@@ -121,77 +124,71 @@
 ### 2.3 Machine Learning Layer (`models/` and `src/`)
 
 #### `src/train_cricket_models.py` (Master Training & Evaluation Script)
-- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 6 Machine Learning models (4 Classification, 1 Clustering, 1 PCA) and the StandardScaler.
+- **WHAT:** Master script that trains, cross-validates, tests, and serializes all 10 Machine Learning models and transformers.
 - **HOW:**
   1. Loads `cricket_players_clean.csv`.
   2. Applies One-Hot Encoding on `primary_role`.
   3. Splits data into 80% training (495 players) and 20% testing (124 players).
   4. Fits `StandardScaler` on training data and scales features.
-  5. Trains and cross-validates 4 classification models (KNN, Random Forest, Logistic, Decision Tree) using 5-Fold Stratified CV.
-  6. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring.
-  7. Fits PCA (2 components) for 2D visualization.
-  8. Saves all 7 trained binary model and transformer files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
-- **WHEN:** Run during model development or retraining (`python src/train_cricket_models.py`).
+  5. Trains and cross-validates 3 continuous regression models: Linear Regression (OLS), Polynomial Regression (Degree 2), Random Forest Regressor.
+  6. Trains and cross-validates 4 multi-class classification models: KNN ($k=7$), Random Forest Classifier, Logistic Regression, Decision Tree.
+  7. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring ($s=0.2676$).
+  8. Fits PCA (2 components) for 2D tactical latent space.
+  9. Saves all 10 trained joblib models into `models/` and exports scores to `metrics_summary.json` and `feature_metadata.json`.
+- **WHEN:** Run during model development or retraining (`python3 src/train_cricket_models.py`).
 - **WHY:** Centralizes all model training and testing into one automated, reproducible script.
 
 ---
 
 #### Serialized Model Files in `models/`
 
-| File Name | Model Type | What It Does | Score in Project |
+| File Name | Model Type | Purpose in System | Benchmark Metric |
 | :--- | :--- | :--- | :--- |
-| `models/scaler.joblib` | StandardScaler | Rescales all 29 features to $\mu=0, \sigma=1$. | Prevents large numbers from overpowering small numbers. |
-| `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=7$) | **Top Accuracy Classifier:** Assigns talent tier by finding 7 similar peers. | **95.16% Accuracy** (Top Classifier) |
-| `models/random_forest_classifier.joblib` | Random Forest Classifier | Ensemble of 150 trees voting on tier & feature importance. | 94.35% Accuracy (94.75% 5-fold CV) |
-| `models/logistic_regression.joblib` | Logistic Regression (Softmax) | Outputs exact risk probabilities for each tier. | 87.90% Accuracy |
-| `models/decision_tree_classifier.joblib` | Decision Tree (CART) | Visual IF-THEN flowchart for coaches. | 87.90% Accuracy |
-| `models/kmeans_model.joblib` | K-Means Clustering ($k=5$) | Groups players into 5 tactical playing styles. | Discovered 5 real tactical archetypes ($s=0.285$) |
-| `models/pca_model.joblib` | Principal Component Analysis | Compresses 29 stats into 2 coordinates (X, Y) for 2D scatter plots. | Captures 60.79% of all information |
-| `models/feature_metadata.json` | JSON Metadata | Stores column order, feature names, and tier labels. | Guarantees consistency between training and the web app. |
-| `models/metrics_summary.json` | JSON Results | Stores test scores, CV scores, and confusion matrices. | Feeds the live model leaderboard in Tab 6 of `app.py`. |
+| `models/scaler.joblib` | StandardScaler | Rescales all 29 features to $\mu=0, \sigma=1$. | Eliminates scale dominance |
+| `models/linear_regression.joblib` | Linear Regression (OLS) | Continuous rating baseline | $R^2 = 0.9490$, RMSE = $1.9534$ |
+| `models/polynomial_regression.joblib` | Polynomial Regression (Deg 2) | Continuous curved fit | **$R^2 = 0.9941$, CV = $0.9956$** |
+| `models/random_forest_regressor.joblib` | Random Forest Regressor | Production rating & auction purse engine | **$R^2 = 0.9780$, RMSE = $1.2837$** |
+| `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=7$) | Talent tier classification by historical peers | **$95.16\%$ Test Accuracy, $0.9501$ F1** |
+| `models/random_forest_classifier.joblib` | Random Forest Classifier | Production tier engine & Gini feature rankings | $94.35\%$ Test Acc, **$94.75\%$ 5-Fold CV** |
+| `models/logistic_regression.joblib` | Logistic Regression (Softmax) | Outputs tier risk probability distributions | $87.90\%$ Test Acc, $92.53\%$ CV |
+| `models/decision_tree_classifier.joblib` | Decision Tree (CART) | Visual IF-THEN flowchart for coaching audits | $87.90\%$ Test Acc, $89.90\%$ CV |
+| `models/kmeans_model.joblib` | K-Means Clustering ($k=5$) | Groups players into 5 tactical playing styles | $s = 0.2676$ Silhouette score |
+| `models/pca_model.joblib` | Principal Component Analysis | Compresses 29 stats into 2D map (X, Y) | $60.79\%$ Total Variance Explained |
+| `models/feature_metadata.json` | JSON Metadata | Stores column order, feature names, and tier labels | Ensures 100% pipeline consistency |
+| `models/metrics_summary.json` | JSON Results | Stores test scores, CV scores, and confusion matrices | Feeds Tab 6 leaderboards in `app.py` |
 
 ---
 
 ### 2.4 Research, Development & Documentation Layer
 
-#### `notebooks/cricket_player_performance_analysis.ipynb` (Jupyter Research Notebook)
-- **WHAT:** An interactive 21-cell data science notebook documenting the complete research study.
+#### `notebooks/cricket_player_performance.ipynb` (Jupyter Research Notebook)
+- **WHAT:** An interactive 10-cell data science notebook documenting the complete research study end-to-end.
 - **HOW:** Contains executable code cells paired with Markdown explanations:
-  - *Cells 1–4:* Problem formulation, data loading, missing value handling.
-  - *Cells 5–8:* Exploratory Data Analysis, correlation heatmaps, role distributions.
-  - *Cells 9–12:* One-hot encoding, stratified train/test split, standard scaling.
-  - *Cells 13–15:* 4-model classification benchmark (KNN, RF, Logistic, Decision Tree) with 5-Fold Stratified CV.
-  - *Cells 16–17:* Confusion matrix diagnostics (KNN vs Random Forest).
-  - *Cell 18:* Random Forest feature importances (Gini reduction weights).
-  - *Cell 19:* K-Means clustering ($k=5$) with Elbow and Silhouette charts.
-  - *Cell 20:* 2D PCA scree plot and explained variance.
-  - *Cell 21:* Technical Defense & Viva Voce Q&A.
+  - *Cell 1:* Problem statement, student-formulated title, and business objectives.
+  - *Cell 2:* Dataset ingestion, inspection, and missing value checks.
+  - *Cell 3:* Exploratory Data Analysis, role distributions, and rating correlations.
+  - *Cell 4:* Data preprocessing, one-hot encoding, 80/20 train/test split, standard scaling.
+  - *Cell 5:* Continuous regression modeling (Linear, Polynomial, Random Forest) with 5-fold CV.
+  - *Cell 6:* Multi-class classification modeling (KNN, Random Forest, Logistic, Decision Tree).
+  - *Cell 7:* Detailed confusion matrix diagnostics.
+  - *Cell 8:* Feature importance analysis (regression vs classification factors).
+  - *Cell 9:* Unsupervised K-Means clustering ($k=5$) and 2D PCA latent space mapping.
+  - *Cell 10:* Academic conclusions, limitations, and viva voce defense.
 - **WHEN:** Opened in Jupyter Notebook or VS Code for interactive experimentation and grading review.
 - **WHY:** Gives professors, examiners, and data scientists a transparent, cell-by-cell walkthrough of our research.
 
 ---
 
 #### `src/create_cricket_notebook.py` (Automated Notebook Generator)
-- **WHAT:** A helper script that automatically builds `cricket_player_performance_analysis.ipynb` as pure JSON.
-- **HOW:** Assembles markdown text, code cells, and outputs into standard `nbformat` v4 structure.
-- **WHEN:** Run whenever the research notebook needs to be updated or refreshed (`python src/create_cricket_notebook.py`).
-- **WHY:** Ensures the notebook can be regenerated reliably without manual copy-pasting across computers.
+- **WHAT:** Helper script that builds `notebooks/cricket_player_performance.ipynb` as pure JSON.
+- **HOW:** Programmatically creates Markdown cells, executable Python code cells, and saves the notebook using `nbformat` v4.
+- **WHEN:** Run whenever the research notebook needs to be refreshed (`python3 src/create_cricket_notebook.py`).
+- **WHY:** Ensures the notebook can be regenerated reliably without manual copy-pasting.
 
 ---
 
 #### `requirements.txt` (Python Package List)
-- **WHAT:** A simple text file listing the exact Python libraries required to run the project:
-  ```text
-  streamlit>=1.35.0
-  scikit-learn>=1.4.0
-  pandas>=2.1.0
-  numpy>=1.26.0
-  matplotlib>=3.8.0
-  seaborn>=0.13.0
-  plotly>=5.18.0
-  joblib>=1.3.0
-  scipy>=1.11.0
-  ```
+- **WHAT:** Text file listing the exact Python libraries required to run the project.
 - **WHEN:** Used when setting up the environment (`pip install -r requirements.txt`) and read automatically by Streamlit Cloud during online deployment.
 - **WHY:** Guarantees that the code runs smoothly across Windows, Mac, Linux, and cloud servers.
 
@@ -206,6 +203,6 @@
 
 #### `README.md` & `FINAL_REPORT.md` (Executive Project Reports)
 - **WHAT:** The public GitHub homepage (`README.md`) and the comprehensive formal project defense report (`FINAL_REPORT.md`).
-- **HOW:** Explains the project's background, quickstart commands, methodology proofs, and viva voce model answers.
+- **HOW:** Explains the project's background, quickstart commands, methodology proofs, and viva voce model answers aligned with all 8 syllabus deliverables.
 - **WHEN:** Read by GitHub visitors, technical auditors, and academic evaluators.
 - **WHY:** Clearly explains the business value of the project and satisfies the requirements of Case Study no. 102.
