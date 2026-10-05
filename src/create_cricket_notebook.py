@@ -109,7 +109,7 @@ Loading the clean dataset derived from 260,920 deliveries across 1,095 IPL match
 """)
 
     add_code([
-        "DATA_PATH = '../data/processed/cricket_players_clean.csv'",
+        "DATA_PATH = 'data/processed/cricket_players_clean.csv' if os.path.exists('data/processed/cricket_players_clean.csv') else '../data/processed/cricket_players_clean.csv'",
         "df = pd.read_csv(DATA_PATH)",
         "print(f'Total Qualified Cricketers: {len(df)}')",
         "print(f'Telemetry Features: {df.shape[1]} columns')",
@@ -292,7 +292,7 @@ Quantifying the primary athletic and clutch factors governing player tier assign
     add_code([
         "plt.figure(figsize=(12, 5))",
         "imp_series = pd.Series(rf_clf.feature_importances_, index=X_train.columns).sort_values(ascending=False).head(10)",
-        "sns.barplot(x=imp_series.values, y=imp_series.index, hue=imp_series.index, palette='Cividis', legend=False)",
+        "sns.barplot(x=imp_series.values, y=imp_series.index, hue=imp_series.index, palette='cividis', legend=False)",
         "plt.title('Top 10 Most Influential Telemetry Factors (Random Forest Classifier)')",
         "plt.xlabel('Gini Impurity Reduction Weight')",
         "plt.tight_layout()",

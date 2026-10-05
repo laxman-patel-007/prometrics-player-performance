@@ -963,7 +963,7 @@ elif menu == "🏆 Model Benchmarks & Defense":
             "Test_Precision": st.column_config.NumberColumn("Precision", format="%.4f"),
             "Test_Recall": st.column_config.NumberColumn("Recall", format="%.4f")
         },
-        use_container_width=True
+        width="stretch"
     )
     
     st.markdown("---")
