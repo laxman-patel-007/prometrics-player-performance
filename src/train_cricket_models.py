@@ -19,7 +19,6 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import (
@@ -121,19 +120,6 @@ def train_and_evaluate_models():
     }
     joblib.dump(rf_reg, os.path.join(MODELS_DIR, "random_forest_regressor.joblib"))
 
-    # Model D: Multi-Layer Perceptron Regressor (Module IX - Neural Networks)
-    mlp_reg = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=400, random_state=42, early_stopping=True)
-    mlp_cv = cross_val_score(mlp_reg, X_train, y_train_reg, cv=kf, scoring='r2')
-    mlp_reg.fit(X_train, y_train_reg)
-    mlp_preds = mlp_reg.predict(X_test)
-    reg_metrics['MLP Regressor (Neural Net)'] = {
-        'Test_R2': round(float(r2_score(y_test_reg, mlp_preds)), 4),
-        'CV_R2_mean': round(float(mlp_cv.mean()), 4),
-        'CV_R2_std': round(float(mlp_cv.std()), 4),
-        'Test_RMSE': round(float(np.sqrt(mean_squared_error(y_test_reg, mlp_preds))), 4),
-        'Test_MAE': round(float(mean_absolute_error(y_test_reg, mlp_preds)), 4)
-    }
-    joblib.dump(mlp_reg, os.path.join(MODELS_DIR, "mlp_regressor.joblib"))
 
     print("\n--- Regression Model Evaluation ---")
     for m, vals in reg_metrics.items():
@@ -203,20 +189,6 @@ def train_and_evaluate_models():
     }
     joblib.dump(rf_clf, os.path.join(MODELS_DIR, "random_forest_classifier.joblib"))
 
-    # Model 5: MLP Classifier
-    mlp_clf = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=400, random_state=42, early_stopping=True)
-    mlp_clf_cv = cross_val_score(mlp_clf, X_train, y_train_clf, cv=skf, scoring='accuracy')
-    mlp_clf.fit(X_train, y_train_clf)
-    mlp_cpreds = mlp_clf.predict(X_test)
-    clf_metrics['MLP Classifier (Neural Net)'] = {
-        'Test_Accuracy': round(float(accuracy_score(y_test_clf, mlp_cpreds)), 4),
-        'CV_Accuracy_mean': round(float(mlp_clf_cv.mean()), 4),
-        'Test_Precision': round(float(precision_score(y_test_clf, mlp_cpreds, average='macro')), 4),
-        'Test_Recall': round(float(recall_score(y_test_clf, mlp_cpreds, average='macro')), 4),
-        'Test_F1_Macro': round(float(f1_score(y_test_clf, mlp_cpreds, average='macro')), 4),
-        'Confusion_Matrix': confusion_matrix(y_test_clf, mlp_cpreds).tolist()
-    }
-    joblib.dump(mlp_clf, os.path.join(MODELS_DIR, "mlp_classifier.joblib"))
 
     print("\n--- Classification Model Evaluation ---")
     for m, vals in clf_metrics.items():

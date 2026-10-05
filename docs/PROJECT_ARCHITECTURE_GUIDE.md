@@ -31,12 +31,10 @@
 │   ├── random_forest_regressor.joblib       # Best rating model (R² = 0.9789, error = 1.25 points)
 │   ├── linear_regression.joblib             # Baseline straight-line rating model (R² = 0.9490)
 │   ├── polynomial_regression.joblib         # Interaction regression model (R² = 0.9087)
-│   ├── mlp_regressor.joblib                 # Deep neural network regression model (R² = 0.5495)
 │   ├── knn_classifier.joblib                # Best talent tier classifier (95.16% Accuracy)
 │   ├── random_forest_classifier.joblib      # Production tier classifier & feature importance (94.35%)
 │   ├── logistic_regression.joblib           # Probabilistic tier classifier (87.90% Accuracy)
 │   ├── decision_tree_classifier.joblib      # Visual IF-THEN flowchart classifier (87.90% Accuracy)
-│   ├── mlp_classifier.joblib                # Deep neural network tier classifier (92.74% Accuracy)
 │   ├── kmeans_model.joblib                  # K-Means model grouping players into 5 tactical styles
 │   ├── pca_model.joblib                     # PCA tool compressing 29 stats into 2D coordinates (X, Y)
 │   ├── feature_metadata.json                # Column names, order, and tier labels
@@ -45,7 +43,7 @@
 │   └── cricket_player_performance_analysis.ipynb # 22-cell Jupyter research notebook with charts
 ├── src/
 │   ├── cricket_data_pipeline.py             # Script that cleans 260k balls into 619 player rows
-│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 11 ML models
+│   ├── train_cricket_models.py              # Script that trains, tests, and saves all 9 ML models
 │   └── create_cricket_notebook.py           # Script that automatically builds the Jupyter notebook
 └── docs/
     ├── ML_MODELS_GUIDE.md & .pdf            # Simple & easy guide to all ML models (What, When, Why, How)
@@ -126,17 +124,17 @@
 ### 2.3 Machine Learning Layer (`models/` and `src/`)
 
 #### `src/train_cricket_models.py` (Master Training & Evaluation Script)
-- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 11 Machine Learning models and the StandardScaler.
+- **WHAT:** The master Python script that trains, cross-validates, tests, and saves all 9 Machine Learning models and the StandardScaler.
 - **HOW:**
   1. Loads `cricket_players_clean.csv`.
   2. Applies One-Hot Encoding on `primary_role`.
   3. Splits data into 80% training (495 players) and 20% testing (124 players).
   4. Fits `StandardScaler` on training data and scales features.
-  5. Trains and cross-validates 4 regression models (Linear, Polynomial, Random Forest, MLP) using 5-Fold CV.
-  6. Trains and cross-validates 5 classification models (KNN, Random Forest, Logistic, Decision Tree, MLP) using 5-Fold Stratified CV.
+  5. Trains and cross-validates 3 regression models (Linear, Polynomial, Random Forest) using 5-Fold CV.
+  6. Trains and cross-validates 4 classification models (KNN, Random Forest, Logistic, Decision Tree) using 5-Fold Stratified CV.
   7. Performs K-Means clustering ($k=5$) with Elbow and Silhouette scoring.
   8. Fits PCA (2 components) for 2D visualization.
-  9. Saves all 12 trained binary model files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
+  9. Saves all 10 trained binary model and transformer files (`.joblib`) into `models/` and exports scores to `metrics_summary.json`.
 - **WHEN:** Run during model development or retraining (`python src/train_cricket_models.py`).
 - **WHY:** Centralizes all model training and testing into one automated, reproducible script.
 
@@ -150,12 +148,10 @@
 | `models/random_forest_regressor.joblib` | Random Forest Regressor | **Production Rating Engine:** Predicts continuous player rating (50–95). | **$R^2 = 0.9789$, Error = 1.25 pts** (Winner) |
 | `models/linear_regression.joblib` | Linear Regression (OLS) | Baseline straight-line rating model. | $R^2 = 0.9490$, Error = 1.95 pts |
 | `models/polynomial_regression.joblib` | Polynomial Regression (Deg 2) | Tests multiplicative synergy between key stats. | $R^2 = 0.9087$, Error = 2.61 pts |
-| `models/mlp_regressor.joblib` | Multi-Layer Perceptron (Neural Net) | Deep neural network rating benchmark. | $R^2 = 0.5495$, Error = 5.81 pts |
 | `models/knn_classifier.joblib` | K-Nearest Neighbors ($k=5$) | **Production Tier Classifier:** Assigns talent tier by finding 5 similar peers. | **95.16% Accuracy** (Top Classifier) |
 | `models/random_forest_classifier.joblib` | Random Forest Classifier | Ensemble of 180 trees voting on tier & feature importance. | 94.35% Accuracy (94.75% 5-fold CV) |
 | `models/logistic_regression.joblib` | Logistic Regression (Softmax) | Outputs exact risk probabilities for each tier. | 87.90% Accuracy |
 | `models/decision_tree_classifier.joblib` | Decision Tree (CART) | Visual IF-THEN flowchart for coaches. | 87.90% Accuracy |
-| `models/mlp_classifier.joblib` | Multi-Layer Perceptron (Neural Net) | Deep neural network tier classifier. | 92.74% Accuracy |
 | `models/kmeans_model.joblib` | K-Means Clustering ($k=5$) | Groups players into 5 tactical playing styles. | Discovered 5 real tactical archetypes ($s=0.285$) |
 | `models/pca_model.joblib` | Principal Component Analysis | Compresses 29 stats into 2 coordinates (X, Y) for 2D scatter plots. | Captures 60.79% of all information |
 | `models/feature_metadata.json` | JSON Metadata | Stores column order, feature names, and tier labels. | Guarantees consistency between training and the web app. |
@@ -171,8 +167,8 @@
   - *Cells 1–4:* Problem formulation, data loading, missing value handling.
   - *Cells 5–8:* Exploratory Data Analysis, correlation heatmaps, role distributions.
   - *Cells 9–12:* One-hot encoding, stratified train/test split, standard scaling.
-  - *Cells 13–15:* 4-model regression benchmark (Linear, Poly, Random Forest, MLP) with 5-Fold CV.
-  - *Cells 16–18:* 5-model classification benchmark (KNN, RF, Logistic, Decision Tree, MLP) with confusion matrices.
+  - *Cells 13–15:* 3-model regression benchmark (Linear, Poly, Random Forest) with 5-Fold CV.
+  - *Cells 16–18:* 4-model classification benchmark (KNN, RF, Logistic, Decision Tree) with confusion matrices.
   - *Cells 19–20:* K-Means clustering ($k=5$) with Elbow and Silhouette charts.
   - *Cells 21–22:* 2D PCA projection plot.
 - **WHEN:** Opened in Jupyter Notebook or VS Code for interactive experimentation and grading review.

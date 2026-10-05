@@ -13,8 +13,8 @@ In modern T20 cricket, franchises (like IPL teams) spend ₹100+ Crores in playe
 
 | ML Task | What It Predicts / Outputs | Business Goal | Models Used | Best Model & Result |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Continuous Regression** | Overall Rating ($50.0$ to $95.0$) | Calculate fair player rating and auction purse (in ₹ Crores) | • Random Forest Regressor<br>• Linear Regression (OLS)<br>• Polynomial Regression<br>• Neural Network (MLP) | **Random Forest Regressor**<br>($R^2 = 0.9789$, Error = 1.25 pts) |
-| **2. Talent Classification** | Talent Tier Code (`0, 1, 2`) | Group players into Developing, Core, or Elite tiers | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Neural Network (MLP)<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
+| **1. Continuous Regression** | Overall Rating ($50.0$ to $95.0$) | Calculate fair player rating and auction purse (in ₹ Crores) | • Random Forest Regressor<br>• Linear Regression (OLS)<br>• Polynomial Regression | **Random Forest Regressor**<br>($R^2 = 0.9789$, Error = 1.25 pts) |
+| **2. Talent Classification** | Talent Tier Code (`0, 1, 2`) | Group players into Developing, Core, or Elite tiers | • K-Nearest Neighbors (KNN)<br>• Random Forest Classifier<br>• Logistic Regression<br>• Decision Tree | **K-Nearest Neighbors (KNN)**<br>(95.16% Accuracy)<br>& **Random Forest** (94.35%) |
 | **3. Unsupervised Clustering** | Tactical Style (5 Archetypes) | Group athletes by how they actually play, not just "Batter/Bowler" | • K-Means Clustering ($k=5$ clusters) | **5 Clear Tactical Archetypes**<br>(Anchor, Finisher, Fast Bowler, Spinner, All-Rounder) |
 | **4. Dimensionality Reduction** | 2D Coordinates ($[X, Y]$) | Compress 29 stats into an interactive 2D map | • Principal Component Analysis (PCA) | **Top 2 Components**<br>explain 60.79% of all variation |
 
@@ -118,20 +118,6 @@ Regression models predict a continuous player overall rating between $50.0$ and 
   - Implemented using `RandomForestRegressor(n_estimators=180, max_depth=12, random_state=42)`.
   - **Test $R^2$:** `0.9789` | **5-Fold CV $R^2$:** `0.9528` | **Test RMSE:** `1.2562` points | **Test MAE:** `0.9024` points.
 
----
-
-### 3.4 Multi-Layer Perceptron (MLP) Regressor (Neural Network)
-- **WHAT is it?**  
-  A deep feedforward neural network with an input layer (29 stats), two hidden layers (64 and 32 neurons with ReLU activation), and 1 output rating neuron:
-  $$\text{Input (29)} \longrightarrow \text{Dense (64)} \longrightarrow \text{Dense (32)} \longrightarrow \text{Output (1 Rating)}$$
-- **WHEN is it used?**  
-  Used as a deep learning benchmark to satisfy Module IX (Perceptrons & Neural Networks).
-- **WHY was it chosen?**  
-  To test whether deep representation learning could beat decision tree ensembles on cricket data.
-- **HOW does it work & results?**  
-  - Trained using the Adam optimizer with early stopping on validation loss.
-  - **Test $R^2$:** `0.5495` | **5-Fold CV $R^2$:** `0.4503` | **Test RMSE:** `5.8058` points.
-  - **Key Lesson:** Confirms the standard rule in machine learning: **On small-to-medium tabular datasets (~600 rows), tree ensembles (like Random Forest) work much better than neural networks.**
 
 ---
 
@@ -202,19 +188,6 @@ Classification models place players into **3 talent tiers**:
   - Uses the Softmax formula to turn raw scores into probabilities that sum to 100%.
   - **Test Accuracy:** `87.90%` | **Macro F1:** `0.8853`.
 
----
-
-### 4.5 Multi-Layer Perceptron (MLP) Classifier (Neural Network)
-- **WHAT is it?**  
-  A deep neural network classifier with 2 hidden layers (64 and 32 neurons) and a Softmax output layer with 3 units.
-- **WHEN is it used?**  
-  Benchmark neural network classifier for Module IX.
-- **WHY was it chosen?**  
-  Tests if connected non-linear neurons can draw flexible boundaries separating borderline players.
-- **HOW does it work & results?**  
-  - Trained using Cross-Entropy loss and Adam optimizer.
-  - **Test Accuracy:** `92.74%` | **Macro F1:** `0.9287`.
-  - **Takeaway:** Solid accuracy (92.7%), but KNN and Random Forest were faster, more accurate, and much easier to explain.
 
 ---
 
@@ -288,15 +261,13 @@ To make sure our models work reliably on new matches, we use standard academic t
 
 ## 8. Master Summary Table
 
-| Model Name | Task | Syllabus Module | Test Score | 5-Fold CV Score | Why It Was Chosen |
+| **Model Name** | Task | Syllabus Module | Test Score | 5-Fold CV Score | Why It Was Chosen |
 | :--- | :--- | :--- | :---: | :---: | :--- |
 | **Random Forest Regressor** | Player Rating | Module VIII | **$R^2 = 0.9789$**<br>(RMSE: 1.25) | **$0.9528 \pm 0.0129$** | **Production Winner:** Highest accuracy, handles non-linear cricket thresholds. |
 | **Linear Regression (OLS)** | Player Rating | Module IV | $R^2 = 0.9490$<br>(RMSE: 1.95) | $0.8797 \pm 0.0371$ | Baseline model; easy to explain exact feature weights. |
 | **Polynomial Regression** | Player Rating | Module IV | $R^2 = 0.9087$<br>(RMSE: 2.61) | $0.8739 \pm 0.0343$ | Tests multiplicative synergy between strike rate and boundary frequency. |
-| **MLP Regressor (Neural Net)** | Player Rating | Module IX | $R^2 = 0.5495$<br>(RMSE: 5.81) | $0.4503 \pm 0.1375$ | Deep learning baseline; shows trees are better for tabular sports data. |
 | **K-Nearest Neighbors (KNN)** | Talent Tiers | Module V | **$95.16\%$ Acc**<br>(F1: 0.9501) | $0.9030 \pm 0.0221$ | **Accuracy Winner:** Classifies players by finding historical peer matches. |
 | **Random Forest Classifier** | Talent Tiers | Module VIII | $94.35\%$ Acc<br>(F1: 0.9459) | **$0.9475 \pm 0.0142$** | **Production Winner:** Stable across folds and provides feature importance rankings. |
-| **MLP Classifier (Neural Net)** | Talent Tiers | Module IX | $92.74\%$ Acc<br>(F1: 0.9287) | $0.8141 \pm 0.0384$ | Neural network classifier; draws flexible non-linear boundaries. |
 | **Logistic Regression** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8853) | $0.9253 \pm 0.0180$ | Linear probabilistic model; gives exact risk percentages. |
 | **Decision Tree (CART)** | Talent Tiers | Module V | $87.90\%$ Acc<br>(F1: 0.8812) | $0.8990 \pm 0.0195$ | 100% human-readable "IF-THEN" flowchart for coaches. |
 | **K-Means Clustering** | Tactical Styles | Module VII | **5 Clusters**<br>($s = 0.285$) | Validated via Elbow Curve | Discovered 5 real playing styles beyond simplistic Batter/Bowler tags. |

@@ -20,13 +20,6 @@
       "CV_R2_std": 0.0129,
       "Test_RMSE": 1.2562,
       "Test_MAE": 0.9024
-    },
-    "MLP Regressor (Neural Net)": {
-      "Test_R2": 0.5495,
-      "CV_R2_mean": 0.4503,
-      "CV_R2_std": 0.1375,
-      "Test_RMSE": 5.8058,
-      "Test_MAE": 4.2246
     }
   },
   "classification": {
@@ -123,30 +116,6 @@
           0,
           1,
           38
-        ]
-      ]
-    },
-    "MLP Classifier (Neural Net)": {
-      "Test_Accuracy": 0.9274,
-      "CV_Accuracy_mean": 0.8141,
-      "Test_Precision": 0.9426,
-      "Test_Recall": 0.9177,
-      "Test_F1_Macro": 0.9287,
-      "Confusion_Matrix": [
-        [
-          22,
-          3,
-          0
-        ],
-        [
-          0,
-          57,
-          3
-        ],
-        [
-          0,
-          3,
-          36
         ]
       ]
     }

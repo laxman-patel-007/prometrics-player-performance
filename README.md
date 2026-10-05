@@ -22,8 +22,8 @@ CricMetrics Pro is an end-to-end Machine Learning decision support platform buil
 | **Problem Formulation** | Franchise Economics & Scouting | Evidence-based T20 player valuation, death-overs impact, and auction budget allocation. |
 | **Data Foundation** | Real IPL Ball-by-Ball Data | Aggregated 17 seasons of ball-by-ball deliveries (`deliveries_2008_2024.csv`, `matches_2008_2024.csv`). |
 | **Feature Engineering** | Batting, Bowling & Clutch Indices | Batting SR, Death Overs (16-20) SR, Boundary %, Economy Rate, Dot Ball %, Player of the Match awards. |
-| **Continuous Regression** | Rating Prediction ($R^2 = 0.9789$) | Random Forest Regressor, Linear Regression (OLS), Polynomial interaction, MLP. |
-| **Talent Classification** | Tier Categorization ($95.16\%$ Acc) | K-Nearest Neighbors (KNN), Random Forest Classifier, Logistic Regression, Decision Tree, MLP. |
+| **Continuous Regression** | Rating Prediction ($R^2 = 0.9789$) | Random Forest Regressor, Linear Regression (OLS), Polynomial interaction. |
+| **Talent Classification** | Tier Categorization ($95.16\%$ Acc) | K-Nearest Neighbors (KNN), Random Forest Classifier, Logistic Regression, Decision Tree. |
 | **Tactical Clustering** | Unsupervised Style Discovery | K-Means Clustering ($k=5$) discovering Anchors, Death Finishers, Pace Spearheads, Mystery Spinners, and All-Rounders. |
 | **Dimensionality Reduction** | Latent 2D Tactical Map | Principal Component Analysis (PCA) mapping 619 players into 2D skill space (60.8% variance explained). |
 | **Auction War Room** | Enterprise Streamlit UI | High-contrast executive dashboard with instant player search, one-click iconic presets, and what-if development simulator. |
@@ -83,14 +83,12 @@ python src/create_cricket_notebook.py
 | **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
 | **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
 | **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
-| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.1375$ | $4.2246$ | $5.8058$ | $0.5495$ |
 
 ### Supervised Classification Benchmark (Predicting Talent Tier)
 | Model Architecture | 5-Fold CV Accuracy | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **K-Nearest Neighbors (KNN)** | $0.9030 \pm 0.0221$ | **$95.16\%$** | $0.9587$ | **$0.9421$** | **$0.9501$** |
 | **Random Forest Classifier** | **$0.9475 \pm 0.0142$** | $94.35\%$ | **$0.9496$** | $0.9426$ | $0.9459$ |
-| **MLP Classifier (Neural Net)** | $0.8141 \pm 0.0384$ | $92.74\%$ | $0.9405$ | $0.9177$ | $0.9287$ |
 | **Logistic Regression** | $0.9253 \pm 0.0180$ | $87.90\%$ | $0.9067$ | $0.8694$ | $0.8853$ |
 | **Decision Tree Classifier** | $0.8990 \pm 0.0195$ | $87.90\%$ | $0.8931$ | $0.8706$ | $0.8812$ |
 

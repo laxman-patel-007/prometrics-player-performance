@@ -224,12 +224,10 @@ def load_models():
         "linear_reg": joblib.load(os.path.join(BASE_DIR, "models/linear_regression.joblib")),
         "poly_reg": joblib.load(os.path.join(BASE_DIR, "models/polynomial_regression.joblib")),
         "rf_reg": joblib.load(os.path.join(BASE_DIR, "models/random_forest_regressor.joblib")),
-        "mlp_reg": joblib.load(os.path.join(BASE_DIR, "models/mlp_regressor.joblib")),
         "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
         "knn_clf": joblib.load(os.path.join(BASE_DIR, "models/knn_classifier.joblib")),
         "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
         "rf_clf": joblib.load(os.path.join(BASE_DIR, "models/random_forest_classifier.joblib")),
-        "mlp_clf": joblib.load(os.path.join(BASE_DIR, "models/mlp_classifier.joblib")),
         "kmeans": joblib.load(os.path.join(BASE_DIR, "models/kmeans_model.joblib")),
         "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
     }
@@ -628,7 +626,7 @@ elif menu == "⚡ AI Rating & Auction Valuation":
             
         chosen_reg_name = st.selectbox(
             "Evaluation Model Engine:",
-            ["Random Forest Regressor (Recommended - 97.9% R²)", "Linear Regression (OLS)", "Polynomial Regression (Deg 2)", "MLP Neural Network"],
+            ["Random Forest Regressor (Recommended - 97.9% R²)", "Linear Regression (OLS)", "Polynomial Regression (Deg 2)"],
             key="sim_reg_engine"
         )
 
@@ -687,8 +685,6 @@ elif menu == "⚡ AI Rating & Auction Valuation":
         poly_pkg = models["poly_reg"]
         poly_in = poly_pkg["poly_transformer"].transform(input_df[poly_pkg["poly_cols"]])
         pred_rating = poly_pkg["poly_model"].predict(poly_in)[0]
-    elif "Neural" in chosen_reg_name:
-        pred_rating = models["mlp_reg"].predict(input_scaled)[0]
     else:
         pred_rating = models["rf_reg"].predict(input_scaled)[0]
 

@@ -18,13 +18,10 @@
 4. [Data Preprocessing & Feature Engineering](#4-data-preprocessing--feature-engineering)
 5. [Supervised Learning: Continuous Rating Regression Models](#5-supervised-learning-continuous-rating-regression-models)
 6. [Supervised Learning: Talent Tier Classification Models](#6-supervised-learning-talent-tier-classification-models)
-7. [Rigorous Model Evaluation & Validation](#7-rigorous-model-evaluation--validation)
-8. [Unsupervised Learning: Tactical Archetype Clustering](#8-unsupervised-learning-tactical-archetype-clustering)
-9. [Dimensionality Reduction & Ensemble Analysis](#9-dimensionality-reduction--ensemble-analysis)
-10. [Neural Network Architectures & Model Deployment](#10-neural-network-architectures--model-deployment)
-11. [Streamlit Application Architecture & User Guide](#11-streamlit-application-architecture--user-guide)
-12. [Error Diagnostics, Residual Analysis & Limitations](#12-error-diagnostics-residual-analysis--limitations)
-13. [Viva Voce Examination Guide: Questions & Model Answers](#13-viva-voce-examination-guide-questions--model-answers)
+7. [Unsupervised Learning: Tactical Archetype Clustering](#7-unsupervised-learning-tactical-archetype-clustering)
+8. [Dimensionality Reduction & PCA Analysis](#8-dimensionality-reduction--pca-analysis)
+9. [What-If Development & Auction Valuation Simulator](#9-what-if-development--auction-valuation-simulator)
+10. [Viva Voce Examination Guide: Model Answers](#10-viva-voce-examination-guide-model-answers)
 
 ---
 
@@ -118,7 +115,6 @@ $$\min_{\mathbf{w}} \sum_{i=1}^n \left( y_i - \hat{y}_i \right)^2$$
 | **Random Forest Regressor** | **$0.9528 \pm 0.0129$** | **$0.9024$** | **$1.2562$** | **$0.9789$** |
 | **Linear Regression (OLS)** | $0.8797 \pm 0.0371$ | $1.5364$ | $1.9534$ | $0.9490$ |
 | **Polynomial Regression (Deg 2)** | $0.8739 \pm 0.0343$ | $1.6563$ | $2.6142$ | $0.9087$ |
-| **MLP Regressor (Neural Net)** | $0.4503 \pm 0.1375$ | $4.2246$ | $5.8058$ | $0.5495$ |
 
 **Key Finding:** Random Forest Regressor significantly outperformed linear baselines ($R^2 = 0.9789$, $\text{RMSE} = 1.2562$), capturing the non-linear interaction thresholds between death-overs strike rate and boundary frequency.
 
@@ -132,7 +128,6 @@ We formulated the multi-class classification problem predicting talent tiers (De
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **K-Nearest Neighbors (KNN)** | $0.9030 \pm 0.0221$ | **$95.16\%$** | $0.9587$ | **$0.9421$** | **$0.9501$** |
 | **Random Forest Classifier** | **$0.9475 \pm 0.0142$** | $94.35\%$ | **$0.9496$** | $0.9426$ | $0.9459$ |
-| **MLP Classifier (Neural Net)** | $0.8141 \pm 0.0384$ | $92.74\%$ | $0.9405$ | $0.9177$ | $0.9287$ |
 | **Logistic Regression** | $0.9253 \pm 0.0180$ | $87.90\%$ | $0.9067$ | $0.8694$ | $0.8853$ |
 | **Decision Tree Classifier** | $0.8990 \pm 0.0195$ | $87.90\%$ | $0.8931$ | $0.8706$ | $0.8812$ |
 
