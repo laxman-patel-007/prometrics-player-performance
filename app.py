@@ -3,8 +3,10 @@ CricMetrics Pro: AI-Powered Cricket Player Performance Analytics & Auction War R
 Enterprise Decision Support Platform for Franchise Management, Scouting & Player Valuation
 """
 
+import sys
 import os
 import json
+import logging
 import joblib
 import numpy as np
 import pandas as pd
@@ -12,6 +14,24 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.metrics import confusion_matrix
+
+# Configure immediate unbuffered stdout/stderr logging for Streamlit Cloud
+try:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(line_buffering=True)
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(line_buffering=True)
+except Exception:
+    pass
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+print(">>> [CricMetrics Pro] Application starting up...", flush=True)
+print(f">>> [CricMetrics Pro] Python version: {sys.version.split()[0]}", flush=True)
 
 # -----------------------------------------------------------------------------
 # 1. PAGE CONFIGURATION
@@ -206,11 +226,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # -----------------------------------------------------------------------------
 @st.cache_data
 def load_datasets():
+    print(">>> [CricMetrics Pro] Loading datasets...", flush=True)
     data_path = os.path.join(BASE_DIR, "data/processed/cricket_players_clean.csv")
     metrics_path = os.path.join(BASE_DIR, "models/metrics_summary.json")
     meta_path = os.path.join(BASE_DIR, "models/feature_metadata.json")
     
     if not os.path.exists(metrics_path) or not os.path.exists(meta_path):
+        print(">>> [CricMetrics Pro] Metrics missing, running model trainer...", flush=True)
         from src.train_cricket_models import train_and_evaluate_models
         train_and_evaluate_models()
         
@@ -219,10 +241,12 @@ def load_datasets():
         metrics = json.load(f)
     with open(meta_path, "r") as f:
         metadata = json.load(f)
+    print(f">>> [CricMetrics Pro] Datasets loaded: {len(df_clean)} players", flush=True)
     return df_clean, metrics, metadata
 
 @st.cache_resource
 def load_models():
+    print(">>> [CricMetrics Pro] Loading machine learning models...", flush=True)
     def _read_all():
         return {
             "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
@@ -234,14 +258,20 @@ def load_models():
             "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
         }
     try:
-        return _read_all()
-    except Exception:
+        models_dict = _read_all()
+        print(">>> [CricMetrics Pro] All 7 ML models loaded from disk successfully!", flush=True)
+        return models_dict
+    except Exception as e:
+        print(f">>> [CricMetrics Pro] Notice: Model serialization mismatch ({e}). Auto-retraining models...", flush=True)
         from src.train_cricket_models import train_and_evaluate_models
         train_and_evaluate_models()
-        return _read_all()
+        models_dict = _read_all()
+        print(">>> [CricMetrics Pro] Freshly retrained models loaded successfully!", flush=True)
+        return models_dict
 
 df, metrics, metadata = load_datasets()
 models = load_models()
+print(">>> [CricMetrics Pro] War Room ready for user interactions!", flush=True)
 
 def style_chart(fig, height=440):
     fig.update_layout(
