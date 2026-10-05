@@ -210,6 +210,10 @@ def load_datasets():
     metrics_path = os.path.join(BASE_DIR, "models/metrics_summary.json")
     meta_path = os.path.join(BASE_DIR, "models/feature_metadata.json")
     
+    if not os.path.exists(metrics_path) or not os.path.exists(meta_path):
+        from src.train_cricket_models import train_and_evaluate_models
+        train_and_evaluate_models()
+        
     df_clean = pd.read_csv(data_path)
     with open(metrics_path, "r") as f:
         metrics = json.load(f)
@@ -219,16 +223,22 @@ def load_datasets():
 
 @st.cache_resource
 def load_models():
-    models = {
-        "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
-        "knn_clf": joblib.load(os.path.join(BASE_DIR, "models/knn_classifier.joblib")),
-        "rf_clf": joblib.load(os.path.join(BASE_DIR, "models/random_forest_classifier.joblib")),
-        "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
-        "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
-        "kmeans": joblib.load(os.path.join(BASE_DIR, "models/kmeans_model.joblib")),
-        "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
-    }
-    return models
+    def _read_all():
+        return {
+            "scaler": joblib.load(os.path.join(BASE_DIR, "models/scaler.joblib")),
+            "knn_clf": joblib.load(os.path.join(BASE_DIR, "models/knn_classifier.joblib")),
+            "rf_clf": joblib.load(os.path.join(BASE_DIR, "models/random_forest_classifier.joblib")),
+            "log_clf": joblib.load(os.path.join(BASE_DIR, "models/logistic_regression.joblib")),
+            "dt_clf": joblib.load(os.path.join(BASE_DIR, "models/decision_tree_classifier.joblib")),
+            "kmeans": joblib.load(os.path.join(BASE_DIR, "models/kmeans_model.joblib")),
+            "pca": joblib.load(os.path.join(BASE_DIR, "models/pca_model.joblib"))
+        }
+    try:
+        return _read_all()
+    except Exception:
+        from src.train_cricket_models import train_and_evaluate_models
+        train_and_evaluate_models()
+        return _read_all()
 
 df, metrics, metadata = load_datasets()
 models = load_models()

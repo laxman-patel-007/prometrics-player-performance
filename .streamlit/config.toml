@@ -7,8 +7,3 @@ font = "sans serif"
 
 [client]
 showErrorDetails = true
-
-[server]
-headless = true
-enableCORS = false
-enableXsrfProtection = false
